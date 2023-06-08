@@ -1,0 +1,19 @@
+# bash completion for fontbakery
+which fontbakery > /dev/null &&
+function _fontbakery {
+    local  cur prev subcommands
+    COMPREPLY=()
+    cur="$(_get_cword)"
+    prev="$3"
+    # if prev is empty
+    if [ $COMP_CWORD == 1 ] ; then
+        subcommands="$(fontbakery --list-subcommands)"
+        COMPREPLY=( $(compgen -W "$subcommands" -- "$cur") )
+    fi
+    if [ $prev == "-c" ] || [ $prev == "--checkid" ] || [ $prev == "-x" ] || [ $prev == "--exclude-checkid" ] ; then
+        profile=${COMP_WORDS[1]}
+        checks="$(fontbakery $profile --list-checks)"
+        COMPREPLY=( $(compgen -W "$checks" -- "$cur") )
+    fi
+} &&
+complete -o default -F _fontbakery fontbakery
