@@ -4,11 +4,13 @@ import os
 import tempfile
 
 from openbakery.checkrunner import FAIL, WARN
-from openbakery.codetesting import (assert_PASS,
-                                    assert_SKIP,
-                                    assert_results_contain,
-                                    CheckTester,
-                                    TEST_FILE)
+from openbakery.codetesting import (
+    assert_PASS,
+    assert_SKIP,
+    assert_results_contain,
+    CheckTester,
+    TEST_FILE,
+)
 from openbakery.profiles import shaping as shaping_profile
 
 
@@ -24,14 +26,12 @@ def wrap_args(config, font):
 
 
 def test_check_shaping_regression():
-    """ Check that we can test shaping against expectations. """
-    check = CheckTester(shaping_profile,
-                        "com.google.fonts/check/shaping/regression")
+    """Check that we can test shaping against expectations."""
+    check = CheckTester(shaping_profile, "com.google.fonts/check/shaping/regression")
 
     shaping_test = {
         "configuration": {},
-        "tests": [{"input": "AV",
-                   "expectation": "A=0+664|V=1+691"}],
+        "tests": [{"input": "AV", "expectation": "A=0+664|V=1+691"}],
     }
 
     with tempfile.TemporaryDirectory() as tmp_gf_dir:
@@ -40,19 +40,20 @@ def test_check_shaping_regression():
         config = {"com.google.fonts/check/shaping": {"test_directory": tmp_gf_dir}}
 
         font = TEST_FILE("nunito/Nunito-Regular.ttf")
-        assert_PASS(check(wrap_args(config, font)),
-                    "Nunito: A=664,V=691")
+        assert_PASS(check(wrap_args(config, font)), "Nunito: A=664,V=691")
 
         font = TEST_FILE("slabo/Slabo13px.ttf")
-        assert_results_contain(check(wrap_args(config, font)),
-                               FAIL, "shaping-regression",
-                               "Slabo: A!=664,V!=691")
+        assert_results_contain(
+            check(wrap_args(config, font)),
+            FAIL,
+            "shaping-regression",
+            "Slabo: A!=664,V!=691",
+        )
 
 
 def test_check_shaping_forbidden():
-    """ Check that we can test for forbidden glyphs in output. """
-    check = CheckTester(shaping_profile,
-                        "com.google.fonts/check/shaping/forbidden")
+    """Check that we can test for forbidden glyphs in output."""
+    check = CheckTester(shaping_profile, "com.google.fonts/check/shaping/forbidden")
 
     shaping_test = {
         "configuration": {"forbidden_glyphs": [".notdef"]},
@@ -65,24 +66,23 @@ def test_check_shaping_forbidden():
         config = {"com.google.fonts/check/shaping": {"test_directory": tmp_gf_dir}}
 
         font = TEST_FILE("cjk/SourceHanSans-Regular.otf")
-        assert_PASS(check(wrap_args(config, font)),
-                    "Source Han contains CJK")
+        assert_PASS(check(wrap_args(config, font)), "Source Han contains CJK")
 
         font = TEST_FILE("slabo/Slabo13px.ttf")
-        assert_results_contain(check(wrap_args(config, font)),
-                               FAIL, "shaping-forbidden",
-                               "Slabo shapes .notdef for CJK")
+        assert_results_contain(
+            check(wrap_args(config, font)),
+            FAIL,
+            "shaping-forbidden",
+            "Slabo shapes .notdef for CJK",
+        )
 
 
 def test_check_shaping_collides():
-    """ Check that we can test for colliding glyphs in output. """
-    check = CheckTester(shaping_profile,
-                        "com.google.fonts/check/shaping/collides")
+    """Check that we can test for colliding glyphs in output."""
+    check = CheckTester(shaping_profile, "com.google.fonts/check/shaping/collides")
 
     shaping_test = {
-        "configuration": {"collidoscope": {"area": 0,
-                                           "bases": True,
-                                           "marks": True}},
+        "configuration": {"collidoscope": {"area": 0, "bases": True, "marks": True}},
         "tests": [{"input": "ïï"}],
     }
 
@@ -92,38 +92,35 @@ def test_check_shaping_collides():
         config = {"com.google.fonts/check/shaping": {"test_directory": tmp_gf_dir}}
 
         font = TEST_FILE("cousine/Cousine-Regular.ttf")
-        assert_PASS(check(wrap_args(config, font)),
-                    "ïï doesn't collide in Cousine")
+        assert_PASS(check(wrap_args(config, font)), "ïï doesn't collide in Cousine")
 
         font = TEST_FILE("nunito/Nunito-Black.ttf")
-        assert_results_contain(check(wrap_args(config, font)),
-                               FAIL, "shaping-collides",
-                               "ïï collides in Nunito")
+        assert_results_contain(
+            check(wrap_args(config, font)),
+            FAIL,
+            "shaping-collides",
+            "ïï collides in Nunito",
+        )
 
 
 def test_check_dotted_circle():
     """Ensure dotted circle glyph is present and can attach marks."""
-    check = CheckTester(shaping_profile,
-                        "com.google.fonts/check/dotted_circle")
+    check = CheckTester(shaping_profile, "com.google.fonts/check/dotted_circle")
 
     font = TEST_FILE("mada/Mada-Regular.ttf")
-    assert_PASS(check(font),
-                "with a good font...")
+    assert_PASS(check(font), "with a good font...")
 
     font = TEST_FILE("cabin/Cabin-Regular.ttf")
-    assert_results_contain(check(font),
-                           WARN, "missing-dotted-circle")
+    assert_results_contain(check(font), WARN, "missing-dotted-circle")
 
     font = TEST_FILE("broken_markazitext/MarkaziText-VF.ttf")
-    assert_results_contain(check(font),
-                           FAIL, "unattached-dotted-circle-marks")
+    assert_results_contain(check(font), FAIL, "unattached-dotted-circle-marks")
 
 
 def test_check_soft_dotted():
     """Check if font substitues soft dotted glyphs
     when combined with top marks."""
-    check = CheckTester(shaping_profile,
-                        "com.google.fonts/check/soft_dotted")
+    check = CheckTester(shaping_profile, "com.google.fonts/check/soft_dotted")
 
     font = TEST_FILE("abeezee/ABeeZee-Regular.ttf")
     msg = assert_results_contain(check(font), WARN, "soft-dotted")
@@ -136,9 +133,7 @@ def test_check_soft_dotted():
     assert "The dot of soft dotted characters should disappear" in msg
 
     font = TEST_FILE("akshar/Akshar[wght].ttf")
-    assert_PASS(check(font),
-                "All soft dotted characters seem to lose their dot ...")
+    assert_PASS(check(font), "All soft dotted characters seem to lose their dot ...")
 
     font = TEST_FILE("rosarivo/Rosarivo-Regular.ttf")
-    assert_SKIP(check(font),
-                "It is not clear if soft dotted characters ...")
+    assert_SKIP(check(font), "It is not clear if soft dotted characters ...")

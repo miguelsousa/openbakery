@@ -23,8 +23,7 @@ def empty_ufo_font(tmpdir):
 
 
 def test_check_ufolint(empty_ufo_font):
-    check = CheckTester(ufo_sources_profile,
-                        "com.daltonmaag/check/ufolint")
+    check = CheckTester(ufo_sources_profile, "com.daltonmaag/check/ufolint")
 
     _, ufo_path = empty_ufo_font
 
@@ -41,8 +40,7 @@ def test_check_ufolint(empty_ufo_font):
 
 
 def test_check_required_fields(empty_ufo_font):
-    check = CheckTester(ufo_sources_profile,
-                        "com.daltonmaag/check/ufo_required_fields")
+    check = CheckTester(ufo_sources_profile, "com.daltonmaag/check/ufo_required_fields")
 
     ufo, _ = empty_ufo_font
 
@@ -65,8 +63,9 @@ def test_check_required_fields(empty_ufo_font):
 
 
 def test_check_recommended_fields(empty_ufo_font):
-    check = CheckTester(ufo_sources_profile,
-                        "com.daltonmaag/check/ufo_recommended_fields")
+    check = CheckTester(
+        ufo_sources_profile, "com.daltonmaag/check/ufo_recommended_fields"
+    )
 
     ufo, _ = empty_ufo_font
 
@@ -90,8 +89,9 @@ def test_check_recommended_fields(empty_ufo_font):
 
 
 def test_check_unnecessary_fields(empty_ufo_font):
-    check = CheckTester(ufo_sources_profile,
-                        "com.daltonmaag/check/ufo_unnecessary_fields")
+    check = CheckTester(
+        ufo_sources_profile, "com.daltonmaag/check/ufo_unnecessary_fields"
+    )
 
     ufo, _ = empty_ufo_font
 
@@ -113,8 +113,9 @@ def test_check_unnecessary_fields(empty_ufo_font):
 
 def test_check_designspace_has_sources():
     """See if we can actually load the source files."""
-    check = CheckTester(ufo_sources_profile,
-                        "com.google.fonts/check/designspace_has_sources")
+    check = CheckTester(
+        ufo_sources_profile, "com.google.fonts/check/designspace_has_sources"
+    )
 
     designspace = TEST_FILE("stupidfont/Stupid Font.designspace")
     assert_PASS(check(designspace))
@@ -124,8 +125,9 @@ def test_check_designspace_has_sources():
 
 def test_check_designspace_has_default_master():
     """Ensure a default master is defined."""
-    check = CheckTester(ufo_sources_profile,
-                        "com.google.fonts/check/designspace_has_default_master")
+    check = CheckTester(
+        ufo_sources_profile, "com.google.fonts/check/designspace_has_default_master"
+    )
 
     designspace = TEST_FILE("stupidfont/Stupid Font.designspace")
     assert_PASS(check(designspace))
@@ -135,23 +137,25 @@ def test_check_designspace_has_default_master():
 
 def test_check_designspace_has_consistent_glyphset():
     """Check consistency of glyphset in a designspace file."""
-    check = CheckTester(ufo_sources_profile,
-                        "com.google.fonts/check/designspace_has_consistent_glyphset")
+    check = CheckTester(
+        ufo_sources_profile,
+        "com.google.fonts/check/designspace_has_consistent_glyphset",
+    )
 
     designspace = TEST_FILE("stupidfont/Stupid Font.designspace")
-    assert_results_contain(check(designspace),
-                           FAIL, 'inconsistent-glyphset')
+    assert_results_contain(check(designspace), FAIL, "inconsistent-glyphset")
 
     # TODO: Fix it and ensure it passes the check
 
 
 def test_check_designspace_has_consistent_codepoints():
     """Check codepoints consistency in a designspace file."""
-    check = CheckTester(ufo_sources_profile,
-                        "com.google.fonts/check/designspace_has_consistent_codepoints")
+    check = CheckTester(
+        ufo_sources_profile,
+        "com.google.fonts/check/designspace_has_consistent_codepoints",
+    )
 
     designspace = TEST_FILE("stupidfont/Stupid Font.designspace")
-    assert_results_contain(check(designspace),
-                           FAIL, 'inconsistent-codepoints')
+    assert_results_contain(check(designspace), FAIL, "inconsistent-codepoints")
 
     # TODO: Fix it and ensure it passes the check

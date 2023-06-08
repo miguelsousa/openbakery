@@ -182,11 +182,11 @@ SET_EXPLICIT_CHECKS = {
     # "com.google.fonts/check/transformed_components",
     # ---
     "com.google.fonts/check/family/win_ascent_and_descent",  # IS_OVERRIDDEN
-    "com.google.fonts/check/openbakery_version",             # IS_OVERRIDDEN
-    "com.google.fonts/check/name/trailing_spaces",           # IS_OVERRIDDEN
-    "com.google.fonts/check/os2_metrics_match_hhea",         # IS_OVERRIDDEN
-    "com.google.fonts/check/valid_glyphnames",               # IS_OVERRIDDEN
-    "com.google.fonts/check/whitespace_glyphs",              # IS_OVERRIDDEN
+    "com.google.fonts/check/openbakery_version",  # IS_OVERRIDDEN
+    "com.google.fonts/check/name/trailing_spaces",  # IS_OVERRIDDEN
+    "com.google.fonts/check/os2_metrics_match_hhea",  # IS_OVERRIDDEN
+    "com.google.fonts/check/valid_glyphnames",  # IS_OVERRIDDEN
+    "com.google.fonts/check/whitespace_glyphs",  # IS_OVERRIDDEN
     # ---
     "com.adobe.fonts/check/freetype_rasterizer",
     "com.adobe.fonts/check/sfnt_version",
@@ -418,10 +418,46 @@ def com_adobe_fonts_check_nameid_1_win_english(ttFont, has_name_table):
 def com_adobe_fonts_check_unsupported_tables(ttFont):
     """Does the font have any unsupported tables?"""
     SUPPORTED_TABLES = {
-        "avar", "BASE", "CFF ", "CFF2", "cmap", "cvar", "cvt ", "DSIG", "feat", "fpgm",
-        "fvar", "gasp", "GDEF", "glyf", "GPOS", "GSUB", "gvar", "hdmx", "head", "hhea",
-        "hmtx", "HVAR", "kern", "loca", "LTSH", "maxp", "meta", "morx", "MVAR", "name",
-        "OS/2", "PCLT", "post", "prep", "STAT", "SVG ", "VDMX", "vhea", "vmtx", "VORG",
+        "avar",
+        "BASE",
+        "CFF ",
+        "CFF2",
+        "cmap",
+        "cvar",
+        "cvt ",
+        "DSIG",
+        "feat",
+        "fpgm",
+        "fvar",
+        "gasp",
+        "GDEF",
+        "glyf",
+        "GPOS",
+        "GSUB",
+        "gvar",
+        "hdmx",
+        "head",
+        "hhea",
+        "hmtx",
+        "HVAR",
+        "kern",
+        "loca",
+        "LTSH",
+        "maxp",
+        "meta",
+        "morx",
+        "MVAR",
+        "name",
+        "OS/2",
+        "PCLT",
+        "post",
+        "prep",
+        "STAT",
+        "SVG ",
+        "VDMX",
+        "vhea",
+        "vmtx",
+        "VORG",
         "VVAR",
     }
     font_tables = set(ttFont.keys())
@@ -429,7 +465,7 @@ def com_adobe_fonts_check_unsupported_tables(ttFont):
     unsupported_tables = sorted(font_tables - SUPPORTED_TABLES)
 
     if unsupported_tables:
-        unsupported_list = ''.join(f"* {tag}\n" for tag in unsupported_tables)
+        unsupported_list = "".join(f"* {tag}\n" for tag in unsupported_tables)
         yield FAIL, Message(
             "unsupported-tables",
             f"The following unsupported font tables were found:\n\n{unsupported_list}",
@@ -439,23 +475,23 @@ def com_adobe_fonts_check_unsupported_tables(ttFont):
 
 
 @check(
-    id = 'com.adobe.fonts/check/STAT_strings',
-    conditions = ["has_STAT_table"],
-    rationale = """
+    id="com.adobe.fonts/check/STAT_strings",
+    conditions=["has_STAT_table"],
+    rationale="""
         In the STAT table, the "Italic" keyword must not be used on AxisValues
         for variation axes other than 'ital' or 'slnt'. This is a more lenient
         implementation of com.google.fonts/check/STAT_strings which allows "Italic"
         only for the 'ital' axis.
     """,
-    proposal = 'https://github.com/googlefonts/fontbakery/issues/2863'
+    proposal="https://github.com/googlefonts/fontbakery/issues/2863",
 )
 def com_adobe_fonts_check_STAT_strings(ttFont):
-    """ Check correctness of STAT table strings """
+    """Check correctness of STAT table strings"""
     passed = True
     stat_table = ttFont["STAT"].table
     ital_slnt_axis_indices = []
     for index, axis in enumerate(stat_table.DesignAxisRecord.Axis):
-        if axis.AxisTag in ('ital', 'slnt'):
+        if axis.AxisTag in ("ital", "slnt"):
             ital_slnt_axis_indices.append(index)
 
     nameIDs = set()
@@ -471,17 +507,18 @@ def com_adobe_fonts_check_STAT_strings(ttFont):
                         nameIDs.add(value.ValueNameID)
 
     bad_values = set()
-    for name in ttFont['name'].names:
+    for name in ttFont["name"].names:
         if name.nameID in nameIDs and "italic" in name.toUnicode().lower():
             passed = False
             bad_values.add(f"nameID {name.nameID}: {name.toUnicode()}")
 
     if bad_values:
-        yield FAIL,\
-              Message("bad-italic",
-                      f'The following AxisValue entries in the STAT table'
-                      f' should not contain "Italic":\n'
-                      f' {sorted(bad_values)}')
+        yield FAIL, Message(
+            "bad-italic",
+            f"The following AxisValue entries in the STAT table"
+            f' should not contain "Italic":\n'
+            f" {sorted(bad_values)}",
+        )
 
     if passed:
         yield PASS, "Looks good!"
@@ -581,9 +618,7 @@ profile.check_log_override(
 profile.check_log_override(
     # From fvar.py
     "com.google.fonts/check/varfont/regular_ital_coord",
-    overrides=(
-        ("no-regular-instance", WARN, KEEP_ORIGINAL_MESSAGE),
-    ),
+    overrides=(("no-regular-instance", WARN, KEEP_ORIGINAL_MESSAGE),),
     reason=(
         "Adobe strongly recommends, but does not require having a Regular instance."
     ),
@@ -593,9 +628,7 @@ profile.check_log_override(
 profile.check_log_override(
     # From fvar.py
     "com.google.fonts/check/varfont/regular_opsz_coord",
-    overrides=(
-        ("no-regular-instance", WARN, KEEP_ORIGINAL_MESSAGE),
-    ),
+    overrides=(("no-regular-instance", WARN, KEEP_ORIGINAL_MESSAGE),),
     reason=(
         "Adobe strongly recommends, but does not require having a Regular instance."
     ),
@@ -605,9 +638,7 @@ profile.check_log_override(
 profile.check_log_override(
     # From fvar.py
     "com.google.fonts/check/varfont/regular_slnt_coord",
-    overrides=(
-        ("no-regular-instance", WARN, KEEP_ORIGINAL_MESSAGE),
-    ),
+    overrides=(("no-regular-instance", WARN, KEEP_ORIGINAL_MESSAGE),),
     reason=(
         "Adobe strongly recommends, but does not require having a Regular instance."
     ),
@@ -617,9 +648,7 @@ profile.check_log_override(
 profile.check_log_override(
     # From fvar.py
     "com.google.fonts/check/varfont/regular_wdth_coord",
-    overrides=(
-        ("no-regular-instance", WARN, KEEP_ORIGINAL_MESSAGE),
-    ),
+    overrides=(("no-regular-instance", WARN, KEEP_ORIGINAL_MESSAGE),),
     reason=(
         "Adobe strongly recommends, but does not require having a Regular instance."
     ),
@@ -629,9 +658,7 @@ profile.check_log_override(
 profile.check_log_override(
     # From fvar.py
     "com.google.fonts/check/varfont/regular_wght_coord",
-    overrides=(
-        ("no-regular-instance", WARN, KEEP_ORIGINAL_MESSAGE),
-    ),
+    overrides=(("no-regular-instance", WARN, KEEP_ORIGINAL_MESSAGE),),
     reason=(
         "Adobe strongly recommends, but does not require having a Regular instance."
     ),

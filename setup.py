@@ -17,135 +17,130 @@
 from setuptools import setup
 
 try:
-    readme = open('README.md').read()
+    readme = open("README.md").read()
 except IOError:
-    readme = ''
+    readme = ""
 
 
-FONTTOOLS_VERSION = '>=4.39.0'  # Python 3.8+ required
-UFO2FT_VERSION = '>=2.25.2'
+FONTTOOLS_VERSION = ">=4.39.0"  # Python 3.8+ required
+UFO2FT_VERSION = ">=2.25.2"
 
 # Profile-specific dependencies:
 ufo_sources_extras = [
-    'defcon',
-    f'fontTools[ufo]{FONTTOOLS_VERSION}',
-    f'ufo2ft{UFO2FT_VERSION}',
-    'ufolint',
+    "defcon",
+    f"fontTools[ufo]{FONTTOOLS_VERSION}",
+    f"ufo2ft{UFO2FT_VERSION}",
+    "ufolint",
 ]
 
 googlefonts_extras = [
-    'axisregistry>=0.3.0',
-    'beautifulsoup4',  # For parsing registered vendor IDs from Microsoft's webpage
-    'dehinter>=3.1.0',  # 3.1.0 added dehinter.font.hint function
-    'font-v',
-    f'fontTools[lxml,unicode]{FONTTOOLS_VERSION}',
-    'gflanguages>=0.3.0',  # There was an api simplification/update on v0.3.0
-                           # (see https://github.com/googlefonts/gflanguages/pull/7)
-    'glyphsets>=0.5.0',
-    'protobuf>=3.7.0, <4',  # 3.7.0 fixed a bug on parsing some METADATA.pb files.
-                            # We cannot use v4 because our protobuf files have been compiled with v3.
-                            # (see https://github.com/googlefonts/fontbakery/issues/2200)
+    "axisregistry>=0.3.0",
+    "beautifulsoup4",  # For parsing registered vendor IDs from Microsoft's webpage
+    "dehinter>=3.1.0",  # 3.1.0 added dehinter.font.hint function
+    "font-v",
+    f"fontTools[lxml,unicode]{FONTTOOLS_VERSION}",
+    "gflanguages>=0.3.0",  # There was an api simplification/update on v0.3.0
+    # (see https://github.com/googlefonts/gflanguages/pull/7)
+    "glyphsets>=0.5.0",
+    "protobuf>=3.7.0, <4",  # 3.7.0 fixed a bug on parsing some METADATA.pb files.
+    # We cannot use v4 because our protobuf files have been compiled with v3.
+    # (see https://github.com/googlefonts/fontbakery/issues/2200)
 ] + ufo_sources_extras
 
 fontval_extras = [
-    'lxml',
+    "lxml",
 ]
 
-docs_extras = [
-]
+docs_extras = []
 
-all_extras = set(
-    docs_extras
-    + googlefonts_extras
-    + fontval_extras
-    + ufo_sources_extras
-)
+all_extras = set(docs_extras + googlefonts_extras + fontval_extras + ufo_sources_extras)
 
 setup(
     name="openbakery",
     use_scm_version={"write_to": "Lib/openbakery/_version.py"},
-    url='https://github.com/miguelsousa/openbakery/',
-    description='A font quality assurance tool for everyone',
+    url="https://github.com/miguelsousa/openbakery/",
+    description="A font quality assurance tool for everyone",
     long_description=readme,
-    long_description_content_type='text/markdown',
-    author=('OpenBakery authors and contributors:'
-            ' Dave Crossland,'
-            ' Felipe Sanches,'
-            ' Lasse Fister,'
-            ' Marc Foley,'
-            ' Nikolaus Waxweiler,'
-            ' Chris Simpkins,'
-            ' Jens Kutilek,'
-            ' Vitaly Volkov,'
-            ' Simon Cozens,'
-            ' Miguel Sousa'),
-    author_email='miguel.sousa@adobe.com',
-    package_dir={'': 'Lib'},
-    packages=['openbakery',
-              'openbakery.reporters',
-              'openbakery.profiles',
-              'openbakery.commands',
-              ],
-    package_data={'openbakery': ['data/*.cache',
-                                 'data/googlefonts/*_exceptions.txt']},
-    classifiers=[
-        'Environment :: Console',
-        'Intended Audience :: Developers',
-        'License :: OSI Approved :: Apache Software License',
-        'Operating System :: OS Independent',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.8',
-        'Programming Language :: Python :: 3 :: Only',
+    long_description_content_type="text/markdown",
+    author=(
+        "OpenBakery authors and contributors:"
+        " Dave Crossland,"
+        " Felipe Sanches,"
+        " Lasse Fister,"
+        " Marc Foley,"
+        " Nikolaus Waxweiler,"
+        " Chris Simpkins,"
+        " Jens Kutilek,"
+        " Vitaly Volkov,"
+        " Simon Cozens,"
+        " Miguel Sousa"
+    ),
+    author_email="miguel.sousa@adobe.com",
+    package_dir={"": "Lib"},
+    packages=[
+        "openbakery",
+        "openbakery.reporters",
+        "openbakery.profiles",
+        "openbakery.commands",
     ],
-    python_requires='>=3.8',
+    package_data={"openbakery": ["data/*.cache", "data/googlefonts/*_exceptions.txt"]},
+    classifiers=[
+        "Environment :: Console",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: Apache Software License",
+        "Operating System :: OS Independent",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3 :: Only",
+    ],
+    python_requires=">=3.8",
     setup_requires=[
-        'setuptools>=61.2',
-        'setuptools_scm[toml]>=6.2',
+        "setuptools>=61.2",
+        "setuptools_scm[toml]>=6.2",
     ],
     install_requires=[
         # --- core dependencies
-        f'fontTools{FONTTOOLS_VERSION}',
-        'freetype-py!=2.4.0',  # Avoiding 2.4.0 due to seg-fault described at
-                               # https://github.com/googlefonts/fontbakery/issues/4143
-        'munkres',  # For interpolation compatibility checking (fontTools dependency)
-        'opentypespec',
-        'opentype-sanitizer>=7.1.9',  # 7.1.9 fixes caret value format = 3 bug
-                                      # (see https://github.com/khaledhosny/ots/pull/182)
-
+        f"fontTools{FONTTOOLS_VERSION}",
+        "freetype-py!=2.4.0",  # Avoiding 2.4.0 due to seg-fault described at
+        # https://github.com/googlefonts/fontbakery/issues/4143
+        "munkres",  # For interpolation compatibility checking (fontTools dependency)
+        "opentypespec",
+        "opentype-sanitizer>=7.1.9",  # 7.1.9 fixes caret value format = 3 bug
+        # (see https://github.com/khaledhosny/ots/pull/182)
+        #
         # --- for parsing Configuration files
-        'PyYAML',
-        'toml',
-
+        "PyYAML",
+        "toml",
+        #
         # --- used by Reporters
-        'cmarkgfm',
-        'rich',
-
+        "cmarkgfm",
+        "rich",
+        #
         # --- for checking OpenBakery's version
-        'packaging',  # Universal profile
-        'pip-api',    # Universal profile
-        'requests',   # Universal & googlefonts profiles
-
-
+        "packaging",  # Universal profile
+        "pip-api",  # Universal profile
+        "requests",  # Universal & googlefonts profiles
+        #
         # TODO: Try to split the packages below into feature-specific extras.
-        'beziers>=0.5.0',  # Opentype, iso15008, Shaping (& Universal) profiles
-                           # Uses new fontTools glyph outline access
-        'collidoscope>=0.5.2',  # Shaping (& Universal) profiles
-                                # 0.5.1 did not yet support python 3.11
-                                # (see https://github.com/googlefonts/fontbakery/issues/3970)
-        'stringbrewer',  # Shaping (& Universal) profiles
-        f'ufo2ft{UFO2FT_VERSION}',  # Shaping
-                           # 2.25.2 updated the script lists for Unicode 14.0
-        'vharfbuzz>=0.2.0',  # Googlefonts, Shaping (& Universal) profiles
-                             # v0.2.0 had an API update
+        "beziers>=0.5.0",  # Opentype, iso15008, Shaping (& Universal) profiles
+        # Uses new fontTools glyph outline access
+        "collidoscope>=0.5.2",  # Shaping (& Universal) profiles
+        # 0.5.1 did not yet support python 3.11
+        # (see https://github.com/googlefonts/fontbakery/issues/3970)
+        "stringbrewer",  # Shaping (& Universal) profiles
+        f"ufo2ft{UFO2FT_VERSION}",  # Shaping
+        # 2.25.2 updated the script lists for Unicode 14.0
+        "vharfbuzz>=0.2.0",  # Googlefonts, Shaping (& Universal) profiles
+        # v0.2.0 had an API update
     ],
     extras_require={
-        'all': all_extras,
-        'docs': docs_extras,
-        'googlefonts': googlefonts_extras,
-        'fontval': fontval_extras,
-        'ufo-sources': ufo_sources_extras,
+        "all": all_extras,
+        "docs": docs_extras,
+        "googlefonts": googlefonts_extras,
+        "fontval": fontval_extras,
+        "ufo-sources": ufo_sources_extras,
     },
     entry_points={
-        'console_scripts': ['openbakery=openbakery.cli:main'],
+        "console_scripts": ["openbakery=openbakery.cli:main"],
     },
 )

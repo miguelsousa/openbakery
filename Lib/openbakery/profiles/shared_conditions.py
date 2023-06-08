@@ -3,19 +3,23 @@ from typing import List
 from collections import Counter
 
 from openbakery.callable import condition
+
 # used to inform get_module_profile whether and how to create a profile
-from openbakery.fonts_profile import profile_factory # NOQA pylint: disable=unused-import,cyclic-import
+from openbakery.fonts_profile import (
+    profile_factory,
+)  # NOQA pylint: disable=unused-import,cyclic-import
 
 
 @condition
 def ttFont(font):
     from fontTools.ttLib import TTFont
+
     return TTFont(font)
 
 
 @condition
 def is_ttf(ttFont):
-    return 'glyf' in ttFont
+    return "glyf" in ttFont
 
 
 @condition
@@ -29,12 +33,12 @@ def are_ttf(ttFonts):
 
 @condition
 def is_cff(ttFont):
-    return 'CFF ' in ttFont
+    return "CFF " in ttFont
 
 
 @condition
 def is_cff2(ttFont):
-    return 'CFF2' in ttFont
+    return "CFF2" in ttFont
 
 
 @condition
@@ -59,7 +63,8 @@ def style(font):
     """Determine font style from canonical filename."""
     from openbakery.constants import STATIC_STYLE_NAMES
     from fontTools.ttLib import TTFont
-    acceptable_stylenames = [name.replace(' ', '') for name in STATIC_STYLE_NAMES]
+
+    acceptable_stylenames = [name.replace(" ", "") for name in STATIC_STYLE_NAMES]
     filename = os.path.basename(font)
     # VF
     ttFont = TTFont(font)
@@ -75,8 +80,8 @@ def style(font):
             else:
                 return "Regular"
     # Static
-    elif '-' in filename:
-        stylename = os.path.splitext(filename)[0].split('-')[1]
+    elif "-" in filename:
+        stylename = os.path.splitext(filename)[0].split("-")[1]
         if stylename in acceptable_stylenames:
             return stylename
     return None
@@ -85,17 +90,17 @@ def style(font):
 @condition
 def variable_font_filename(ttFont):
     from openbakery.utils import get_name_entry_strings
-    from openbakery.constants import (MacStyle,
-                                      NameID)
+    from openbakery.constants import MacStyle, NameID
+
     familynames = get_name_entry_strings(ttFont, NameID.FONT_FAMILY_NAME)
     typo_familynames = get_name_entry_strings(ttFont, NameID.TYPOGRAPHIC_FAMILY_NAME)
     if familynames == []:
         return None
 
     familyname = typo_familynames[0] if typo_familynames else familynames[0]
-    familyname = "".join(familyname.split(' ')) #remove spaces
+    familyname = "".join(familyname.split(" "))  # remove spaces
     if bool(ttFont["head"].macStyle & MacStyle.ITALIC):
-        familyname+="-Italic"
+        familyname += "-Italic"
 
     tags = ttFont["fvar"].axes
     tags = list(map(lambda t: t.axisTag, tags))
@@ -109,8 +114,8 @@ def family_directory(font):
     """Get the path of font project directory."""
     if font:
         dirname = os.path.dirname(font)
-        if dirname == '':
-            dirname = '.'
+        if dirname == "":
+            dirname = "."
         return dirname
 
 
@@ -126,17 +131,12 @@ def sibling_directories(family_directory):
 
     This function returs a list of paths to directories where related font files were detected.
     """
-    SIBLING_SUFFIXES = ["sans",
-                        "sc",
-                        "narrow",
-                        "text",
-                        "display",
-                        "condensed"]
+    SIBLING_SUFFIXES = ["sans", "sc", "narrow", "text", "display", "condensed"]
 
     base_family_dir = family_directory
     for suffix in SIBLING_SUFFIXES:
         if family_directory.endswith(suffix):
-            candidate = family_directory[:-len(suffix)]
+            candidate = family_directory[: -len(suffix)]
             if os.path.isdir(candidate):
                 base_family_dir = candidate
                 break
@@ -169,6 +169,7 @@ def superfamily(sibling_directories):
 @condition
 def superfamily_ttFonts(superfamily):
     from fontTools.ttLib import TTFont
+
     result = []
     for family in superfamily:
         result.append([TTFont(f) for f in family])
@@ -183,7 +184,7 @@ def ligatures(ttFont):
     try:
         if "GSUB" in ttFont and ttFont["GSUB"].table.LookupList:
             for record in ttFont["GSUB"].table.FeatureList.FeatureRecord:
-                if record.FeatureTag == 'liga':
+                if record.FeatureTag == "liga":
                     for index in record.Feature.LookupListIndex:
                         lookup = ttFont["GSUB"].table.LookupList.Lookup[index]
                         for subtable in lookup.SubTable:
@@ -191,11 +192,16 @@ def ligatures(ttFont):
                                 for firstGlyph in subtable.ligatures.keys():
                                     all_ligatures[firstGlyph] = []
                                     for lig in subtable.ligatures[firstGlyph]:
-                                        if lig.Component not in all_ligatures[firstGlyph]:
-                                            all_ligatures[firstGlyph].append(lig.Component)
+                                        if (
+                                            lig.Component
+                                            not in all_ligatures[firstGlyph]
+                                        ):
+                                            all_ligatures[firstGlyph].append(
+                                                lig.Component
+                                            )
         return all_ligatures
     except:
-        return -1 # Indicate fontTools-related crash...
+        return -1  # Indicate fontTools-related crash...
 
 
 @condition
@@ -206,7 +212,7 @@ def ligature_glyphs(ttFont):
     try:
         if "GSUB" in ttFont and ttFont["GSUB"].table.LookupList:
             for record in ttFont["GSUB"].table.FeatureList.FeatureRecord:
-                if record.FeatureTag == 'liga':
+                if record.FeatureTag == "liga":
                     for index in record.Feature.LookupListIndex:
                         lookup = ttFont["GSUB"].table.LookupList.Lookup[index]
                         for subtable in lookup.SubTable:
@@ -230,21 +236,26 @@ def glyph_metrics_stats(ttFont):
     width, otherwise all glyphs of printable characters must have one of
     two widths or be zero-width.
     """
-    glyph_metrics = ttFont['hmtx'].metrics
+    glyph_metrics = ttFont["hmtx"].metrics
     # NOTE: `range(a, b)` includes `a` and does not include `b`.
     #       Here we don't include 0-31 as well as 127
     #       because these are control characters.
-    ascii_glyph_names = [ttFont.getBestCmap()[c] for c in range(32, 127)
-                         if c in ttFont.getBestCmap()]
+    ascii_glyph_names = [
+        ttFont.getBestCmap()[c] for c in range(32, 127) if c in ttFont.getBestCmap()
+    ]
 
     if len(ascii_glyph_names) > 0.8 * (127 - 32):
-        ascii_widths = [adv for name, (adv, lsb) in glyph_metrics.items()
-                        if name in ascii_glyph_names and adv != 0]
+        ascii_widths = [
+            adv
+            for name, (adv, lsb) in glyph_metrics.items()
+            if name in ascii_glyph_names and adv != 0
+        ]
         ascii_width_count = Counter(ascii_widths)
         ascii_most_common_width = ascii_width_count.most_common(1)[0][1]
         seems_monospaced = ascii_most_common_width >= len(ascii_widths) * 0.8
     else:
         from fontTools import unicodedata
+
         # Collect relevant glyphs.
         relevant_glyph_names = set()
         # Add character glyphs that are in one of these categories:
@@ -258,19 +269,24 @@ def glyph_metrics_stats(ttFont):
         # Remove character glyphs that are mark glyphs.
         gdef = ttFont.get("GDEF")
         if gdef and gdef.table.GlyphClassDef:
-            marks = {name
-                     for name, c in gdef.table.GlyphClassDef.classDefs.items()
-                     if c == 3
-                    }
+            marks = {
+                name for name, c in gdef.table.GlyphClassDef.classDefs.items() if c == 3
+            }
             relevant_glyph_names.difference_update(marks)
 
-        widths = sorted({adv for name, (adv, lsb) in glyph_metrics.items()
-                         if name in relevant_glyph_names and adv != 0})
+        widths = sorted(
+            {
+                adv
+                for name, (adv, lsb) in glyph_metrics.items()
+                if name in relevant_glyph_names and adv != 0
+            }
+        )
         seems_monospaced = len(widths) <= 2
 
     width_max = max(adv for k, (adv, lsb) in glyph_metrics.items())
-    most_common_width = Counter([g for g in glyph_metrics.values()
-                                 if g[0] != 0]).most_common(1)[0][0][0]
+    most_common_width = Counter(
+        [g for g in glyph_metrics.values() if g[0] != 0]
+    ).most_common(1)[0][0][0]
     return {
         "seems_monospaced": seems_monospaced,
         "width_max": width_max,
@@ -281,13 +297,16 @@ def glyph_metrics_stats(ttFont):
 @condition
 def missing_whitespace_chars(ttFont):
     from openbakery.utils import get_glyph_name
+
     space = get_glyph_name(ttFont, 0x0020)
     nbsp = get_glyph_name(ttFont, 0x00A0)
     # tab = get_glyph_name(ttFont, 0x0009)
 
     missing = []
-    if space is None: missing.append("0x0020")
-    if nbsp is None: missing.append("0x00A0")
+    if space is None:
+        missing.append("0x0020")
+    if nbsp is None:
+        missing.append("0x00A0")
     # fonts probably don't need an actual tab char
     # if tab is None: missing.append("0x0009")
     return missing
@@ -296,6 +315,7 @@ def missing_whitespace_chars(ttFont):
 @condition
 def vmetrics(ttFonts):
     from openbakery.utils import get_bounding_box
+
     v_metrics = {"ymin": 0, "ymax": 0}
     for ttFont in ttFonts:
         font_ymin, font_ymax = get_bounding_box(ttFont)
@@ -307,6 +327,7 @@ def vmetrics(ttFonts):
 @condition
 def is_hinted(ttFont):
     return "fpgm" in ttFont
+
 
 @condition
 def is_variable_font(ttFont):
@@ -321,8 +342,7 @@ def is_not_variable_font(ttFont):
 @condition
 def VFs(ttFonts):
     """Returns a list of font files which are recognized as variable fonts"""
-    return [ttFont for ttFont in ttFonts
-            if is_variable_font(ttFont)]
+    return [ttFont for ttFont in ttFonts if is_variable_font(ttFont)]
 
 
 @condition
@@ -464,7 +484,7 @@ def regular_opsz_coord(ttFont):
 @condition
 def vtt_talk_sources(ttFont) -> List[str]:
     """Return the tags of VTT source tables found in a font."""
-    VTT_SOURCE_TABLES = {'TSI0', 'TSI1', 'TSI2', 'TSI3', 'TSI5'}
+    VTT_SOURCE_TABLES = {"TSI0", "TSI1", "TSI2", "TSI3", "TSI5"}
     tables_found = [tag for tag in ttFont.keys() if tag in VTT_SOURCE_TABLES]
     return tables_found
 
@@ -472,17 +492,21 @@ def vtt_talk_sources(ttFont) -> List[str]:
 @condition
 def preferred_cmap(ttFont):
     from openbakery.utils import get_preferred_cmap
+
     return get_preferred_cmap(ttFont)
 
 
 @condition
 def unicoderange(ttFont):
     """Get an integer bitmap representing the UnicodeRange fields in the os/2 table."""
-    os2 = ttFont['OS/2']
-    return (os2.ulUnicodeRange1 |
-            os2.ulUnicodeRange2 << 32 |
-            os2.ulUnicodeRange3 << 64 |
-            os2.ulUnicodeRange4 << 96)
+    os2 = ttFont["OS/2"]
+    return (
+        os2.ulUnicodeRange1
+        | os2.ulUnicodeRange2 << 32
+        | os2.ulUnicodeRange3 << 64
+        | os2.ulUnicodeRange4 << 96
+    )
+
 
 @condition
 def is_cjk_font(ttFont):
@@ -493,9 +517,12 @@ def is_cjk_font(ttFont):
       2. The font has a CJK Unicode range bit set in the OS/2 table
       3. The font has any CJK Unicode code points defined in the cmap table
     """
-    from openbakery.constants import (CJK_CODEPAGE_BITS,
-                                      CJK_UNICODE_RANGE_BITS,
-                                      CJK_UNICODE_RANGES)
+    from openbakery.constants import (
+        CJK_CODEPAGE_BITS,
+        CJK_UNICODE_RANGE_BITS,
+        CJK_UNICODE_RANGES,
+    )
+
     if not has_os2_table(ttFont):
         return
 
@@ -513,17 +540,17 @@ def is_cjk_font(ttFont):
                 return True
 
         elif bit in range(32, 64):
-            if os2.ulUnicodeRange2 & (1 << (bit-32)):
+            if os2.ulUnicodeRange2 & (1 << (bit - 32)):
                 return True
 
         elif bit in range(64, 96):
-            if os2.ulUnicodeRange3 & (1 << (bit-64)):
+            if os2.ulUnicodeRange3 & (1 << (bit - 64)):
                 return True
 
     # defined CJK Unicode code point in cmap table checks
     cmap = ttFont.getBestCmap()
     for unicode_range in CJK_UNICODE_RANGES:
-        for x in range(unicode_range[0], unicode_range[1]+1):
+        for x in range(unicode_range[0], unicode_range[1] + 1):
             if int(x) in cmap:
                 return True
 
@@ -535,10 +562,11 @@ def is_cjk_font(ttFont):
 def get_cjk_glyphs(ttFont):
     """Return all glyphs which belong to a CJK unicode block"""
     from openbakery.constants import CJK_UNICODE_RANGES
+
     results = []
     cjk_unicodes = set()
     for start, end in CJK_UNICODE_RANGES:
-        cjk_unicodes |= set(u for u in range(start, end+1))
+        cjk_unicodes |= set(u for u in range(start, end + 1))
     for uni, glyph_name in ttFont.getBestCmap().items():
         if uni in cjk_unicodes:
             results.append(glyph_name)
@@ -547,48 +575,50 @@ def get_cjk_glyphs(ttFont):
 
 @condition
 def typo_metrics_enabled(ttFont):
-    return ttFont['OS/2'].fsSelection & 0b10000000 > 0
+    return ttFont["OS/2"].fsSelection & 0b10000000 > 0
 
 
 @condition
 def is_indic_font(ttFont):
     INDIC_FONT_DETECTION_CODEPOINTS = [
-        0x0988, # Bengali
-        0x0908, # Devanagari
-        0x0A88, # Gujarati
-        0x0A08, # Gurmukhi
-        0x0D08, # Kannada
-        0x0B08, # Malayalam
-        0xABC8, # Meetei Mayek
-        0x1C58, # OlChiki
-        0x0B08, # Oriya
-        0x0B88, # Tamil
-        0x0C08, # Telugu
+        0x0988,  # Bengali
+        0x0908,  # Devanagari
+        0x0A88,  # Gujarati
+        0x0A08,  # Gurmukhi
+        0x0D08,  # Kannada
+        0x0B08,  # Malayalam
+        0xABC8,  # Meetei Mayek
+        0x1C58,  # OlChiki
+        0x0B08,  # Oriya
+        0x0B88,  # Tamil
+        0x0C08,  # Telugu
     ]
 
-    font_codepoints = ttFont['cmap'].getBestCmap().keys()
+    font_codepoints = ttFont["cmap"].getBestCmap().keys()
     for codepoint in INDIC_FONT_DETECTION_CODEPOINTS:
         if codepoint in font_codepoints:
             return True
 
-    #otherwise:
+    # otherwise:
     return False
 
 
 def keyword_in_full_font_name(ttFont, keyword):
-    from openbakery.constants import (MacStyle,
-                                      NameID)
+    from openbakery.constants import MacStyle, NameID
+
     for entry in ttFont["name"].names:
-        if entry.nameID == NameID.FULL_FONT_NAME and \
-           keyword in entry.string.decode(entry.getEncoding()).lower().split():
+        if (
+            entry.nameID == NameID.FULL_FONT_NAME
+            and keyword in entry.string.decode(entry.getEncoding()).lower().split()
+        ):
             return True
     return False
 
 
 @condition
 def is_italic(ttFont):
-    from openbakery.constants import (FsSelection,
-                                      MacStyle)
+    from openbakery.constants import FsSelection, MacStyle
+
     return (
         ("OS/2" in ttFont and ttFont["OS/2"].fsSelection & FsSelection.ITALIC)
         or ("head" in ttFont and ttFont["head"].macStyle & MacStyle.ITALIC)
@@ -599,8 +629,8 @@ def is_italic(ttFont):
 
 @condition
 def is_bold(ttFont):
-    from openbakery.constants import (FsSelection,
-                                      MacStyle)
+    from openbakery.constants import FsSelection, MacStyle
+
     return (
         ("OS/2" in ttFont and ttFont["OS/2"].fsSelection & FsSelection.BOLD)
         or ("head" in ttFont and ttFont["head"].macStyle & MacStyle.BOLD)
