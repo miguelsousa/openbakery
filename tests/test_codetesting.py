@@ -3,7 +3,7 @@ import os
 from glyphsLib import GSFont
 import pytest
 
-from fontbakery.codetesting import (
+from openbakery.codetesting import (
     assert_PASS,
     assert_results_contain,
     assert_SKIP,
@@ -12,8 +12,8 @@ from fontbakery.codetesting import (
     portable_path,
     TEST_FILE,
 )
-from fontbakery.message import Message
-from fontbakery.status import PASS, FAIL, WARN, ERROR, INFO, SKIP, DEBUG
+from openbakery.message import Message
+from openbakery.status import PASS, FAIL, WARN, ERROR, INFO, SKIP, DEBUG
 
 
 def test_portable_path():

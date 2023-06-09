@@ -1,12 +1,12 @@
 import pytest
 from fontTools.ttLib import TTFont
 
-from fontbakery.codetesting import (assert_PASS,
+from openbakery.codetesting import (assert_PASS,
                                     assert_results_contain,
                                     CheckTester,
                                     TEST_FILE)
-from fontbakery.checkrunner import (DEBUG, INFO, WARN, ERROR, SKIP, PASS, FAIL)
-from fontbakery.profiles import opentype as opentype_profile
+from openbakery.checkrunner import (DEBUG, INFO, WARN, ERROR, SKIP, PASS, FAIL)
+from openbakery.profiles import opentype as opentype_profile
 
 check_statuses = (ERROR, FAIL, SKIP, PASS, WARN, INFO, DEBUG)
 
@@ -30,7 +30,7 @@ def test_check_family_equal_unicode_encodings(mada_ttFonts):
     check = CheckTester(opentype_profile,
                         "com.google.fonts/check/family/equal_unicode_encodings")
 
-    from fontbakery.constants import WindowsEncodingID
+    from openbakery.constants import WindowsEncodingID
 
     # our reference Mada family is know to be good here.
     assert_PASS(check(mada_ttFonts),

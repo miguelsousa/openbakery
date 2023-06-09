@@ -1,10 +1,10 @@
 from fontTools.ttLib import TTFont
-from fontbakery.checkrunner import FAIL, SKIP
-from fontbakery.codetesting import (assert_PASS,
+from openbakery.checkrunner import FAIL, SKIP
+from openbakery.codetesting import (assert_PASS,
                                     assert_results_contain,
                                     CheckTester,
                                     TEST_FILE)
-from fontbakery.profiles import fontwerk as fontwerk_profile
+from openbakery.profiles import fontwerk as fontwerk_profile
 
 
 def test_check_name_no_mac_entries():

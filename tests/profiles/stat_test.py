@@ -1,15 +1,15 @@
 from fontTools.ttLib import TTFont
 from fontTools.ttLib.tables.otTables import AxisValueRecord
 
-from fontbakery.checkrunner import FAIL, SKIP, WARN
-from fontbakery.codetesting import (
+from openbakery.checkrunner import FAIL, SKIP, WARN
+from openbakery.codetesting import (
     assert_PASS,
     assert_results_contain,
     CheckTester,
     TEST_FILE,
     portable_path,
 )
-from fontbakery.profiles import opentype as opentype_profile
+from openbakery.profiles import opentype as opentype_profile
 
 
 def test_check_varfont_stat_axis_record_for_each_axis():
@@ -168,7 +168,7 @@ def test_check_italic_axis_in_stat_is_boolean():
     """Ensure 'ital' STAT axis is boolean value"""
     check = CheckTester(opentype_profile,
                         "com.google.fonts/check/italic_axis_in_stat_is_boolean")
-    from fontbakery.profiles.shared_conditions import style
+    from openbakery.profiles.shared_conditions import style
 
     # PASS
     font = TEST_FILE("shantell/ShantellSans[BNCE,INFM,SPAC,wght].ttf")
@@ -213,7 +213,7 @@ def test_check_italic_axis_last():
     """Ensure 'ital' STAT axis is last."""
     check = CheckTester(opentype_profile,
                         "com.google.fonts/check/italic_axis_last")
-    from fontbakery.profiles.shared_conditions import style
+    from openbakery.profiles.shared_conditions import style
 
     font = TEST_FILE("shantell/ShantellSans-Italic[BNCE,INFM,SPAC,wght].ttf")
     ttFont = TTFont(font)

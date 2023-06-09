@@ -2,13 +2,13 @@ from io import BytesIO
 from fontTools.ttLib import TTFont, newTable
 from fontTools.ttLib.tables import otTables
 
-from fontbakery.checkrunner import WARN
-from fontbakery.codetesting import (assert_PASS,
+from openbakery.checkrunner import WARN
+from openbakery.codetesting import (assert_PASS,
                                     assert_SKIP,
                                     assert_results_contain,
                                     CheckTester,
                                     TEST_FILE)
-from fontbakery.profiles import opentype as opentype_profile
+from openbakery.profiles import opentype as opentype_profile
 
 
 def get_test_font():

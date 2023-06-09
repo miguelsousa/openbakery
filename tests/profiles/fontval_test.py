@@ -1,10 +1,10 @@
 import pytest
 import shutil
 
-from fontbakery.codetesting import (TEST_FILE,
+from openbakery.codetesting import (TEST_FILE,
                                     assert_results_contain)
-from fontbakery.checkrunner import ERROR
-from fontbakery.profiles import fontval as fontval_profile
+from openbakery.checkrunner import ERROR
+from openbakery.profiles import fontval as fontval_profile
 
 @pytest.mark.skipif(not shutil.which("FontValidator"),
   reason="FontValidator is not installed on your system")

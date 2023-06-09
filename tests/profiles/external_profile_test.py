@@ -1,5 +1,5 @@
-from fontbakery.section import Section
-from fontbakery.fonts_profile import profile_factory
+from openbakery.section import Section
+from openbakery.fonts_profile import profile_factory
 
 
 def check_filter(item_type, item_id, item):
@@ -18,7 +18,7 @@ def test_external_profile():
     profile = profile_factory(default_section=Section("Dalton Maag OpenType"))
     profile.auto_register(
         globals(),
-        profile_imports=["fontbakery.profiles.opentype"],
+        profile_imports=["openbakery.profiles.opentype"],
         filter_func=check_filter)
 
     # Probe some tests
@@ -50,7 +50,7 @@ def test_profile_imports():
 
     # this is in docs/writing profiles
     profile_imports = [
-        ['fontbakery.profiles', ['cmap', 'head']]
+        ['openbakery.profiles', ['cmap', 'head']]
     ]
     # Probe some tests
     expected_tests = [
@@ -62,7 +62,7 @@ def test_profile_imports():
     # the example from issue #1886
     profile_imports = (
         (
-            "fontbakery.profiles",
+            "openbakery.profiles",
             (
                 "cmap",
                 "head",
@@ -89,18 +89,18 @@ def test_profile_imports():
     # make sure the suggested workaround still works:
     # https://github.com/googlefonts/fontbakery/issues/1886#issuecomment-392535435
     profile_imports = (
-        "fontbakery.profiles.cmap",
-        "fontbakery.profiles.head",
-        "fontbakery.profiles.os2",
-        "fontbakery.profiles.post",
-        "fontbakery.profiles.name",
-        "fontbakery.profiles.hhea",
-        "fontbakery.profiles.dsig",
-        "fontbakery.profiles.gpos",
-        "fontbakery.profiles.kern",
-        "fontbakery.profiles.glyf",
-        "fontbakery.profiles.fvar",
-        "fontbakery.profiles.shared_conditions"
+        "openbakery.profiles.cmap",
+        "openbakery.profiles.head",
+        "openbakery.profiles.os2",
+        "openbakery.profiles.post",
+        "openbakery.profiles.name",
+        "openbakery.profiles.hhea",
+        "openbakery.profiles.dsig",
+        "openbakery.profiles.gpos",
+        "openbakery.profiles.kern",
+        "openbakery.profiles.glyf",
+        "openbakery.profiles.fvar",
+        "openbakery.profiles.shared_conditions"
     )
     # Probe some tests
     expected_tests = [
@@ -114,13 +114,13 @@ def test_profile_imports():
     # Import just certain attributes from modules.
     # Also, using absolute import module names:
     profile_imports = [
-        # like we do in fontbakery.profiles.fvar
-        ('fontbakery.profiles.shared_conditions', ('is_variable_font',
+        # like we do in openbakery.profiles.fvar
+        ('openbakery.profiles.shared_conditions', ('is_variable_font',
             'regular_wght_coord', 'regular_wdth_coord', 'regular_slnt_coord',
             'regular_ital_coord', 'regular_opsz_coord', 'bold_wght_coord')),
         # just as an example: import a check and a dependency/condition of
         # that check from the googlefonts specific profile:
-        ('fontbakery.profiles.googlefonts', (
+        ('openbakery.profiles.googlefonts', (
             # "License URL matches License text on name table?"
             'com_google_fonts_check_name_license_url',
             # This condition is a dependency of the check above:
@@ -138,21 +138,21 @@ def test_profile_imports():
 
 
 def test_opentype_checks_load():
-    profile_imports = ("fontbakery.profiles.opentype", )
+    profile_imports = ("openbakery.profiles.opentype", )
     profile = profile_factory(default_section=Section("OpenType Testing"))
     profile.auto_register({}, profile_imports=profile_imports)
     profile.test_dependencies()
 
 
 def test_googlefonts_checks_load():
-    profile_imports = ("fontbakery.profiles.googlefonts", )
+    profile_imports = ("openbakery.profiles.googlefonts", )
     profile = profile_factory(default_section=Section("Google Fonts Testing"))
     profile.auto_register({}, profile_imports=profile_imports)
     profile.test_dependencies()
 
 
 def test_in_and_exclude_checks():
-    profile_imports = ("fontbakery.profiles.opentype", )
+    profile_imports = ("openbakery.profiles.opentype", )
     profile = profile_factory(default_section=Section("OpenType Testing"))
     profile.auto_register({}, profile_imports=profile_imports)
     profile.test_dependencies()
@@ -177,7 +177,7 @@ def test_in_and_exclude_checks():
 
 
 def test_in_and_exclude_checks_default():
-    profile_imports = ("fontbakery.profiles.opentype",)
+    profile_imports = ("openbakery.profiles.opentype",)
     profile = profile_factory(default_section=Section("OpenType Testing"))
     profile.auto_register({}, profile_imports=profile_imports)
     profile.test_dependencies()

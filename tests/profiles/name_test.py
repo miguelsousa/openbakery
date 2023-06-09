@@ -2,20 +2,20 @@ import os
 
 from fontTools.ttLib import TTFont
 
-from fontbakery.constants import (NameID,
+from openbakery.constants import (NameID,
                                   PlatformID,
                                   WindowsEncodingID,
                                   WindowsLanguageID,
                                   MacintoshEncodingID,
                                   MacintoshLanguageID)
-from fontbakery.checkrunner import INFO, WARN, PASS, FAIL, SKIP
-from fontbakery.codetesting import (assert_PASS,
+from openbakery.checkrunner import INFO, WARN, PASS, FAIL, SKIP
+from openbakery.codetesting import (assert_PASS,
                                     assert_SKIP,
                                     assert_results_contain,
                                     CheckTester,
                                     portable_path,
                                     TEST_FILE)
-from fontbakery.profiles import opentype as opentype_profile
+from openbakery.profiles import opentype as opentype_profile
 
 
 def test_check_name_empty_records():
@@ -66,7 +66,7 @@ def test_check_monospace():
     check = CheckTester(opentype_profile,
                         "com.google.fonts/check/monospace")
     import string
-    from fontbakery.constants import (PANOSE_Proportion,
+    from openbakery.constants import (PANOSE_Proportion,
                                       IsFixedWidth)
 
     # This check has a large number of code-paths

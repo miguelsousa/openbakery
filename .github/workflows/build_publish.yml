@@ -3,11 +3,10 @@ name: Build & Publish
 on:
   push:
     tags:
-      - 'v\d+\.\d+\.[0-9a-z]+' # e.g. v1.0.0 or v20.15.10b5
+      - '\d+\.\d+\.[0-9a-z]+' # e.g. 1.0.0 or 20.15.10b5
 
 jobs:
   build:
-    name: Build Release
     runs-on: ubuntu-latest
 
     steps:
@@ -37,7 +36,6 @@ jobs:
         retention-days: 30
 
   publish:
-    name: Publish Release
     needs: build
     runs-on: ubuntu-latest
 
@@ -45,12 +43,12 @@ jobs:
     - name: Get date & flat tag
       id: date_tag
       run: |
-        export DATE=$(TZ=America/Sao_Paulo date +'%Y-%b-%-d')
+        export DATE=$(TZ=US/Pacific date +'%Y-%m-%d')
         echo $DATE
-        export FLAT_TAG=$(echo ${GITHUB_REF##*/} | sed 's/[v.]//g')
+        export FLAT_TAG=$(echo ${GITHUB_REF##*/} | sed 's/\.//g')
         echo $FLAT_TAG
-        echo ::set-output name=TODAY::$DATE
-        echo ::set-output name=VERSION::$FLAT_TAG
+        echo "TODAY=$DATE" >> "$GITHUB_OUTPUT"
+        echo "VERSION=$FLAT_TAG" >> "$GITHUB_OUTPUT"
       shell: bash
 
     - name: Download artifacts
@@ -68,7 +66,7 @@ jobs:
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v1
       with:
-        body: '[Release Notes](https://github.com/googlefonts/fontbakery/blob/main/CHANGELOG.md#${{ steps.date_tag.outputs.VERSION }}-${{ steps.date_tag.outputs.TODAY }})'
+        body: '[Release Notes](https://github.com/miguelsousa/openbakery/blob/main/CHANGELOG.md#${{ steps.date_tag.outputs.VERSION }}---${{ steps.date_tag.outputs.TODAY }})'
         token: ${{ secrets.GITHUB_TOKEN }}
         prerelease: true
         files: ./dist/*.tar.gz

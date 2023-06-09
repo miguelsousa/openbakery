@@ -1,6 +1,6 @@
 import pytest
 
-from fontbakery.utils import (
+from openbakery.utils import (
     bullet_list,
     pretty_print_list,
     text_flow,

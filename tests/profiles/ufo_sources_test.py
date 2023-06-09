@@ -3,14 +3,14 @@ import os
 import defcon
 import pytest
 
-from fontbakery.checkrunner import FAIL, SKIP, WARN
-from fontbakery.codetesting import (
+from openbakery.checkrunner import FAIL, SKIP, WARN
+from openbakery.codetesting import (
     assert_PASS,
     assert_results_contain,
     CheckTester,
     TEST_FILE,
 )
-from fontbakery.profiles.ufo_sources import profile as ufo_sources_profile
+from openbakery.profiles.ufo_sources import profile as ufo_sources_profile
 
 
 @pytest.fixture

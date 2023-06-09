@@ -7,11 +7,11 @@ import tempfile
 
 
 def test_list_subcommands_has_all_scripts():
-    """Tests if the output from running `fontbakery --list-subcommands` matches
-      the fontbakery scripts within the bin folder and the promoted profiles."""
-    import fontbakery.commands
-    from fontbakery.cli import CLI_PROFILES
-    commands_dir = os.path.dirname(fontbakery.commands.__file__)
+    """Tests if the output from running `openbakery --list-subcommands` matches
+      the openbakery scripts within the bin folder and the promoted profiles."""
+    import openbakery.commands
+    from openbakery.cli import CLI_PROFILES
+    commands_dir = os.path.dirname(openbakery.commands.__file__)
 
     scripts = [
         f.rstrip(".py").replace("_", "-")
@@ -20,34 +20,34 @@ def test_list_subcommands_has_all_scripts():
     ]
     scripts = scripts + [ ("check-"+i).replace("_", "-") for i in CLI_PROFILES ]
     subcommands = subprocess.check_output(
-        ['fontbakery', '--list-subcommands']).decode().split()
+        ['openbakery', '--list-subcommands']).decode().split()
     assert sorted(scripts) == sorted(subcommands)
 
 
 def test_command_check_googlefonts():
-    """Test if `fontbakery check-googlefonts` can run successfully`."""
-    subprocess.check_output(["fontbakery", "check-googlefonts", "-h"])
+    """Test if `openbakery check-googlefonts` can run successfully`."""
+    subprocess.check_output(["openbakery", "check-googlefonts", "-h"])
 
     test_font = os.path.join("data", "test", "nunito", "Nunito-Regular.ttf")
 
     subprocess.check_output([
-        "fontbakery", "check-googlefonts", "-c", "com.google.fonts/check/canonical_filename",
+        "openbakery", "check-googlefonts", "-c", "com.google.fonts/check/canonical_filename",
         test_font
     ])
 
     with pytest.raises(subprocess.CalledProcessError):
-        subprocess.check_output(["fontbakery", "check-googlefonts"])
+        subprocess.check_output(["openbakery", "check-googlefonts"])
 
 
 @pytest.mark.xfail(strict=True) # This test is too much prone to failing whenever we update
-                                # the text-output formatting or the actual log messages in that fontbakery check
+                                # the text-output formatting or the actual log messages in that openbakery check
                                 # I would like to have this test refactored to be in a good state for much longer.
                                 # Please, only remove the xfail mark once the test is more robust / future proof.
 def test_status_log_is_indented():
     """Test if statuses are printed in a limited boundary."""
     test_font = os.path.join("data", "test", "nunito", "Nunito-Regular.ttf")
 
-    result = subprocess.run(["fontbakery", "check-googlefonts",
+    result = subprocess.run(["openbakery", "check-googlefonts",
         "-c", "old_ttfautohint", "-c", "font_copyright",
         test_font], capture_output=True)
 
@@ -71,27 +71,27 @@ def test_status_log_is_indented():
 
 
 def test_command_check_profile():
-    """Test if `fontbakery check-profile` can run successfully`."""
-    subprocess.check_output(["fontbakery", "check-profile", "-h"])
+    """Test if `openbakery check-profile` can run successfully`."""
+    subprocess.check_output(["openbakery", "check-profile", "-h"])
 
     with pytest.raises(subprocess.CalledProcessError):
-        subprocess.check_output(["fontbakery", "check-profile"])
+        subprocess.check_output(["openbakery", "check-profile"])
 
 
 def test_command_check_opentype():
-    """Test if `fontbakery check-opentype` can run successfully`."""
-    subprocess.check_output(["fontbakery", "check-opentype", "-h"])
+    """Test if `openbakery check-opentype` can run successfully`."""
+    subprocess.check_output(["openbakery", "check-opentype", "-h"])
 
     with pytest.raises(subprocess.CalledProcessError):
-        subprocess.check_output(["fontbakery", "check-opentype"])
+        subprocess.check_output(["openbakery", "check-opentype"])
 
 
 def test_command_check_ufo_sources():
-    """Test if `fontbakery check-ufo-sources` can run successfully`."""
-    subprocess.check_output(["fontbakery", "check-ufo-sources", "-h"])
+    """Test if `openbakery check-ufo-sources` can run successfully`."""
+    subprocess.check_output(["openbakery", "check-ufo-sources", "-h"])
 
     with pytest.raises(subprocess.CalledProcessError):
-        subprocess.check_output(["fontbakery", "check-ufo-sources"])
+        subprocess.check_output(["openbakery", "check-ufo-sources"])
 
 def test_command_config_file():
     """Test if we can set checks using a config file."""
@@ -99,7 +99,7 @@ def test_command_config_file():
     config.write(b"explicit_checks = ['com.adobe.fonts/check/name/empty_records']")
     config.close()
     test_font = os.path.join("data", "test", "nunito", "Nunito-Regular.ttf")
-    result = subprocess.run(["fontbakery", "check-googlefonts",
+    result = subprocess.run(["openbakery", "check-googlefonts",
         "--config", config.name,
         test_font], stdout=subprocess.PIPE)
     stdout = result.stdout.decode()
@@ -117,7 +117,7 @@ OK = 123
     config.close()
     test_font = os.path.join("data", "test", "nunito", "Nunito-Regular.ttf")
     test_profile = os.path.join("tests", "profiles", "a_test_profile.py")
-    result = subprocess.run(["fontbakery", "check-profile",
+    result = subprocess.run(["openbakery", "check-profile",
         "-C",
         "--config", config.name,
         test_profile,
@@ -139,7 +139,7 @@ explicit_checks:
 """)
     config.close()
     test_font = os.path.join("data", "test", "varfont", "inter", "Inter[slnt,wght].ttf")
-    result = subprocess.run(["fontbakery", "check-googlefonts",
+    result = subprocess.run(["openbakery", "check-googlefonts",
         "-C",
         "--config", config.name,
         test_font], stdout=subprocess.PIPE)

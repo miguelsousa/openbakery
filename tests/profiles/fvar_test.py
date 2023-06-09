@@ -1,14 +1,14 @@
 from fontTools.ttLib import TTFont
 from fontTools.ttLib.tables._f_v_a_r import Axis
 
-from fontbakery.checkrunner import FAIL, WARN, SKIP
-from fontbakery.codetesting import (
+from openbakery.checkrunner import FAIL, WARN, SKIP
+from openbakery.codetesting import (
     assert_PASS,
     assert_results_contain,
     CheckTester,
     TEST_FILE,
 )
-from fontbakery.profiles import opentype as opentype_profile
+from openbakery.profiles import opentype as opentype_profile
 
 
 def test_check_varfont_regular_wght_coord():

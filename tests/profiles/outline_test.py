@@ -1,9 +1,9 @@
-from fontbakery.checkrunner import WARN
-from fontbakery.codetesting import (assert_results_contain,
+from openbakery.checkrunner import WARN
+from openbakery.codetesting import (assert_results_contain,
                                     CheckTester,
                                     TEST_FILE,
                                     assert_PASS)
-from fontbakery.profiles import outline as outline_profile
+from openbakery.profiles import outline as outline_profile
 
 
 def test_check_outline_alignment_miss():

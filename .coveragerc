@@ -5,15 +5,12 @@ branch = True
 parallel = True
 
 # list of directories or packages to measure
-source = fontbakery
+source = openbakery
 
 # these are treated as equivalent when combining data
 [paths]
 source =
-    Lib/fontbakery
-    .tox*/*/Lib/python*/site-packages/fontbakery
-    .tox*/*/Lib/site-packages/fontbakery
-    .tox*/pypy*/site-packages/fontbakery
+    Lib/openbakery
 
 [report]
 # Regexes for lines to exclude from consideration

@@ -1,11 +1,11 @@
 from fontTools.ttLib import TTFont
 
-from fontbakery.codetesting import (TEST_FILE,
+from openbakery.codetesting import (TEST_FILE,
                                     assert_PASS,
                                     assert_results_contain,
                                     CheckTester)
-from fontbakery.checkrunner import WARN
-from fontbakery.profiles import opentype as opentype_profile
+from openbakery.checkrunner import WARN
+from openbakery.profiles import opentype as opentype_profile
 
 
 def test_check_gpos_kerning_info():

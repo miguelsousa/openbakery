@@ -4,12 +4,12 @@ import os
 import pytest
 from fontTools.ttLib import TTFont
 
-from fontbakery.checkrunner import (WARN, FAIL, PASS)
-from fontbakery.codetesting import (assert_PASS,
+from openbakery.checkrunner import (WARN, FAIL, PASS)
+from openbakery.codetesting import (assert_PASS,
                                     assert_results_contain,
                                     CheckTester,
                                     TEST_FILE)
-from fontbakery.profiles import opentype as opentype_profile
+from openbakery.profiles import opentype as opentype_profile
 
 
 mada_fonts = [
@@ -77,7 +77,7 @@ def test_check_unitsperem():
 
 def test_parse_version_string():
     """ Checking font version fields. """
-    from fontbakery.profiles.head import parse_version_string
+    from openbakery.profiles.head import parse_version_string
     import fractions
 
     version_tests_good = {
@@ -169,7 +169,7 @@ def test_check_mac_style():
     """ Checking head.macStyle value. """
     check = CheckTester(opentype_profile,
                         "com.google.fonts/check/mac_style")
-    from fontbakery.constants import MacStyle
+    from openbakery.constants import MacStyle
 
     ttFont = TTFont(TEST_FILE("cabin/Cabin-Regular.ttf"))
 

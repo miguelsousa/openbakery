@@ -3,13 +3,13 @@ import json
 import os
 import tempfile
 
-from fontbakery.checkrunner import FAIL, WARN
-from fontbakery.codetesting import (assert_PASS,
+from openbakery.checkrunner import FAIL, WARN
+from openbakery.codetesting import (assert_PASS,
                                     assert_SKIP,
                                     assert_results_contain,
                                     CheckTester,
                                     TEST_FILE)
-from fontbakery.profiles import shaping as shaping_profile
+from openbakery.profiles import shaping as shaping_profile
 
 
 def wrap_args(config, font):

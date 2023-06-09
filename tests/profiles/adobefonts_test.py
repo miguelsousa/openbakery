@@ -8,28 +8,28 @@ from fontTools.ttLib import TTFont
 from fontTools.ttLib.tables.otTables import AxisValueRecord
 from requests.exceptions import ConnectionError
 
-from fontbakery.checkrunner import WARN, FAIL, PASS, SKIP
-from fontbakery.codetesting import (
+from openbakery.checkrunner import WARN, FAIL, PASS, SKIP
+from openbakery.codetesting import (
     assert_PASS,
     assert_results_contain,
     CheckTester,
     portable_path,
     TEST_FILE,
 )
-from fontbakery.constants import (
+from openbakery.constants import (
     NameID,
     PlatformID,
     WindowsEncodingID,
     WindowsLanguageID,
 )
-from fontbakery.profiles import adobefonts as adobefonts_profile
-from fontbakery.profiles.adobefonts import (
+from openbakery.profiles import adobefonts as adobefonts_profile
+from openbakery.profiles.adobefonts import (
     ADOBEFONTS_PROFILE_CHECKS,
     OVERRIDDEN_CHECKS,
     profile,
     SET_EXPLICIT_CHECKS,
 )
-from fontbakery.profiles.shared_conditions import vmetrics
+from openbakery.profiles.shared_conditions import vmetrics
 
 OVERRIDE_SUFFIX = ":adobefonts"
 
@@ -413,11 +413,11 @@ def test_check_override_weight_class_fvar():
 
 
 @patch("requests.get", side_effect=ConnectionError)
-def test_check_override_fontbakery_version(mock_get):
+def test_check_override_openbakery_version(mock_get):
     """Check that overridden test yields SKIP rather than FAIL."""
     check = CheckTester(
         adobefonts_profile,
-        f"com.google.fonts/check/fontbakery_version{OVERRIDE_SUFFIX}",
+        f"com.google.fonts/check/openbakery_version{OVERRIDE_SUFFIX}",
     )
 
     font = TEST_FILE("cabin/Cabin-Regular.ttf")

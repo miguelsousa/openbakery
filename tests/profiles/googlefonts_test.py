@@ -5,26 +5,26 @@ import shutil
 import pytest
 from fontTools.ttLib import TTFont
 
-from fontbakery.profiles.googlefonts import can_shape
-from fontbakery.profiles.googlefonts_conditions import expected_font_names
-from fontbakery.checkrunner import (DEBUG, INFO, WARN, ERROR,
+from openbakery.profiles.googlefonts import can_shape
+from openbakery.profiles.googlefonts_conditions import expected_font_names
+from openbakery.checkrunner import (DEBUG, INFO, WARN, ERROR,
                                     SKIP, PASS, FAIL, ENDCHECK)
-from fontbakery.codetesting import (assert_results_contain,
+from openbakery.codetesting import (assert_results_contain,
                                     assert_PASS,
                                     assert_SKIP,
                                     portable_path,
                                     TEST_FILE,
                                     GLYPHSAPP_TEST_FILE,
                                     CheckTester)
-from fontbakery.configuration import Configuration
-from fontbakery.constants import (NameID,
+from openbakery.configuration import Configuration
+from openbakery.constants import (NameID,
                                   PlatformID,
                                   WindowsEncodingID,
                                   WindowsLanguageID,
                                   MacintoshEncodingID,
                                   MacintoshLanguageID,
                                   OFL_BODY_TEXT)
-from fontbakery.profiles import googlefonts as googlefonts_profile
+from openbakery.profiles import googlefonts as googlefonts_profile
 
 check_statuses = (ERROR, FAIL, SKIP, PASS, WARN, INFO, DEBUG)
 
@@ -111,11 +111,11 @@ def test_example_checkrunner_based(cabin_regular_path):
         This test is run via the checkRunner and demonstrate how to get
         (mutable) objects from the conditions cache and change them.
 
-        NOTE: the actual fontbakery checks of conditions should never
+        NOTE: the actual OpenBakery checks of conditions should never
         change a condition object.
     """
-    from fontbakery.checkrunner import CheckRunner
-    from fontbakery.profiles.googlefonts import profile
+    from openbakery.checkrunner import CheckRunner
+    from openbakery.profiles.googlefonts import profile
     values = dict(fonts=[cabin_regular_path])
     runner = CheckRunner(profile, values, Configuration(explicit_checks=['com.google.fonts/check/vendor_id']))
 
@@ -323,7 +323,7 @@ def test_check_name_family_and_style_max_length():
     check = CheckTester(googlefonts_profile,
                         "com.google.fonts/check/name/family_and_style_max_length")
 
-    # Our reference Cabin Regular is known to be good 
+    # Our reference Cabin Regular is known to be good
     ttFont = TTFont(TEST_FILE("cabin/Cabin-Regular.ttf"))
 
     # So it must PASS the check:
@@ -545,7 +545,7 @@ def test_check_name_family_name_compliance():
     assert_PASS(check(ttFont),
                 'with a good font...')
 
-        
+
 def test_check_metadata_parses():
     """ Check METADATA.pb parse correctly. """
     check = CheckTester(googlefonts_profile,
@@ -700,7 +700,7 @@ def test_check_fstype():
 
 def test_condition__registered_vendor_ids():
     """ Get a list of vendor IDs from Microsoft's website. """
-    from fontbakery.profiles.googlefonts import registered_vendor_ids
+    from openbakery.profiles.googlefonts import registered_vendor_ids
     registered_ids = registered_vendor_ids()
 
     print('As of July 2018, "MLAG": "Michael LaGattuta" must show up in the list...')
@@ -862,7 +862,7 @@ def test_check_usweightclass():
 
     # TODO: test italic variants to ensure we do not get regressions of
     #       this bug: https://github.com/googlefonts/fontbakery/issues/2650
-    
+
 
     # Check with VF font reported in issue:
     # https://github.com/googlefonts/fontbakery/issues/4113
@@ -878,7 +878,7 @@ def test_check_usweightclass():
 
 
 def test_family_directory_condition():
-    from fontbakery.profiles.shared_conditions import family_directory
+    from openbakery.profiles.shared_conditions import family_directory
     assert family_directory("some_directory/Foo.ttf") == "some_directory"
     assert family_directory("some_directory/subdir/Foo.ttf") == "some_directory/subdir"
     assert family_directory("Foo.ttf") == "." # This is meant to ensure license files
@@ -891,15 +891,15 @@ def test_check_family_has_license():
     check = CheckTester(googlefonts_profile,
                         "com.google.fonts/check/family/has_license")
 
-    from fontbakery.profiles.googlefonts import licenses
+    from openbakery.profiles.googlefonts import licenses
 
     def licenses_for_test(path):
         found = licenses(path)
-        # If the tests are running inside a git checkout of fontbakery,
-        # fontbakery's own license will also be detected:
+        # If the tests are running inside a git checkout of openbakery,
+        # OpenBakery's own license will also be detected:
         # ['data/test/028/multiple/OFL.txt',
         #  'data/test/028/multiple/LICENSE.txt',
-        #  '/home/dan/src/fontbakery/LICENSE.txt']
+        #  '/home/dan/src/openbakery/LICENSE.txt']
         # Filter it out so it doesn't interfere with the test.
         found = [lic for lic in found if not os.path.isabs(lic)]
         return found
@@ -1268,7 +1268,7 @@ def test_check_name_ascii_only_entries():
 
 
 def test_split_camel_case_condition():
-    from fontbakery.utils import split_camel_case
+    from openbakery.utils import split_camel_case
     assert split_camel_case("Lobster") == "Lobster"
     assert split_camel_case("LibreCaslonText") == "Libre Caslon Text"
 
@@ -1837,7 +1837,7 @@ def test_check_metadata_valid_post_script_name_values():
 
 def test_check_metadata_valid_nameid25():
     """Check name ID 25 to end with "Italic" for Italic VFs"""
-    from fontbakery.profiles.shared_conditions import style
+    from openbakery.profiles.shared_conditions import style
     check = CheckTester(googlefonts_profile,
                         "com.google.fonts/check/metadata/valid_nameid25")
 
@@ -2019,7 +2019,7 @@ def test_check_metadata_filenames():
 
 def test_check_metadata_italic_style():
     """ METADATA.pb font.style "italic" matches font internals ? """
-    from fontbakery.constants import MacStyle
+    from openbakery.constants import MacStyle
     check = CheckTester(googlefonts_profile,
                         "com.google.fonts/check/metadata/italic_style")
 
@@ -2052,7 +2052,7 @@ def test_check_metadata_normal_style():
     """ METADATA.pb font.style "normal" matches font internals ? """
     check = CheckTester(googlefonts_profile,
                         "com.google.fonts/check/metadata/normal_style")
-    from fontbakery.constants import MacStyle
+    from openbakery.constants import MacStyle
 
     # This one is pretty similar to check/metadata/italic_style
     # You may want to take a quick look above...
@@ -2436,7 +2436,7 @@ def test_check_metadata_nameid_copyright():
         all copyright notice entries on the name table? """
     check = CheckTester(googlefonts_profile,
                         "com.google.fonts/check/metadata/nameid/copyright")
-    from fontbakery.utils import get_name_entry_strings
+    from openbakery.utils import get_name_entry_strings
 
     # Our reference Cabin Regular is known to be good
     font = TEST_FILE("cabin/Cabin-Regular.ttf")
@@ -2586,9 +2586,9 @@ def test_check_font_names(fp, mod, result):
     # axis registry,
     # https://github.com/googlefonts/axisregistry/blob/main/Lib/axisregistry/__init__.py#L232
     # this repository already has good unit tests but this check will also include the previous
-    # test cases found in fontbakery.
+    # test cases found in openbakery.
     # https://github.com/googlefonts/axisregistry/blob/main/tests/test_names.py
-    from fontbakery.profiles.googlefonts_conditions import expected_font_names
+    from openbakery.profiles.googlefonts_conditions import expected_font_names
     check = CheckTester(googlefonts_profile,
                         "com.google.fonts/check/font_names")
     ttFont = TTFont(fp)
@@ -2672,7 +2672,7 @@ def test_check_name_mandatory_entries():
 
 
 def test_condition_familyname_with_spaces():
-    from fontbakery.profiles.googlefonts_conditions import familyname_with_spaces
+    from openbakery.profiles.googlefonts_conditions import familyname_with_spaces
     assert familyname_with_spaces("OverpassMono") == "Overpass Mono"
     assert familyname_with_spaces("BodoniModa11") == "Bodoni Moda 11"
 
@@ -3242,7 +3242,7 @@ def test_check_repo_upstream_yaml_has_required_fields():
 
 
 def test_check_repo_fb_report(tmp_path):
-    """ A font repository should not include fontbakery report files """
+    """ A font repository should not include OpenBakery report files """
     check = CheckTester(googlefonts_profile,
                         "com.google.fonts/check/repo/fb_report")
 
@@ -3253,10 +3253,10 @@ def test_check_repo_fb_report(tmp_path):
     shutil.copytree(src_family, family_dir, dirs_exist_ok=True)
 
     assert_PASS(check([], {"family_directory": family_dir}),
-                'for a repo without Font Bakery report files.')
+                'for a repo without OpenBakery report files.')
 
     assert_PASS(check([], {"family_directory": family_dir}),
-                'with a json file that is not a Font Bakery report.')
+                'with a json file that is not a OpenBakery report.')
 
     # Add a json file that is not a FB report
     open(os.path.join(family_dir,
@@ -3413,7 +3413,7 @@ def test_check_vertical_metrics():
 def test_check_vertical_metrics_regressions(cabin_ttFonts):
     check = CheckTester(googlefonts_profile,
                         "com.google.fonts/check/vertical_metrics_regressions")
-    from fontbakery.profiles.shared_conditions import family_directory
+    from openbakery.profiles.shared_conditions import family_directory
 
     ttFonts = [TTFont(f) for f in cabin_fonts]
 
@@ -4327,7 +4327,7 @@ def test_check_STAT(fps, new_stat, result):
 def test_check_colorfont_tables():
     """Check font has the expected color font tables."""
     from fontTools.ttLib import newTable
-    from fontbakery.profiles.shared_conditions import is_variable_font
+    from openbakery.profiles.shared_conditions import is_variable_font
 
     check = CheckTester(googlefonts_profile,
                         "com.google.fonts/check/colorfont_tables")
@@ -4453,7 +4453,7 @@ def test_check_italic_axis_in_stat_is_boolean():
     """Ensure 'ital' STAT axis is boolean value"""
     check = CheckTester(googlefonts_profile,
                         f"com.google.fonts/check/italic_axis_in_stat_is_boolean{OVERRIDE_SUFFIX}")
-    from fontbakery.profiles.shared_conditions import style
+    from openbakery.profiles.shared_conditions import style
 
     # PASS
     font = TEST_FILE("shantell/ShantellSans[BNCE,INFM,SPAC,wght].ttf")
@@ -4498,7 +4498,7 @@ def test_check_italic_axis_last():
     """Ensure 'ital' STAT axis is boolean value"""
     check = CheckTester(googlefonts_profile,
                         f"com.google.fonts/check/italic_axis_last{OVERRIDE_SUFFIX}")
-    from fontbakery.profiles.shared_conditions import style
+    from openbakery.profiles.shared_conditions import style
 
     font = TEST_FILE("shantell/ShantellSans-Italic[BNCE,INFM,SPAC,wght].ttf")
     ttFont = TTFont(font)

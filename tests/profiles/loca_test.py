@@ -1,12 +1,12 @@
 import io
 from fontTools.ttLib import TTFont
 
-from fontbakery.checkrunner import FAIL
-from fontbakery.codetesting import (assert_PASS,
+from openbakery.checkrunner import FAIL
+from openbakery.codetesting import (assert_PASS,
                                     assert_results_contain,
                                     CheckTester,
                                     TEST_FILE)
-from fontbakery.profiles import opentype as opentype_profile
+from openbakery.profiles import opentype as opentype_profile
 
 
 def test_check_loca_maxp_num_glyphs():

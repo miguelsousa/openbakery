@@ -6,14 +6,14 @@ import fontTools.ttLib
 from fontTools.ttLib import TTFont
 import fontTools.subset
 
-from fontbakery.checkrunner import (INFO, WARN, FAIL, PASS)
-from fontbakery.codetesting import (assert_PASS,
+from openbakery.checkrunner import (INFO, WARN, FAIL, PASS)
+from openbakery.codetesting import (assert_PASS,
                                     assert_SKIP,
                                     assert_results_contain,
                                     CheckTester,
                                     portable_path,
                                     TEST_FILE)
-from fontbakery.profiles import opentype as opentype_profile
+from openbakery.profiles import opentype as opentype_profile
 
 
 mada_fonts = [
@@ -148,7 +148,7 @@ def test_check_fsselection_matches_macstyle():
     """Check if OS/2 fsSelection matches head macStyle bold and italic bits."""
     check = CheckTester(opentype_profile,
                         "com.adobe.fonts/check/fsselection_matches_macstyle")
-    from fontbakery.constants import FsSelection
+    from openbakery.constants import FsSelection
 
     test_font_path = TEST_FILE("nunito/Nunito-Regular.ttf")
 
@@ -177,7 +177,7 @@ def test_check_family_bold_italic_unique_for_nameid1():
     Compatible Family group (i.e. group of up to 4 with same NameID1)"""
     check = CheckTester(opentype_profile,
                         "com.adobe.fonts/check/family/bold_italic_unique_for_nameid1")
-    from fontbakery.constants import FsSelection
+    from openbakery.constants import FsSelection
 
     base_path = portable_path("data/test/source-sans-pro/OTF")
 
@@ -249,7 +249,7 @@ def test_check_fsselection():
     check = CheckTester(opentype_profile,
                         "com.google.fonts/check/fsselection")
 
-    from fontbakery.constants import FsSelection
+    from openbakery.constants import FsSelection
 
     ttFont = TTFont(TEST_FILE("cabin/Cabin-Regular.ttf"))
 

@@ -5,14 +5,14 @@ from fontTools.ttLib import TTFont
 import pytest
 from requests.exceptions import ConnectionError
 
-from fontbakery.checkrunner import INFO, WARN, FAIL, PASS, SKIP
-from fontbakery.codetesting import (assert_PASS,
+from openbakery.checkrunner import INFO, WARN, FAIL, PASS, SKIP
+from openbakery.codetesting import (assert_PASS,
                                     assert_SKIP,
                                     assert_results_contain,
                                     CheckTester,
                                     TEST_FILE)
-from fontbakery.profiles import universal as universal_profile
-from fontbakery.profiles.universal import is_up_to_date
+from openbakery.profiles import universal as universal_profile
+from openbakery.profiles.universal import is_up_to_date
 
 
 @pytest.fixture
@@ -68,7 +68,7 @@ def cabin_condensed_ttFonts():
 
 
 def test_style_condition():
-    from fontbakery.profiles.shared_conditions import style
+    from openbakery.profiles.shared_conditions import style
     # VFs
     assert style(TEST_FILE("shantell/ShantellSans[BNCE,INFM,SPAC,wght].ttf")) == "Regular"
     assert style(TEST_FILE("shantell/ShantellSans-Italic[BNCE,INFM,SPAC,wght].ttf")) == "Italic"
@@ -335,7 +335,7 @@ class MockDistribution:
     """Helper class to mock pip-api's Distribution class."""
 
     def __init__(self, version: str):
-        self.name = "fontbakery"
+        self.name = "openbakery"
         self.version = version
 
     def __repr__(self):
@@ -346,10 +346,10 @@ class MockDistribution:
 # We'll also mock pip-api's 'installed_distributions' method.
 @patch("pip_api.installed_distributions")
 @patch("requests.get")
-def test_check_fontbakery_version(mock_get, mock_installed):
-    """Check if Font Bakery is up-to-date"""
+def test_check_openbakery_version(mock_get, mock_installed):
+    """Check if OpenBakery is up-to-date"""
     check = CheckTester(universal_profile,
-                        "com.google.fonts/check/fontbakery_version")
+                        "com.google.fonts/check/openbakery_version")
 
     # Any of the test fonts can be used here.
     # The check requires a 'font' argument but it doesn't do anything with it.
@@ -362,21 +362,21 @@ def test_check_fontbakery_version(mock_get, mock_installed):
     latest_ver = installed_ver = "0.1.0"
     mock_response.json.return_value = {"info": {"version": latest_ver}}
     mock_get.return_value = mock_response
-    mock_installed.return_value = {"fontbakery": MockDistribution(installed_ver)}
+    mock_installed.return_value = {"openbakery": MockDistribution(installed_ver)}
     msg = assert_PASS(check(font), PASS)
-    assert msg == "Font Bakery is up-to-date."
+    assert msg == "OpenBakery is up-to-date."
 
     # Test the case of installed version being newer than PyPI's version.
     installed_ver = "0.1.1"
-    mock_installed.return_value = {"fontbakery": MockDistribution(installed_ver)}
+    mock_installed.return_value = {"openbakery": MockDistribution(installed_ver)}
     msg = assert_PASS(check(font), PASS)
-    assert msg == "Font Bakery is up-to-date."
+    assert msg == "OpenBakery is up-to-date."
 
     # Test the case of installed version being older than PyPI's version.
     installed_ver = "0.0.1"
-    mock_installed.return_value = {"fontbakery": MockDistribution(installed_ver)}
-    msg = assert_results_contain(check(font), FAIL, "outdated-fontbakery")
-    assert (f"Current Font Bakery version is {installed_ver},"
+    mock_installed.return_value = {"openbakery": MockDistribution(installed_ver)}
+    msg = assert_results_contain(check(font), FAIL, "outdated-openbakery")
+    assert (f"Current OpenBakery version is {installed_ver},"
             f" while a newer {latest_ver} is already available.") in msg
 
     # Test the case of an unsuccessful response to the GET request.
@@ -391,20 +391,20 @@ def test_check_fontbakery_version(mock_get, mock_installed):
     assert "Request to PyPI.org failed with this message" in msg
 
 
-def test_check_fontbakery_version_live_apis():
-    """Check if Font Bakery is up-to-date. (No API-mocking edition)"""
+def test_check_openbakery_version_live_apis():
+    """Check if OpenBakery is up-to-date. (No API-mocking edition)"""
     check = CheckTester(universal_profile,
-                        "com.google.fonts/check/fontbakery_version")
+                        "com.google.fonts/check/openbakery_version")
 
     # Any of the test fonts can be used here.
     # The check requires a 'font' argument but it doesn't do anything with it.
     font = TEST_FILE("nunito/Nunito-Regular.ttf")
 
     # The check will make an actual request to PyPI.org,
-    # and will query 'pip' to determine which version of 'fontbakery' is installed.
+    # and will query 'pip' to determine which version of 'openbakery' is installed.
     # The check should PASS.
     msg = assert_PASS(check(font), PASS)
-    assert msg == "Font Bakery is up-to-date."
+    assert msg == "OpenBakery is up-to-date."
 
 
 def test_check_mandatory_glyphs():
@@ -730,7 +730,7 @@ def test_check_unwanted_tables():
 
 
 def test_glyph_has_ink():
-    from fontbakery.utils import glyph_has_ink
+    from openbakery.utils import glyph_has_ink
     from fontTools.ttLib import TTFont
 
     print()  # so next line doesn't start with '.....'
@@ -773,7 +773,7 @@ def test_check_family_win_ascent_and_descent(mada_ttFonts):
     """ Checking OS/2 usWinAscent & usWinDescent. """
     check = CheckTester(universal_profile,
                         "com.google.fonts/check/family/win_ascent_and_descent")
-    from fontbakery.profiles.shared_conditions import vmetrics
+    from openbakery.profiles.shared_conditions import vmetrics
 
     # Our reference Mada Regular is know to be bad here.
     ttFont = TTFont(TEST_FILE("mada/Mada-Regular.ttf"))
@@ -895,7 +895,7 @@ def test_check_rupee():
     #
     #        But for now we have to do this:
     #
-    from fontbakery.profiles.shared_conditions import is_indic_font
+    from openbakery.profiles.shared_conditions import is_indic_font
     print("Ensure the check will SKIP when dealing with a non-indic font...")
     non_indic = TTFont(TEST_FILE("mada/Mada-Regular.ttf"))
     assert is_indic_font(non_indic) == False
@@ -1199,7 +1199,7 @@ def test_check_STAT_in_statics():
     assert_SKIP(check(ttFont),
                 'with a variable font...')
 
-    # fake it: Remove fvar table to make Font Bakery think it is dealing with a static font
+    # fake it: Remove fvar table to make OpenBakery think it is dealing with a static font
     del ttFont["fvar"]
 
     # We know that our reference RobotoSerif varfont (which the check is induced

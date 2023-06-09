@@ -1,13 +1,13 @@
 from fontTools.ttLib import TTFont, newTable
 from fontTools.ttLib.tables._k_e_r_n  import KernTable_format_0, KernTable_format_unkown
 
-from fontbakery.checkrunner import INFO, FAIL, WARN
-from fontbakery.codetesting import (assert_PASS,
+from openbakery.checkrunner import INFO, FAIL, WARN
+from openbakery.codetesting import (assert_PASS,
                                     assert_results_contain,
                                     CheckTester,
                                     TEST_FILE)
 
-from fontbakery.profiles import opentype as opentype_profile
+from openbakery.profiles import opentype as opentype_profile
 
 
 def test_check_kern_table():

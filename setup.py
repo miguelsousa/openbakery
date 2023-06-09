@@ -52,9 +52,6 @@ fontval_extras = [
 ]
 
 docs_extras = [
-    'recommonmark',
-    'sphinx >= 1.4',
-    'sphinx_rtd_theme',
 ]
 
 all_extras = set(
@@ -65,13 +62,13 @@ all_extras = set(
 )
 
 setup(
-    name="fontbakery",
-    use_scm_version={"write_to": "Lib/fontbakery/_version.py"},
-    url='https://github.com/googlefonts/fontbakery/',
-    description='Well designed Font QA tool, written in Python 3',
+    name="openbakery",
+    use_scm_version={"write_to": "Lib/openbakery/_version.py"},
+    url='https://github.com/miguelsousa/openbakery/',
+    description='A font quality assurance tool for everyone',
     long_description=readme,
     long_description_content_type='text/markdown',
-    author=('Font Bakery authors and contributors:'
+    author=('OpenBakery authors and contributors:'
             ' Dave Crossland,'
             ' Felipe Sanches,'
             ' Lasse Fister,'
@@ -79,16 +76,17 @@ setup(
             ' Nikolaus Waxweiler,'
             ' Chris Simpkins,'
             ' Jens Kutilek,'
-            ' Vitaly Volkov'),
-    author_email='dave@lab6.com',
+            ' Vitaly Volkov,'
+            ' Simon Cozens,'
+            ' Miguel Sousa'),
+    author_email='miguel.sousa@adobe.com',
     package_dir={'': 'Lib'},
-    packages=['fontbakery',
-              'fontbakery.reporters',
-              'fontbakery.profiles',
-              'fontbakery.commands',
-              'fontbakery.sphinx_extensions'
+    packages=['openbakery',
+              'openbakery.reporters',
+              'openbakery.profiles',
+              'openbakery.commands',
               ],
-    package_data={'fontbakery': ['data/*.cache',
+    package_data={'openbakery': ['data/*.cache',
                                  'data/googlefonts/*_exceptions.txt']},
     classifiers=[
         'Environment :: Console',
@@ -122,7 +120,7 @@ setup(
         'cmarkgfm',
         'rich',
 
-        # --- for checking Font Bakery's version
+        # --- for checking OpenBakery's version
         'packaging',  # Universal profile
         'pip-api',    # Universal profile
         'requests',   # Universal & googlefonts profiles
@@ -148,10 +146,6 @@ setup(
         'ufo-sources': ufo_sources_extras,
     },
     entry_points={
-        'console_scripts': ['fontbakery=fontbakery.cli:main'],
+        'console_scripts': ['openbakery=openbakery.cli:main'],
     },
-# TODO: review this and make it cross-platform:
-#    data_files=[
-#        ('/etc/bash_completion.d', ['snippets/fontbakery.bash-completion']),
-#    ]
 )
