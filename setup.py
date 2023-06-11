@@ -42,7 +42,7 @@ googlefonts_extras = [
     "gflanguages>=0.3.0",  # There was an api simplification/update on v0.3.0
     # (see https://github.com/googlefonts/gflanguages/pull/7)
     "glyphsets>=0.5.0",
-    "protobuf>=3.7.0, <4",  # 3.7.0 fixed a bug on parsing some METADATA.pb files.
+    "protobuf>=4.23.2, <5",  # 3.7.0 fixed a bug on parsing some METADATA.pb files.
     # We cannot use v4 because our protobuf files have been compiled with v3.
     # (see https://github.com/googlefonts/fontbakery/issues/2200)
 ] + ufo_sources_extras
