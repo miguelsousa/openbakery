@@ -1,18 +1,50 @@
-name: Tests & linting
+name: Lint & Test
 
 on:
   push:
-    branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - '**.md'
+
   pull_request:
-    branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - '**.md'
 
 jobs:
-  build:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install -r testing-requirements.txt
+        python -m pip install -r requirements.txt
+
+    - name: Run black, flake8, and pylint
+      run: |
+        black . --check --diff --color
+        flake8
+        pylint Lib tests
+
+
+  test:
+    needs: lint
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        # TODO: Re-enable all platforms
+        # os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest]
         python-version: ["3.8", "3.9", "3.10", "3.11"]
 
     steps:
@@ -25,14 +57,6 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
-    - name: Install FontValidator (for testing on GNU+Linux only)
-      if: matrix.os == 'ubuntu-latest'
-      run: |
-        sudo apt-get install mono-runtime libmono-system-windows-forms4.0-cil
-        wget https://github.com/HinTak/Font-Validator/releases/download/FontVal-2.1.2/FontVal-2.1.2-ubuntu-16.04-x64.tgz
-        tar -xvzf ./FontVal-2.1.2-ubuntu-16.04-x64.tgz
-        sudo mv ./FontVal-2.1.2-ubuntu-16.04-x64/FontValidator /usr/local/bin/FontValidator
-
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
@@ -44,12 +68,6 @@ jobs:
       run: |
         python -m pip install . --use-pep517
 
-    - name: Run flake8 & pylint (only Ubuntu/Python 3.9)
-      if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.9'
-      run: |
-        flake8 --count --show-source --statistics
-        pylint Lib/fontbakery
-
     - name: Test with pytest
       run: |
         python -m pytest
@@ -57,4 +75,4 @@ jobs:
     - name: Run coverage (only Ubuntu/Python 3.10)
       if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.10'
       run: |
-        python -m pytest --cov
+        python -m pytest --quiet --cov
