@@ -1,8 +1,19 @@
 <p align="center">
-  <img src="https://github.com/miguelsousa/openbakery/blob/main/data/openbakery.jpg" alt="OpenBakery">
+  <img src="https://raw.githubusercontent.com/miguelsousa/openbakery/main/data/openbakery.jpg" alt="OpenBakery">
 </p>
 <p align="center">
     <b>OpenBakery, a font quality assurance tool for everyone</b>
+</p>
+<p align="center">
+<a href="https://github.com/miguelsousa/openbakery/actions/workflows/lint_test.yml" target="_blank">
+    <img src="https://github.com/miguelsousa/openbakery/actions/workflows/lint_test.yml/badge.svg" alt="Lint & Test workflow status">
+</a>
+<a href="https://pypi.org/project/openbakery" target="_blank">
+    <img src="https://img.shields.io/pypi/v/openbakery.svg" alt="Package version">
+</a>
+<a href="https://pypi.org/project/openbakery" target="_blank">
+    <img src="https://img.shields.io/pypi/pyversions/openbakery.svg" alt="Minimum Python version">
+</a>
 </p>
 
 ---
