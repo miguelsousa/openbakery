@@ -8,6 +8,9 @@
 <a href="https://github.com/miguelsousa/openbakery/actions/workflows/lint_test.yml" target="_blank">
     <img src="https://github.com/miguelsousa/openbakery/actions/workflows/lint_test.yml/badge.svg" alt="Lint & Test workflow status">
 </a>
+<a href="https://codecov.io/gh/miguelsousa/openbakery" target="_blank">
+  <img src="https://codecov.io/gh/miguelsousa/openbakery/branch/main/graph/badge.svg?token=2K1LW5OCW8"/ alt="Code coverage status"> 
+</a>
 <a href="https://pypi.org/project/openbakery" target="_blank">
     <img src="https://img.shields.io/pypi/v/openbakery.svg" alt="Package version">
 </a>
