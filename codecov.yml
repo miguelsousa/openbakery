@@ -1,0 +1,22 @@
+# When modifying this file, please validate using
+# curl -X POST --data-binary @codecov.yml https://codecov.io/validate
+
+codecov:
+  require_ci_to_pass: false     # post report without waiting for other status checks to complete or pass
+
+comment:
+  layout: "reach, diff, files"  # see https://docs.codecov.com/docs/pull-request-comments#layout
+  behavior: default             # see https://docs.codecov.com/docs/pull-request-comments#behavior
+  require_changes: true         # post report only if coverage results change
+
+coverage:
+  status:
+    project:
+      default:
+        informational: true     # get coverage status but prevent them from blocking the PR
+        target: auto            # each PR must increase coverage,
+        threshold: 10%          # within a threshold
+    patch:
+      default:
+        informational: true
+        target: 100%            # new code must be fully tested
