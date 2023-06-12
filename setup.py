@@ -17,7 +17,7 @@
 from setuptools import setup
 
 try:
-    readme = open("README.md").read()
+    readme = open("README.md", encoding="utf8").read()
 except IOError:
     readme = ""
 
