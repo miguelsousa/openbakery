@@ -420,8 +420,6 @@ def test_check_openbakery_version(mock_get, mock_installed):
     assert "Request to PyPI.org failed with this message" in msg
 
 
-# TODO: Remove skip decorator
-@pytest.mark.skip(reason="not available on PyPI yet")
 def test_check_openbakery_version_live_apis():
     """Check if OpenBakery is up-to-date. (No API-mocking edition)"""
     check = CheckTester(universal_profile, "com.google.fonts/check/openbakery_version")
