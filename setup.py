@@ -22,6 +22,7 @@ except IOError:
     readme = ""
 
 
+BEZIERS_VERSION = ">=0.5.0"
 FONTTOOLS_VERSION = ">=4.39.0"  # Python 3.8+ required
 UFO2FT_VERSION = ">=2.25.2"
 
@@ -47,13 +48,24 @@ googlefonts_extras = [
     # (see https://github.com/googlefonts/fontbakery/issues/2200)
 ] + ufo_sources_extras
 
+iso15008_extras = [
+    f"beziers{BEZIERS_VERSION}",
+    "uharfbuzz",
+]
+
 fontval_extras = [
     "lxml",
 ]
 
 docs_extras = []
 
-all_extras = set(docs_extras + googlefonts_extras + fontval_extras + ufo_sources_extras)
+all_extras = set(
+    docs_extras
+    + fontval_extras
+    + googlefonts_extras
+    + iso15008_extras
+    + ufo_sources_extras
+)
 
 setup(
     name="openbakery",
@@ -125,7 +137,7 @@ setup(
         "requests",  # Universal & googlefonts profiles
         #
         # TODO: Try to split the packages below into feature-specific extras.
-        "beziers>=0.5.0",  # Opentype, iso15008, Shaping (& Universal) profiles
+        f"beziers{BEZIERS_VERSION}",  # Opentype, Shaping (& Universal) profiles
         # Uses new fontTools glyph outline access
         "collidoscope>=0.5.2",  # Shaping (& Universal) profiles
         # 0.5.1 did not yet support python 3.11
@@ -139,8 +151,9 @@ setup(
     extras_require={
         "all": all_extras,
         "docs": docs_extras,
-        "googlefonts": googlefonts_extras,
         "fontval": fontval_extras,
+        "googlefonts": googlefonts_extras,
+        "iso15008": iso15008_extras,
         "ufo-sources": ufo_sources_extras,
     },
     entry_points={
