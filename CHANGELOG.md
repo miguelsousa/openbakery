@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `shaping` subcommand and extra (#36).
 - `fontwerk` extra (#37).
 - `notofonts` extra (#37).
+- `com.thetypefounders/check/features_default_languagesystem`: Checks if a default languagesystem statement is present in feature files and warns if the compiler will not insert one automatically (https://github.com/fonttools/fontbakery/issues/4011)
 
 ### Changed
 
