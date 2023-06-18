@@ -1,12 +1,10 @@
 from openbakery.callable import check
+from openbakery.constants import REGISTERED_AXIS_TAGS
 from openbakery.status import FAIL, PASS, WARN
 from openbakery.message import Message
 
 # used to inform get_module_profile whether and how to create a profile
-from openbakery.fonts_profile import (
-    profile_factory,
-)  # NOQA pylint: disable=unused-import
-from openbakery.constants import REGISTERED_AXIS_TAGS
+from openbakery.fonts_profile import profile_factory  # noqa: F401
 
 profile_imports = ((".", ("shared_conditions",)),)
 

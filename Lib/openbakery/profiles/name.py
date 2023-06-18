@@ -9,9 +9,7 @@ from openbakery.constants import (
 )
 
 # used to inform get_module_profile whether and how to create a profile
-from openbakery.fonts_profile import (
-    profile_factory,
-)  # NOQA pylint: disable=unused-import
+from openbakery.fonts_profile import profile_factory  # noqa: F401
 
 profile_imports = [(".shared_conditions", ("glyph_metrics_stats", "is_ttf", "is_cff"))]
 

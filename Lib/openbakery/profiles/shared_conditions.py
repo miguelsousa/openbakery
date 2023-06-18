@@ -5,9 +5,7 @@ from collections import Counter
 from openbakery.callable import condition
 
 # used to inform get_module_profile whether and how to create a profile
-from openbakery.fonts_profile import (
-    profile_factory,
-)  # NOQA pylint: disable=unused-import,cyclic-import
+from openbakery.fonts_profile import profile_factory  # noqa: F401
 
 
 @condition

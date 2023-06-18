@@ -1,15 +1,15 @@
+import math
+
 from beziers.path import BezierPath
 
 from openbakery.callable import condition, check
 from openbakery.status import FAIL, PASS, WARN
 from openbakery.section import Section
-from openbakery.fonts_profile import (
-    profile_factory,
-)  # NOQA pylint: disable=unused-import
 from openbakery.message import Message
 from openbakery.utils import bullet_list
-import math
 
+# used to inform get_module_profile whether and how to create a profile
+from openbakery.fonts_profile import profile_factory  # noqa: F401
 
 ALIGNMENT_MISS_EPSILON = 2  # Two point lee-way on alignment misses
 SHORT_PATH_EPSILON = 0.006  # <0.6% of total outline length makes a short segment

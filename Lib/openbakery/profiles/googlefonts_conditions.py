@@ -9,6 +9,10 @@ from openbakery.constants import (
     UnicodeEncodingID,
     WindowsLanguageID,
 )
+
+# used to inform get_module_profile whether and how to create a profile
+from openbakery.fonts_profile import profile_factory  # noqa: F401
+
 from .shared_conditions import style
 
 

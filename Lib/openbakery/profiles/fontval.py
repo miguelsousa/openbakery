@@ -1,12 +1,12 @@
 from pathlib import Path
 import tempfile
+
 from openbakery.callable import check
+from openbakery.fonts_profile import profile_factory
 from openbakery.status import ERROR, FAIL, INFO, PASS, WARN
 from openbakery.section import Section
 from openbakery.message import Message
 
-# used to inform get_module_profile whether and how to create a profile
-from openbakery.fonts_profile import profile_factory
 from .shared_conditions import is_cff, is_variable_font
 
 
