@@ -5,7 +5,7 @@ from openbakery.status import PASS, FAIL
 from openbakery.message import Message
 
 # used to inform get_module_profile whether and how to create a profile
-from openbakery.fonts_profile import profile_factory  # noqa: F401
+from openbakery.fonts_profile import profile_factory  # noqa:F401 pylint:disable=W0611
 
 
 def feature_tags(ttFont):

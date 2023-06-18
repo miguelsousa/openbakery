@@ -11,7 +11,6 @@ import logging
 
 from openbakery.errors import NamespaceError, SetupError, CircularAliasError
 from openbakery.callable import (
-    OpenBakeryCallable,
     OpenBakeryCheck,
     OpenBakeryCondition,
     OpenBakeryExpectedValue,

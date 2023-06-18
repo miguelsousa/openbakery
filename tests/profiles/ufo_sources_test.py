@@ -3,7 +3,7 @@ import os
 import defcon
 import pytest
 
-from openbakery.checkrunner import FAIL, SKIP, WARN
+from openbakery.status import FAIL, SKIP, WARN
 from openbakery.codetesting import (
     assert_PASS,
     assert_results_contain,

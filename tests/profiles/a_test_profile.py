@@ -1,8 +1,7 @@
 from openbakery.callable import check
 from openbakery.section import Section
-from openbakery.status import PASS, FAIL, WARN
+from openbakery.status import PASS, FAIL
 from openbakery.fonts_profile import profile_factory
-from openbakery.message import Message
 
 profile = profile_factory(default_section=Section("Just a Test"))
 

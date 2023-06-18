@@ -9,20 +9,7 @@ Conditions) and MAYBE in *customized* reporters e.g. subclasses.
 """
 from collections import Counter
 
-from openbakery.checkrunner import (
-    DEBUG,
-    INFO,
-    WARN,
-    ERROR,
-    STARTCHECK,
-    SKIP,
-    PASS,
-    FAIL,
-    ENDCHECK,
-    SECTIONSUMMARY,
-    START,
-    END,
-)
+from openbakery.status import END, ENDCHECK, START
 from openbakery.errors import ProtocolViolationError
 
 

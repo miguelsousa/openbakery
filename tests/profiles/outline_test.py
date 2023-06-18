@@ -1,4 +1,4 @@
-from openbakery.checkrunner import WARN
+from openbakery.status import WARN
 from openbakery.codetesting import (
     assert_results_contain,
     CheckTester,

@@ -2,7 +2,7 @@ import io
 
 from fontTools.ttLib import TTFont
 
-from openbakery.checkrunner import WARN, FAIL
+from openbakery.status import WARN, FAIL
 from openbakery.codetesting import (
     assert_PASS,
     assert_results_contain,

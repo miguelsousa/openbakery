@@ -1,8 +1,9 @@
-import pytest
 import shutil
 
+import pytest
+
 from openbakery.codetesting import TEST_FILE, assert_results_contain
-from openbakery.checkrunner import ERROR
+from openbakery.status import ERROR
 from openbakery.profiles import fontval as fontval_profile
 
 

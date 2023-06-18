@@ -10,7 +10,7 @@ from openbakery.constants import (
     MacintoshEncodingID,
     MacintoshLanguageID,
 )
-from openbakery.checkrunner import INFO, WARN, PASS, FAIL, SKIP
+from openbakery.status import INFO, WARN, PASS, FAIL, SKIP
 from openbakery.codetesting import (
     assert_PASS,
     assert_SKIP,

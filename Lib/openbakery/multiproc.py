@@ -17,20 +17,22 @@ import queue
 
 from openbakery.reporters import OpenBakeryReporter
 from openbakery.checkrunner import (
-    INFO,
-    WARN,
-    ERROR,
-    STARTCHECK,
-    SKIP,
-    PASS,
-    FAIL,
-    ENDCHECK,
-    END,
-    DEBUG,
     CheckRunner,
-    session_protocol_generator,
     drive_session_protocol,
     get_profile_from_module_locator,
+    session_protocol_generator,
+)
+from openbakery.status import (
+    DEBUG,
+    END,
+    ENDCHECK,
+    ERROR,
+    FAIL,
+    INFO,
+    PASS,
+    SKIP,
+    STARTCHECK,
+    WARN,
 )
 from openbakery.message import Message
 

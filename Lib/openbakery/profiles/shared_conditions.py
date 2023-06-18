@@ -5,7 +5,7 @@ from collections import Counter
 from openbakery.callable import condition
 
 # used to inform get_module_profile whether and how to create a profile
-from openbakery.fonts_profile import profile_factory  # noqa: F401
+from openbakery.fonts_profile import profile_factory  # noqa:F401 pylint:disable=W0611
 
 
 @condition
@@ -602,7 +602,7 @@ def is_indic_font(ttFont):
 
 
 def keyword_in_full_font_name(ttFont, keyword):
-    from openbakery.constants import MacStyle, NameID
+    from openbakery.constants import NameID
 
     for entry in ttFont["name"].names:
         if (

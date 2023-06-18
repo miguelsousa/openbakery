@@ -6,7 +6,7 @@ from openbakery.codetesting import (
     assert_results_contain,
     CheckTester,
 )
-from openbakery.checkrunner import WARN
+from openbakery.status import WARN
 from openbakery.profiles import opentype as opentype_profile
 
 

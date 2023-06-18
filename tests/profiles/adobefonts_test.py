@@ -8,7 +8,7 @@ from fontTools.ttLib import TTFont
 from fontTools.ttLib.tables.otTables import AxisValueRecord
 from requests.exceptions import ConnectionError
 
-from openbakery.checkrunner import WARN, FAIL, PASS, SKIP
+from openbakery.status import WARN, FAIL, PASS, SKIP
 from openbakery.codetesting import (
     assert_PASS,
     assert_results_contain,

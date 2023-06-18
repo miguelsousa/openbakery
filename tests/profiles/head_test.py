@@ -1,10 +1,7 @@
-import io
-import os
-
-import pytest
 from fontTools.ttLib import TTFont
+import pytest
 
-from openbakery.checkrunner import WARN, FAIL, PASS
+from openbakery.status import WARN, FAIL, PASS
 from openbakery.codetesting import (
     assert_PASS,
     assert_results_contain,

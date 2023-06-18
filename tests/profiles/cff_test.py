@@ -1,12 +1,10 @@
-from fontTools.ttLib import TTFont
-
 from openbakery.codetesting import (
     assert_PASS,
     assert_results_contain,
     CheckTester,
     TEST_FILE,
 )
-from openbakery.checkrunner import DEBUG, INFO, WARN, ERROR, SKIP, PASS, FAIL
+from openbakery.status import DEBUG, INFO, WARN, ERROR, SKIP, PASS, FAIL
 from openbakery.profiles import cff as cff_profile
 
 check_statuses = (ERROR, FAIL, SKIP, PASS, WARN, INFO, DEBUG)

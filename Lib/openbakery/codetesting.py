@@ -15,7 +15,8 @@
 #
 import defcon
 
-from openbakery.checkrunner import CheckRunner, PASS, DEBUG, ERROR, SKIP
+from openbakery.checkrunner import CheckRunner
+from openbakery.status import PASS, DEBUG, ERROR, SKIP
 from openbakery.configuration import Configuration
 from openbakery.message import Message
 from openbakery.profile import Profile, get_module_profile

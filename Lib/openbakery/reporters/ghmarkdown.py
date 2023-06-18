@@ -1,7 +1,7 @@
 import os
+
 from openbakery.reporters.serialize import SerializeReporter
 from openbakery.utils import html5_collapsible
-from openbakery.checkrunner import Status
 from openbakery import __version__ as version
 
 LOGLEVELS = ["ERROR", "FAIL", "WARN", "SKIP", "INFO", "PASS", "DEBUG"]

@@ -1,9 +1,9 @@
 from openbakery.callable import check
-from openbakery.status import FAIL, PASS, WARN, SKIP
+from openbakery.status import PASS, WARN, SKIP
 from openbakery.message import Message
 
 # used to inform get_module_profile whether and how to create a profile
-from openbakery.fonts_profile import profile_factory  # noqa: F401
+from openbakery.fonts_profile import profile_factory  # noqa:F401 pylint:disable=W0611
 
 
 def _is_non_spacing_mark_char(charcode):

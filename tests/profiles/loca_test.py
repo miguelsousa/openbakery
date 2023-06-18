@@ -1,7 +1,8 @@
 import io
+
 from fontTools.ttLib import TTFont
 
-from openbakery.checkrunner import FAIL
+from openbakery.status import FAIL
 from openbakery.codetesting import (
     assert_PASS,
     assert_results_contain,

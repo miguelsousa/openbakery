@@ -1,7 +1,7 @@
 from fontTools.ttLib import TTFont
 from fontTools.ttLib.tables._f_v_a_r import Axis
 
-from openbakery.checkrunner import FAIL, WARN, SKIP
+from openbakery.status import FAIL, WARN, SKIP
 from openbakery.codetesting import (
     assert_PASS,
     assert_results_contain,

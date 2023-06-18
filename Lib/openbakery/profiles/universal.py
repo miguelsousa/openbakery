@@ -1,6 +1,8 @@
 import os
 import re
 
+from packaging.version import VERSION_PATTERN
+
 from openbakery.status import PASS, FAIL, WARN, INFO, SKIP
 from openbakery.section import Section
 from openbakery.callable import check, disable
@@ -8,8 +10,6 @@ from openbakery.message import Message
 from openbakery.fonts_profile import profile_factory
 from openbakery.profiles.opentype import OPENTYPE_PROFILE_CHECKS
 from openbakery.profiles.shaping import SHAPING_PROFILE_CHECKS
-
-from packaging.version import VERSION_PATTERN
 
 re_version = re.compile(r"^\s*" + VERSION_PATTERN + r"\s*$", re.VERBOSE | re.IGNORECASE)
 
