@@ -6,7 +6,5 @@ show_source = false
 select = E,F,W
 extend-exclude = *_pb2.py
 extend-ignore =
-    # line too long
-    E501,
     # line break before binary operator
     W503,
