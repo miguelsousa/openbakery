@@ -1,31 +1,30 @@
-from openbakery.fonts_profile import (
-    profile_factory,
-)  # NOQA pylint: disable=unused-import
+from openbakery.fonts_profile import profile_factory
 from openbakery.section import Section
 
-OPENTYPE_PROFILE_IMPORTS = (
-    ".",
+profile_imports = (
     (
-        "cff",
-        "cmap",
-        "head",
-        "os2",
-        "post",
-        "name",
-        "loca",
-        "hhea",
-        "dsig",
-        "gdef",
-        "gpos",
-        "kern",
-        "glyf",
-        "fvar",
-        "stat",
-        "layout",
-        "shared_conditions",
+        ".",
+        (
+            "cff",
+            "cmap",
+            "head",
+            "os2",
+            "post",
+            "name",
+            "loca",
+            "hhea",
+            "dsig",
+            "gdef",
+            "gpos",
+            "kern",
+            "glyf",
+            "fvar",
+            "stat",
+            "layout",
+            "shared_conditions",
+        ),
     ),
 )
-profile_imports = (OPENTYPE_PROFILE_IMPORTS,)
 profile = profile_factory(default_section=Section("OpenType Specification Checks"))
 
 OPENTYPE_PROFILE_CHECKS = [

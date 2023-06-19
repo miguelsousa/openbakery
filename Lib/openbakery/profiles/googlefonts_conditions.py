@@ -9,6 +9,10 @@ from openbakery.constants import (
     UnicodeEncodingID,
     WindowsLanguageID,
 )
+
+# used to inform get_module_profile whether and how to create a profile
+from openbakery.fonts_profile import profile_factory  # noqa:F401 pylint:disable=W0611
+
 from .shared_conditions import style
 
 
@@ -290,7 +294,7 @@ def licenses(family_directory):
 @condition
 def license_contents(license_path):
     if license_path:
-        return open(license_path).read()
+        return open(license_path).read().replace(" \n", "\n")
 
 
 @condition
@@ -331,7 +335,8 @@ def familyname(font):
 @condition
 def hinting_stats(font):
     """
-    Return file size differences for a hinted font compared to an dehinted version of same file
+    Return file size differences for a hinted font compared to an dehinted version
+    of same file
     """
     from io import BytesIO
     from dehinter.font import dehint

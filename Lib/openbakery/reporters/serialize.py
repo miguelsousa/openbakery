@@ -10,9 +10,8 @@ domains as well.
 Domain specific knowledge should be encoded only in the Profile (Checks,
 Conditions) and MAYBE in *customized* reporters e.g. subclasses.
 """
-from openbakery.checkrunner import DEBUG, SECTIONSUMMARY, ENDCHECK, START, END
+from openbakery.status import Status, DEBUG, END, ENDCHECK, SECTIONSUMMARY, START
 from openbakery.reporters import OpenBakeryReporter
-from openbakery.checkrunner import Status
 
 
 class SerializeReporter(OpenBakeryReporter):
@@ -92,7 +91,8 @@ class SerializeReporter(OpenBakeryReporter):
 
                     item["clustered"] = {
                         "name": self._results_by,
-                        "index": index,  # None if this check did not require self.results_by
+                        # 'index' is None if this check did not require self.results_by
+                        "index": index,
                     }
                     if (
                         value

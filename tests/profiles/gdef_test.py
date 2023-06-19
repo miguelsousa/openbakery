@@ -2,7 +2,7 @@ from io import BytesIO
 from fontTools.ttLib import TTFont, newTable
 from fontTools.ttLib.tables import otTables
 
-from openbakery.checkrunner import WARN
+from openbakery.status import WARN
 from openbakery.codetesting import (
     assert_PASS,
     assert_SKIP,

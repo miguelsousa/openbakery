@@ -118,7 +118,8 @@ NO_COLORS_THEME = {
     "list-checks: description": no_color,
 }
 
-DARK_THEME = {  #     Foreground    Background
+DARK_THEME = {
+    # Foreground, Background
     "header": color(WHITE, BLACK, bold=True),
     "url": color(CYAN, BLACK, bold=True),
     "check-id": color(CYAN, BLACK, bold=True),
@@ -138,7 +139,8 @@ DARK_THEME = {  #     Foreground    Background
     "list-checks: description": color(BLUE, BLACK),
 }
 
-LIGHT_THEME = {  #     Foreground     Background
+LIGHT_THEME = {
+    # Foreground, Background
     "header": color(BLACK, BRIGHT_WHITE, bold=True),
     "url": color(CYAN, BRIGHT_WHITE, bold=True),
     "check-id": color(MAGENTA, BRIGHT_WHITE, bold=True),
@@ -627,7 +629,7 @@ with others.
 
 The OFL allows the licensed fonts to be used, studied, modified and
 redistributed freely as long as they are not sold by themselves. The
-fonts, including any derivative works, can be bundled, embedded, 
+fonts, including any derivative works, can be bundled, embedded,
 redistributed and/or sold with any software provided that any reserved
 names are not used by derivative works. The fonts and derivatives,
 however, cannot be released under any other type of license. The

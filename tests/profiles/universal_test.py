@@ -5,7 +5,7 @@ from fontTools.ttLib import TTFont
 import pytest
 from requests.exceptions import ConnectionError
 
-from openbakery.checkrunner import INFO, WARN, FAIL, PASS, SKIP
+from openbakery.status import INFO, WARN, FAIL, PASS, SKIP
 from openbakery.codetesting import (
     assert_PASS,
     assert_SKIP,
@@ -109,8 +109,8 @@ def test_style_condition():
         == "BoldItalic"
     )
     # Badly named statics, fail them
-    assert style(TEST_FILE("bad_fonts/bad_stylenames/NotoSans-Fat.ttf")) == None
-    assert style(TEST_FILE("bad_fonts/bad_stylenames/NotoSans.ttf")) == None
+    assert style(TEST_FILE("bad_fonts/bad_stylenames/NotoSans-Fat.ttf")) is None
+    assert style(TEST_FILE("bad_fonts/bad_stylenames/NotoSans.ttf")) is None
 
 
 def test_check_valid_glyphnames():
@@ -796,7 +796,6 @@ def test_check_unwanted_tables():
 
 def test_glyph_has_ink():
     from openbakery.utils import glyph_has_ink
-    from fontTools.ttLib import TTFont
 
     print()  # so next line doesn't start with '.....'
 
@@ -978,7 +977,7 @@ def test_check_rupee():
 
     print("Ensure the check will SKIP when dealing with a non-indic font...")
     non_indic = TTFont(TEST_FILE("mada/Mada-Regular.ttf"))
-    assert is_indic_font(non_indic) == False
+    assert is_indic_font(non_indic) is False
 
     # This one is good:
     ttFont = TTFont(
@@ -1268,7 +1267,7 @@ def test_check_STAT_in_statics():
     ttFont = TTFont(TEST_FILE("varfont/RobotoSerif[GRAD,opsz,wdth,wght].ttf"))
     assert_SKIP(check(ttFont), "with a variable font...")
 
-    # fake it: Remove fvar table to make OpenBakery think it is dealing with a static font
+    # Remove fvar table to make OpenBakery think it is dealing with a static font
     del ttFont["fvar"]
 
     # We know that our reference RobotoSerif varfont (which the check is induced

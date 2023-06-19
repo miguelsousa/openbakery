@@ -6,7 +6,7 @@ from openbakery.profiles.universal import UNIVERSAL_PROFILE_CHECKS
 from openbakery.profiles.ufo_sources import UFO_PROFILE_CHECKS
 from openbakery.status import INFO, WARN, ERROR, SKIP, PASS, FAIL
 from openbakery.section import Section
-from openbakery.callable import check, disable
+from openbakery.callable import check, condition, disable
 from openbakery.utils import (
     add_check_overrides,
     bullet_list,
@@ -20,14 +20,13 @@ from openbakery.constants import (
     PlatformID,
     WindowsEncodingID,
     WindowsLanguageID,
-    MacintoshEncodingID,
-    MacintoshLanguageID,
+    UnicodeEncodingID,
     LATEST_TTFAUTOHINT_VERSION,
 )
-from .googlefonts_conditions import *  # pylint: disable=wildcard-import,unused-wildcard-import
 
-
-profile_imports = ((".", ("universal", "outline", "ufo_sources")),)
+profile_imports = (
+    (".", ("googlefonts_conditions", "universal", "outline", "ufo_sources")),
+)
 profile = profile_factory(default_section=Section("Google Fonts"))
 
 profile.configuration_defaults = {
@@ -61,9 +60,12 @@ METADATA_CHECKS = [
     "com.google.fonts/check/metadata/nameid/family_name",
     "com.google.fonts/check/metadata/nameid/post_script_name",
     "com.google.fonts/check/metadata/nameid/full_name",
-    "com.google.fonts/check/metadata/nameid/family_and_full_names",  # FIXME! This seems redundant!
+    # FIXME! This seems redundant!
+    "com.google.fonts/check/metadata/nameid/family_and_full_names",
     "com.google.fonts/check/metadata/nameid/copyright",
-    "com.google.fonts/check/metadata/nameid/font_name",  # FIXME! This looks suspiciously similar to com.google.fonts/check/metadata/nameid/family_name
+    # FIXME! This looks suspiciously similar
+    # to com.google.fonts/check/metadata/nameid/family_name
+    "com.google.fonts/check/metadata/nameid/font_name",
     "com.google.fonts/check/metadata/match_fullname_postscript",
     "com.google.fonts/check/metadata/match_filename_postscript",
     "com.google.fonts/check/metadata/match_weight_postscript",
@@ -133,8 +135,10 @@ NAME_TABLE_CHECKS = [
 #  we implement check polymorphism
 # https://github.com/googlefonts/fontbakery/issues/3436
 GLYPHSAPP_CHECKS = [
-    # DISABLED:    'com.google.fonts/check/glyphs_file/name/family_and_style_max_length',
-    # DISABLED:    'com.google.fonts/check/glyphs_file/font_copyright'
+    # DISABLED:
+    # "com.google.fonts/check/glyphs_file/name/family_and_style_max_length",
+    # DISABLED:
+    # "com.google.fonts/check/glyphs_file/font_copyright",
 ]
 
 REPO_CHECKS = [
@@ -274,7 +278,6 @@ def com_google_fonts_check_canonical_filename(ttFont):
 def com_google_fonts_check_description_broken_links(description_html):
     """Does DESCRIPTION file contain broken links?"""
     import requests
-    from lxml import etree
 
     doc = description_html
     broken_links = []
@@ -334,8 +337,6 @@ def com_google_fonts_check_description_broken_links(description_html):
 )
 def com_google_fonts_check_description_urls(description_html):
     """URLs on DESCRIPTION file must not display http(s) prefix."""
-    from lxml import etree
-
     passed = True
     for a_href in description_html.iterfind(".//a[@href]"):
         link_text = a_href.text
@@ -507,7 +508,8 @@ def com_google_fonts_check_description_eof_linebreak(description):
     id="com.google.fonts/check/metadata/parses",
     conditions=["family_directory"],
     rationale="""
-        The purpose of this check is to ensure that the METADATA.pb file is not malformed.
+        The purpose of this check is to ensure that the METADATA.pb file is not
+        malformed.
     """,
     proposal="https://github.com/googlefonts/fontbakery/issues/2248",
 )
@@ -656,7 +658,7 @@ def com_google_fonts_check_metadata_broken_links(family_metadata):
                     if len(chunks) == 6 and chunks[2].endswith("github.com"):
                         protocol, _, domain, user, repo, something = chunks
                         for branch in ["main", "master"]:
-                            alternate_link = f"{protocol}//{domain}/{user}/{repo}/tree/{branch}/{something}"
+                            alternate_link = f"{protocol}//{domain}/{user}/{repo}/tree/{branch}/{something}"  # noqa:E501 pylint:disable=C0301
                             response = requests.head(
                                 alternate_link, allow_redirects=True, timeout=10
                             )
@@ -762,7 +764,8 @@ def com_google_fonts_check_metadata_undeclared_fonts(family_metadata, family_dir
     id="com.google.fonts/check/metadata/category",
     conditions=["family_metadata"],
     rationale="""
-        There are only five acceptable values for the category field in a METADATA.pb file:
+        There are only five acceptable values for the category field in a METADATA.pb
+        file:
 
         - MONOSPACE
 
@@ -1264,7 +1267,9 @@ def com_google_fonts_check_name_unwanted_chars(ttFont):
     proposal="legacy:check/020",
 )
 def com_google_fonts_check_usweightclass(ttFont, expected_font_names):
-    """Check the OS/2 usWeightClass is appropriate for the font's best SubFamily name."""
+    """
+    Check the OS/2 usWeightClass is appropriate for the font's best SubFamily name.
+    """
     from openbakery.profiles.shared_conditions import is_ttf, is_cff, is_variable_font
 
     passed = True
@@ -1392,7 +1397,7 @@ def com_google_fonts_check_license_OFL_body_text(license_contents):
     """Check OFL body text is correct."""
     from openbakery.constants import OFL_BODY_TEXT
 
-    if not OFL_BODY_TEXT in license_contents.replace("http://", "https://"):
+    if OFL_BODY_TEXT not in license_contents.replace("http://", "https://"):
         yield FAIL, Message(
             "incorrect-ofl-body-text",
             "The OFL.txt body text is incorrect. Please use"
@@ -1411,8 +1416,8 @@ def com_google_fonts_check_license_OFL_body_text(license_contents):
         A known licensing description must be provided in the NameID 14
         (LICENSE DESCRIPTION) entries of the name table.
 
-        The source of truth for this check (to determine which license is in use)
-        is a file placed side-by-side to your font project including the licensing terms.
+        The source of truth for this check (to determine which license is in use) is
+        a file placed side-by-side to your font project including the licensing terms.
 
         Depending on the chosen license, one of the following string snippets is
         expected to be found on the NameID 13 (LICENSE DESCRIPTION) entries of the
@@ -1506,8 +1511,8 @@ def com_google_fonts_check_name_license(ttFont, license):
         - "Licensed under the Ubuntu Font Licence 1.0."
 
 
-        Currently accepted licenses are Apache or Open Font License.
-        For a small set of legacy families the Ubuntu Font License may be acceptable as well.
+        Currently accepted licenses are Apache or Open Font License. For a small set of
+        legacy families the Ubuntu Font License may be acceptable as well.
 
         When in doubt, please choose OFL for new font projects.
     """,
@@ -1721,17 +1726,17 @@ def com_google_fonts_check_hinting_impact(font, hinting_stats):
 def com_google_fonts_check_file_size(font):
     """Ensure files are not too large."""
     size = os.stat(font).st_size
-    if size > FAIL_SIZE:
+    if size > FAIL_SIZE:  # noqa:F821 pylint:disable=E0602
         yield FAIL, Message(
             "massive-font",
-            f"Font file is {filesize_formatting(size)}, "
-            f"larger than limit {filesize_formatting(FAIL_SIZE)}",
+            f"Font file is {filesize_formatting(size)}, larger than limit"
+            f" {filesize_formatting(FAIL_SIZE)}",  # noqa:F821 pylint:disable=E0602
         )
-    elif size > WARN_SIZE:
+    elif size > WARN_SIZE:  # noqa:F821 pylint:disable=E0602
         yield WARN, Message(
             "large-font",
-            f"Font file is {filesize_formatting(size)}; "
-            f"ideally it should be less than {filesize_formatting(WARN_SIZE)}",
+            f"Font file is {filesize_formatting(size)}; ideally it should be less than"
+            f" {filesize_formatting(WARN_SIZE)}",  # noqa:F821 pylint:disable=E0602
         )
     else:
         yield PASS, "Font had a reasonable file size"
@@ -1780,7 +1785,7 @@ def com_google_fonts_check_has_ttfautohint_params(ttFont):
 
     def ttfautohint_version(value):
         # example string:
-        #'Version 1.000; ttfautohint (v0.93) -l 8 -r 50 -G 200 -x 14 -w "G"
+        # 'Version 1.000; ttfautohint (v0.93) -l 8 -r 50 -G 200 -x 14 -w "G"
         import re
 
         results = re.search(r"ttfautohint \(v(.*)\) ([^;]*)", value)
@@ -1904,13 +1909,15 @@ def com_google_fonts_check_epar(ttFont):
     conditions=["is_ttf"],
     rationale="""
         Traditionally version 0 'gasp' tables were set so that font sizes below 8 ppem
-        had no grid fitting but did have antialiasing. From 9-16 ppem, just grid fitting.
+        had no grid fitting but did have antialiasing. From 9-16 ppem, just grid
+        fitting.
         And fonts above 17ppem had both antialiasing and grid fitting toggled on.
         The use of accelerated graphics cards and higher resolution screens make this
         approach obsolete. Microsoft's DirectWrite pushed this even further with much
         improved rendering built into the OS and apps.
 
-        In this scenario it makes sense to simply toggle all 4 flags ON for all font sizes.
+        In this scenario it makes sense to simply toggle all 4 flags ON for all font
+        sizes.
     """,
     proposal="legacy:check/062",
 )
@@ -2050,7 +2057,7 @@ def com_google_fonts_check_name_ascii_only_entries(ttFont):
             string = name.string.decode(name.getEncoding())
             try:
                 string.encode("ascii")
-            except:
+            except UnicodeEncodeError:
                 bad_entries.append(name)
                 badstring = string.encode("ascii", errors="xmlcharrefreplace")
                 yield FAIL, Message(
@@ -2292,7 +2299,7 @@ def com_google_fonts_check_metadata_has_regular(family_metadata):
             " as required by Google Fonts standards."
             " If family consists of a single-weight non-Regular style only,"
             " consider the Google Fonts specs for this case:"
-            " https://github.com/googlefonts/gf-docs/tree/main/Spec#single-weight-families",
+            " https://github.com/googlefonts/gf-docs/tree/main/Spec#single-weight-families",  # noqa:E501 pylint:disable=C0301
         )
 
 
@@ -2458,7 +2465,6 @@ def com_google_fonts_check_metadata_nameid_font_name(ttFont, style, font_metadat
     the family name declared on the name table.
     """
     from openbakery.utils import get_name_entry_strings
-    from openbakery.constants import RIBBI_STYLE_NAMES
 
     font_familynames = get_name_entry_strings(ttFont, NameID.TYPOGRAPHIC_FAMILY_NAME)
     if len(font_familynames) == 0:
@@ -2715,7 +2721,7 @@ def com_google_fonts_check_metadata_valid_nameid25(ttFont, style):
             yield PASS, ("Name ID 25 looks good.")
 
 
-EXPECTED_COPYRIGHT_PATTERN = r"copyright [0-9]{4}(\-[0-9]{4})? (the .* project authors \([^\@]*\)|google llc. all rights reserved)"
+EXPECTED_COPYRIGHT_PATTERN = r"copyright [0-9]{4}(\-[0-9]{4})? (the .* project authors \([^\@]*\)|google llc. all rights reserved)"  # noqa:E501 pylint:disable=C0301
 
 
 @check(
@@ -3287,7 +3293,9 @@ def com_google_fonts_check_metadata_canonical_style_names(ttFont, font_metadata)
     proposal="https://github.com/googlefonts/fontbakery/issues/4056",
 )
 def com_google_fonts_check_metadata_consistent_repo_urls(config, family_metadata):
-    """METADATA.pb: Check URL on copyright string is the same as in repository_url field."""
+    """
+    METADATA.pb: Check URL on copyright string is the same as in repository_url field.
+    """
     bad_urls = []
     repo_url = family_metadata.source.repository_url
     if repo_url.endswith(".git"):
@@ -3706,7 +3714,8 @@ def com_google_fonts_check_name_mandatory_entries(ttFont, style):
     rationale="""
         This is an arbitrary max length for the copyright notice field of the name
         table. We simply don't want such notices to be too long. Typically such notices
-        are actually much shorter than this with a length of roughly 70 or 80 characters.
+        are actually much shorter than this with a length of roughly 70 or 80
+        characters.
     """,
     proposal="https://github.com/googlefonts/fontbakery/issues/1603",
 )
@@ -3767,7 +3776,7 @@ def com_google_fonts_check_fontdata_namecheck(ttFont, familyname):
             )
         else:
             yield PASS, "Font familyname seems to be unique."
-    except:
+    except requests.exceptions.RequestException:
         import sys
 
         yield ERROR, Message(
@@ -4358,10 +4367,9 @@ def com_google_fonts_check_fvar_instances(ttFont, expected_font_names):
     elif any(font_instances[i] != expected_instances[i] for i in same):
         yield WARN, Message(
             "suspicious-fvar-coords",
-            (
-                f"fvar instance coordinates for non-wght axes are not the same as the fvar defaults. "
-                f"This may be intentional so please check with the font author:\n\n{md_table}"
-            ),
+            "fvar instance coordinates for non-wght axes are not the same as the fvar"
+            " defaults. This may be intentional so please check with the font author:"
+            f"\n\n{md_table}",
         )
     else:
         yield PASS, f"fvar instances are good:\n\n{md_table}"
@@ -5067,7 +5075,7 @@ def com_google_fonts_check_repo_dirname_match_nameid_1(fonts, gfonts_repo_struct
             "The font seems to lack a regular."
             " If family consists of a single-weight non-Regular style only,"
             " consider the Google Fonts specs for this case:"
-            " https://github.com/googlefonts/gf-docs/tree/main/Spec#single-weight-families",
+            " https://github.com/googlefonts/gf-docs/tree/main/Spec#single-weight-families",  # noqa:E501 pylint:disable=C0301
         )
         return
 
@@ -5239,7 +5247,6 @@ def com_google_fonts_check_repo_zip_files(family_directory, config):
 )
 def com_google_fonts_check_vertical_metrics(ttFont):
     """Check font follows the Google Fonts vertical metric schema"""
-    from .shared_conditions import typo_metrics_enabled
 
     filename = os.path.basename(ttFont.reader.file.name)
 
@@ -5407,11 +5414,7 @@ def com_google_fonts_check_vertical_metrics_regressions(
     """Check if the vertical metrics of a family are similar to the same
     family hosted on Google Fonts."""
     import math
-    from .shared_conditions import (
-        is_variable_font,
-        get_instance_axis_value,
-        typo_metrics_enabled,
-    )
+    from .shared_conditions import typo_metrics_enabled
 
     gf_ttFont = regular_remote_style
     ttFont = regular_ttFont
@@ -5525,7 +5528,7 @@ def com_google_fonts_check_vertical_metrics_regressions(
 )
 def com_google_fonts_check_cjk_vertical_metrics(ttFont):
     """Check font follows the Google Fonts CJK vertical metric schema"""
-    from .shared_conditions import is_cjk_font, typo_metrics_enabled
+    from .shared_conditions import typo_metrics_enabled
 
     filename = os.path.basename(ttFont.reader.file.name)
 
@@ -5956,7 +5959,9 @@ def com_google_fonts_check_gf_axisregistry_valid_tags(family_metadata, GFAxisReg
     proposal="https://github.com/googlefonts/fontbakery/issues/3141",
 )
 def com_google_fonts_check_gf_axisregistry_fvar_axis_defaults(ttFont, GFAxisRegistry):
-    """Validate defaults on fvar table match registered fallback names in GFAxisRegistry."""
+    """
+    Validate defaults on fvar table match registered fallback names in GFAxisRegistry.
+    """
 
     passed = True
     for axis in ttFont["fvar"].axes:
@@ -5967,10 +5972,10 @@ def com_google_fonts_check_gf_axisregistry_fvar_axis_defaults(ttFont, GFAxisRegi
             passed = False
             yield FAIL, Message(
                 "not-registered",
-                f"The defaul value {axis.axisTag}:{axis.defaultValue} is not"
-                f" registered as an axis fallback name on the Google Axis Registry.\n"
-                f"\tYou should consider suggesting the addition of this value to the registry"
-                f" or adopted one of the existing fallback names for this axis:\n"
+                f"The defaul value {axis.axisTag}:{axis.defaultValue} is not registered"
+                " as an axis fallback name on the Google Axis Registry.\n\tYou should"
+                " consider suggesting the addition of this value to the registry"
+                " or adopted one of the existing fallback names for this axis:\n"
                 f"\t{fallbacks}",
             )
     if passed:
@@ -5988,7 +5993,9 @@ def com_google_fonts_check_gf_axisregistry_fvar_axis_defaults(ttFont, GFAxisRegi
     proposal="https://github.com/googlefonts/fontbakery/issues/3022",
 )
 def com_google_fonts_check_STAT_gf_axisregistry_names(ttFont, GFAxisRegistry):
-    """Validate STAT particle names and values match the fallback names in GFAxisRegistry."""
+    """
+    Validate STAT particle names and values match the fallback names in GFAxisRegistry.
+    """
 
     def normalize_name(name):
         return "".join(name.split(" "))
@@ -6053,19 +6060,18 @@ def com_google_fonts_check_STAT_gf_axisregistry_names(ttFont, GFAxisRegistry):
                 passed = False
                 yield FAIL, Message(
                     "invalid-name",
-                    f"On the font variation axis '{axis.AxisTag}', the name '{name_entry.toUnicode()}'"
+                    f"On the font variation axis '{axis.AxisTag}',"
+                    f" the name '{name_entry.toUnicode()}'"
                     f" is not among the expected ones ({expected_names}) according"
-                    f" to the Google Fonts Axis Registry.",
+                    " to the Google Fonts Axis Registry.",
                 )
             elif is_value != fallbacks[name_entry.toUnicode()]:
                 passed = False
                 yield FAIL, Message(
                     "bad-coordinate",
-                    (
-                        f"Axis Value for '{axis.AxisTag}':'{name_entry.toUnicode()}' is"
-                        f" expected to be '{fallbacks[name_entry.toUnicode()]}'"
-                        f" but this font has '{name_entry.toUnicode()}'='{axis_value.Value}'."
-                    ),
+                    f"Axis Value for '{axis.AxisTag}':'{name_entry.toUnicode()}' is"
+                    f" expected to be '{fallbacks[name_entry.toUnicode()]}' but this"
+                    f" font has '{name_entry.toUnicode()}'='{axis_value.Value}'.",
                 )
 
     if format4_entries:
@@ -6135,7 +6141,7 @@ def com_google_fonts_check_metadata_consistent_axis_enumeration(
 def com_google_fonts_check_STAT_axis_order(fonts):
     """Check axis ordering on the STAT table."""
     from collections import Counter
-    from fontTools.ttLib import TTFont
+    from fontTools.ttLib import TTFont, TTLibError
 
     no_stat = 0
     summary = []
@@ -6153,7 +6159,7 @@ def com_google_fonts_check_STAT_axis_order(fonts):
                 yield SKIP, Message(
                     "missing-STAT", f"This font does not have a STAT table: {font}"
                 )
-        except:
+        except (TTLibError, AttributeError):
             yield INFO, Message("bad-font", f"Something wrong with {font}")
 
     report = "\n\t".join(map(str, Counter(summary).most_common()))
@@ -6268,7 +6274,7 @@ def com_google_fonts_check_metadata_designer_profiles(family_metadata, config):
         url = DESIGNER_INFO_RAW_URL.format(normalized_name) + "info.pb"
         response = requests.get(url, timeout=config.get("timeout"))
 
-        # (see https://github.com/googlefonts/fontbakery/pull/3892#issuecomment-1248758859)
+        # https://github.com/googlefonts/fontbakery/pull/3892#issuecomment-1248758859
         # For debugging purposes:
         # yield WARN,\
         #      Message("config",
@@ -6320,7 +6326,8 @@ def com_google_fonts_check_metadata_designer_profiles(family_metadata, config):
                 passed = False
                 yield FAIL, Message(
                     "bad-avatar-filename",
-                    f"The avatar filename provided seems to be incorrect: ({avatar_url})",
+                    "The avatar filename provided seems to be incorrect:"
+                    f" ({avatar_url})",
                 )
 
     if passed:
@@ -6372,7 +6379,9 @@ def com_google_fonts_check_mandatory_avar_table(ttFont):
 def com_google_fonts_check_description_family_update(
     description, github_gfonts_description
 ):
-    """On a family update, the DESCRIPTION.en_us.html file should ideally also be updated."""
+    """
+    On a family update, the DESCRIPTION.en_us.html file should ideally also be updated.
+    """
     if github_gfonts_description == description:
         yield WARN, Message(
             "description-not-updated",
@@ -6451,7 +6460,7 @@ def com_google_fonts_check_stylisticset_description(ttFont):
             assert "ss20" in SSETS
             assert "ss21" not in SSETS
             if tag in SSETS:
-                if feature.Feature.FeatureParams == None:
+                if feature.Feature.FeatureParams is None:
                     passed = False
                     yield WARN, Message(
                         "missing-description",
@@ -6459,9 +6468,10 @@ def com_google_fonts_check_stylisticset_description(ttFont):
                         f" a description string on the 'name' table.",
                     )
                 else:
-                    pass  # TODO: Maybe here we can add code to make sure
+                    # TODO: Maybe here we can add code to make sure
                     #       that the referenced nameid does exist
                     #       in the name table.
+                    pass
     if passed:
         yield PASS, "OK"
 
@@ -6788,13 +6798,13 @@ def com_google_fonts_check_metadata_can_render_samples(ttFont, family_metadata):
         #       a way too verbose output. That's why I only left
         #       the "tester" string for now.
         SAMPLES = {
-            #'styles': languages[lang].sample_text.styles,
+            # 'styles': languages[lang].sample_text.styles,
             "tester": languages[lang].sample_text.tester,
-            #'specimen_16': languages[lang].sample_text.specimen_16,
-            #'specimen_21': languages[lang].sample_text.specimen_21,
-            #'specimen_32': languages[lang].sample_text.specimen_32,
-            #'specimen_36': languages[lang].sample_text.specimen_36,
-            #'specimen_48': languages[lang].sample_text.specimen_48
+            # 'specimen_16': languages[lang].sample_text.specimen_16,
+            # 'specimen_21': languages[lang].sample_text.specimen_21,
+            # 'specimen_32': languages[lang].sample_text.specimen_32,
+            # 'specimen_36': languages[lang].sample_text.specimen_36,
+            # 'specimen_48': languages[lang].sample_text.specimen_48
         }
         for sample_type, sample_text in SAMPLES.items():
             # Remove line-breaks and zero width space (U+200B) characteres.
@@ -6822,7 +6832,9 @@ def com_google_fonts_check_metadata_can_render_samples(ttFont, family_metadata):
     proposal="https://github.com/googlefonts/fontbakery/issues/3624",
 )
 def com_google_fonts_check_metadata_category_hint(family_metadata):
-    """Check if category on METADATA.pb matches what can be inferred from the family name."""
+    """
+    Check if category on METADATA.pb matches what can be inferred from the family name.
+    """
 
     HINTS = {
         "SANS_SERIF": ["Sans", "Grotesk", "Grotesque"],
@@ -6840,7 +6852,7 @@ def com_google_fonts_check_metadata_category_hint(family_metadata):
 
     if (
         inferred_category is not None
-        and not inferred_category in family_metadata.category
+        and inferred_category not in family_metadata.category
     ):
         yield WARN, Message(
             "inferred-category",
@@ -6987,8 +6999,8 @@ def com_google_fonts_check_color_cpal_brightness(config, ttFont):
 @check(
     id="com.google.fonts/check/empty_glyph_on_gid1_for_colrv0",
     rationale="""
-        A rendering bug in Windows 10 paints whichever glyph is on GID 1
-        on top of some glyphs, colored or not. This only occurs for COLR version 0 fonts.
+        A rendering bug in Windows 10 paints whichever glyph is on GID 1 on top of
+        some glyphs, colored or not. This only occurs for COLR version 0 fonts.
 
         Having a glyph with no contours on GID 1 is a practical workaround for that.
 

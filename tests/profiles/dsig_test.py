@@ -1,13 +1,13 @@
+from fontTools.ttLib import TTFont
+
 from openbakery.codetesting import (
     assert_PASS,
     assert_results_contain,
     CheckTester,
     TEST_FILE,
 )
-from openbakery.checkrunner import WARN
+from openbakery.status import WARN
 from openbakery.profiles import opentype as opentype_profile
-
-from fontTools.ttLib import TTFont
 
 
 def test_check_dsig():

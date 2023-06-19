@@ -73,14 +73,14 @@ class HTMLReporter(SerializeReporter):
                     if "filename" in result:
                         body_elements.append(
                             html5_collapsible(
-                                f"{EMOTICON[result['result']]} <strong>{result['filename']}</strong>",
+                                f"{EMOTICON[result['result']]} <strong>{result['filename']}</strong>",  # noqa:E501 pylint:disable=C0301
                                 self.html_for_check(result),
                             )
                         )
                     else:
                         body_elements.append(
                             html5_collapsible(
-                                f"{EMOTICON[result['result']]} <strong>Family check</strong>",
+                                f"{EMOTICON[result['result']]} <strong>Family check</strong>",  # noqa:E501 pylint:disable=C0301
                                 self.html_for_check(result),
                             )
                         )
@@ -96,7 +96,7 @@ class HTMLReporter(SerializeReporter):
             results_summary = [data["result"][k] for k in LOGLEVELS]
             body_top.append(summary_table(*results_summary, num_checks))
 
-        omitted = [l for l in LOGLEVELS if self.omit_loglevel(l)]
+        omitted = [loglvl for loglvl in LOGLEVELS if self.omit_loglevel(loglvl)]
         if omitted:
             body_top.append(
                 "<p><strong>Note:</strong>"

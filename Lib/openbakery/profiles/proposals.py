@@ -9,9 +9,8 @@ from openbakery.section import Section
 from openbakery.status import INFO, PASS, FAIL  # WARN
 from openbakery.fonts_profile import profile_factory
 from openbakery.message import Message
-from .googlefonts_conditions import *  # pylint: disable=wildcard-import,unused-wildcard-import
-from .shared_conditions import *  # pylint: disable=wildcard-import,unused-wildcard-import
 
+profile_imports = ((".", ("shared_conditions", "googlefonts_conditions")),)
 profile = profile_factory(default_section=Section("Check Proposals"))
 
 TEMPLATE_FOR_NEW_CHECK = '''
@@ -41,16 +40,18 @@ def com_<revese_domain>_check_<check_name>(ttFont):
     id="com.google.fonts/check/mandatory_name_entries",
     rationale="""
         Any fonts checked with GF profile must contain these name IDs:
-        
-        * ID 0: Copyright string (Copyright: No complaint when everything is missing #3950)
-        
+
+        * ID 0: Copyright string
+                (Copyright: No complaint when everything is missing #3950)
+
         * ID 9: author's name
-        
+
         * ID 13: License description
-        
+
         * ID 14: License URL
-        
-        I think we don't care so much about Manufacturer's name, Manufacturer's URL and Designer's URL, but will confirm.
+
+        I think we don't care so much about Manufacturer's name,
+        Manufacturer's URL and Designer's URL, but will confirm.
     """,
     proposal="https://github.com/googlefonts/fontbakery/issues/3963",
 )
@@ -78,7 +79,8 @@ def com_google_fonts_check_metadata_empty_designer(family_metadata):
 
     if family_metadata.designer.strip() == "":
         yield FAIL, Message("empty-designer", "Font designer field is empty.")
-    # TODO: Parse AUTHORS.txt and WARN if names do not match (and then maybe rename the check-id)
+    # TODO: Parse AUTHORS.txt and WARN if names do not match
+    # (and then maybe rename the check-id)
     else:
         yield PASS, "Font designer field is not empty."
 

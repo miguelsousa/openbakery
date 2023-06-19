@@ -1,4 +1,4 @@
-from openbakery.callable import check, disable
+from openbakery.callable import check
 from openbakery.status import FAIL, PASS, WARN, INFO, SKIP
 from openbakery.message import Message
 from openbakery.constants import (
@@ -9,9 +9,7 @@ from openbakery.constants import (
 )
 
 # used to inform get_module_profile whether and how to create a profile
-from openbakery.fonts_profile import (
-    profile_factory,
-)  # NOQA pylint: disable=unused-import
+from openbakery.fonts_profile import profile_factory  # noqa:F401 pylint:disable=W0611
 
 profile_imports = [(".shared_conditions", ("glyph_metrics_stats", "is_ttf", "is_cff"))]
 
@@ -144,7 +142,7 @@ def PANOSE_expected(family_type):
 
         Requirements for monospace fonts:
 
-        * post.isFixedPitch - "Set to 0 if the font is proportionally spaced, 
+        * post.isFixedPitch - "Set to 0 if the font is proportionally spaced,
           non-zero if the font is not proportionally spaced (monospaced)"
           (https://www.microsoft.com/typography/otspec/post.htm)
 
@@ -160,7 +158,7 @@ def PANOSE_expected(family_type):
           describes up to sixteen variations. Windows uses bFamilyType, bSerifStyle
           and bProportion in the font mapper to determine family type. It also uses
           bProportion to determine if the font is monospaced."
-          (https://www.microsoft.com/typography/otspec/os2.htm#pan 
+          (https://www.microsoft.com/typography/otspec/os2.htm#pan
            https://monotypecom-test.monotype.de/services/pan2)
 
         * OS/2.xAvgCharWidth must be set accurately.
@@ -172,11 +170,11 @@ def PANOSE_expected(family_type):
 
 
         Please also note:
-        
+
         Thomas Phinney told us that a few years ago (as of December 2019), if you gave
         a font a monospace flag in Panose, Microsoft Word would ignore the actual
         advance widths and treat it as monospaced.
-        
+
         Source: https://typedrawers.com/discussion/comment/45140/#Comment_45140
     """,
     proposal="legacy:check/033",
@@ -604,7 +602,7 @@ def com_adobe_fonts_check_name_postscript_name_consistency(ttFont):
     id="com.adobe.fonts/check/family/max_4_fonts_per_family_name",
     rationale="""
         Per the OpenType spec:
-        
+
         'The Font Family name [...] should be shared among at most four fonts that
         differ only in weight or style [...]'
     """,
@@ -649,16 +647,16 @@ def com_adobe_fonts_check_family_max_4_fonts_per_family_name(ttFonts):
             * "...many existing applications that use this pair of names assume that a
               Font Family name is shared by at most four fonts that form a font
               style-linking group"
-            * "For extended typographic families that includes fonts other than the 
+            * "For extended typographic families that includes fonts other than the
               four basic styles(regular, italic, bold, bold italic), it is strongly
-              recommended that name IDs 16 and 17 be used in fonts to create an extended,
-              typographic grouping."
-            * "If name ID 16 is absent, then name ID 1 is considered to be the typographic
-               family name."
+              recommended that name IDs 16 and 17 be used in fonts to create an
+              extended, typographic grouping."
+            * "If name ID 16 is absent, then name ID 1 is considered to be the
+              typographic family name."
 
         https://learn.microsoft.com/en-us/typography/opentype/spec/name
 
-        Fonts within a font family all must have consistent names 
+        Fonts within a font family all must have consistent names
         in the Typographic Family name (nameID 16)
         or Font Family name (nameID 1), depending on which it uses.
 
@@ -667,9 +665,10 @@ def com_adobe_fonts_check_family_max_4_fonts_per_family_name(ttFonts):
     """,
 )
 def com_adobe_fonts_check_consistent_font_family_name(ttFonts):
-    """Verify that family names in the name table are consistent across all fonts in the family.
-    Checks Typographic Family name (nameID 16) if present,
-    otherwise uses Font Family name (nameID 1)
+    """
+    Verify that family names in the name table are consistent across all fonts in the
+    family. Checks Typographic Family name (nameID 16) if present, otherwise uses Font
+    Family name (nameID 1)
     """
     from openbakery.utils import get_name_entry_strings
     from collections import defaultdict
@@ -754,7 +753,8 @@ def com_google_fonts_check_name_italic_names(ttFont, style):
         if subfamily_name not in ("Italic", "Bold Italic"):
             yield FAIL, Message(
                 "bad-subfamilyname",
-                f"Name ID 2 (Subfamily Name) does not conform to specs. Only R/I/B/BI are allowed.\n"
+                "Name ID 2 (Subfamily Name) does not conform to specs."
+                " Only R/I/B/BI are allowed.\n"
                 f"Got: '{subfamily_name}'.",
             )
             passed = False
@@ -764,8 +764,7 @@ def com_google_fonts_check_name_italic_names(ttFont, style):
             if "Italic" in get_name(NameID.TYPOGRAPHIC_FAMILY_NAME):
                 yield FAIL, Message(
                     "bad-typographicfamilyname",
-                    "Name ID 16 (Typographic Family Name)"
-                    " must not contain 'Italic'.",
+                    "Name ID 16 (Typographic Family Name) must not contain 'Italic'.",
                 )
                 passed = False
 

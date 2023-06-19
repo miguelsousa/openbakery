@@ -1,17 +1,17 @@
 from pathlib import Path
 import tempfile
+
 from openbakery.callable import check
+from openbakery.fonts_profile import profile_factory
 from openbakery.status import ERROR, FAIL, INFO, PASS, WARN
 from openbakery.section import Section
 from openbakery.message import Message
 
-# used to inform get_module_profile whether and how to create a profile
-from openbakery.fonts_profile import profile_factory
 from .shared_conditions import is_cff, is_variable_font
 
 
 try:
-    import lxml
+    from lxml import etree
 except ImportError:
     import sys
 
@@ -125,12 +125,12 @@ def com_google_fonts_check_fontvalidator(font, config):
         # contours because they are used to draw each portion
         # of variable glyph features.
         "Intersecting contours",
-        # DeltaFormat = 32768 (same as 0x8000) means VARIATION_INDEX,
-        # according to https://docs.microsoft.com/en-us/typography/opentype/spec/chapter2
+        # DeltaFormat = 32768 (same as 0x8000) means VARIATION_INDEX, according to
+        # https://docs.microsoft.com/en-us/typography/opentype/spec/chapter2
         # The FontVal problem description for this check (E5200) only mentions
         # the other values as possible valid ones. So apparently this means FontVal
-        # implementation is not up-to-date with more recent versions of the OpenType spec
-        # and that's why these spurious FAILs are being emitted.
+        # implementation is not up-to-date with more recent versions of the OpenType
+        # spec and that's why these spurious FAILs are being emitted.
         # That's good enough reason to mute it.
         # More info at:
         # https://github.com/googlefonts/fontbakery/issues/2109
@@ -219,8 +219,6 @@ def com_google_fonts_check_fontvalidator(font, config):
 
     grouped_msgs = {}
     with open(report_file, "rb") as xml_report:
-        from lxml import etree
-
         doc = etree.fromstring(xml_report.read())
         for report in doc.iterfind(".//Report"):
             msg = report.get("Message")
@@ -244,7 +242,8 @@ def com_google_fonts_check_fontvalidator(font, config):
             else:
                 if details not in grouped_msgs[msg]["details"]:
                     # avoid cluttering the output with tons of identical reports
-                    # yield INFO, 'grouped_msgs[msg]["details"]: {}'.format(grouped_msgs[msg]["details"])
+                    # yield INFO, 'grouped_msgs[msg]["details"]: {}'.format(
+                    # grouped_msgs[msg]["details"])
                     grouped_msgs[msg]["details"].append(details)
 
     # ---------------------------

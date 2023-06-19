@@ -5,9 +5,7 @@ from collections import Counter
 from openbakery.callable import condition
 
 # used to inform get_module_profile whether and how to create a profile
-from openbakery.fonts_profile import (
-    profile_factory,
-)  # NOQA pylint: disable=unused-import,cyclic-import
+from openbakery.fonts_profile import profile_factory  # noqa:F401 pylint:disable=W0611
 
 
 @condition
@@ -129,7 +127,8 @@ def sibling_directories(family_directory):
     smarter filesystem lookup procedures or even by letting the user feed explicit
     sibling family paths.
 
-    This function returs a list of paths to directories where related font files were detected.
+    This function returs a list of paths to directories where related font files were
+    detected.
     """
     SIBLING_SUFFIXES = ["sans", "sc", "narrow", "text", "display", "condensed"]
 
@@ -200,7 +199,7 @@ def ligatures(ttFont):
                                                 lig.Component
                                             )
         return all_ligatures
-    except:
+    except (AttributeError, IndexError):
         return -1  # Indicate fontTools-related crash...
 
 
@@ -222,7 +221,7 @@ def ligature_glyphs(ttFont):
                                         if lig.LigGlyph not in all_ligature_glyphs:
                                             all_ligature_glyphs.append(lig.LigGlyph)
         return all_ligature_glyphs
-    except:
+    except (AttributeError, IndexError):
         return -1  # Indicate fontTools-related crash...
 
 
@@ -604,7 +603,7 @@ def is_indic_font(ttFont):
 
 
 def keyword_in_full_font_name(ttFont, keyword):
-    from openbakery.constants import MacStyle, NameID
+    from openbakery.constants import NameID
 
     for entry in ttFont["name"].names:
         if (

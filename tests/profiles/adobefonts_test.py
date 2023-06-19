@@ -8,7 +8,7 @@ from fontTools.ttLib import TTFont
 from fontTools.ttLib.tables.otTables import AxisValueRecord
 from requests.exceptions import ConnectionError
 
-from openbakery.checkrunner import WARN, FAIL, PASS, SKIP
+from openbakery.status import WARN, FAIL, PASS, SKIP
 from openbakery.codetesting import (
     assert_PASS,
     assert_results_contain,
@@ -325,7 +325,7 @@ def test_check_override_varfont_valid_default_instance_nameids():
     """Check that overriden tests yield WARN instead of FAIL"""
     check = CheckTester(
         adobefonts_profile,
-        f"com.adobe.fonts/check/varfont/valid_default_instance_nameids{OVERRIDE_SUFFIX}",
+        f"com.adobe.fonts/check/varfont/valid_default_instance_nameids{OVERRIDE_SUFFIX}",  # noqa:E501 pylint:disable=C0301
     )
 
     ttFont_1 = TTFont(TEST_FILE("cabinvf/Cabin[wdth,wght].ttf"))

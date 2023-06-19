@@ -1,7 +1,7 @@
 import os
+
 from openbakery.reporters.serialize import SerializeReporter
 from openbakery.utils import html5_collapsible
-from openbakery.checkrunner import Status
 from openbakery import __version__ as version
 
 LOGLEVELS = ["ERROR", "FAIL", "WARN", "SKIP", "INFO", "PASS", "DEBUG"]
@@ -38,7 +38,7 @@ class GHMarkdownReporter(SerializeReporter):
             return ""
 
     def render_rationale(self, check, checkid):
-        if self.succinct or not "rationale" in check:
+        if self.succinct or "rationale" not in check:
             return ""
 
         from openbakery.utils import unindent_and_unwrap_rationale
@@ -153,13 +153,13 @@ class GHMarkdownReporter(SerializeReporter):
                     ""
                 ).format(*[data["result"][k] for k in LOGLEVELS])
                 + (
-                    "| {:.0f}% | {:.0f}% | {:.0f}% | {:.0f}% | {:.0f}% | {:.0f}% | {:.0f}% |\n"
+                    "| {:.0f}% | {:.0f}% | {:.0f}% | {:.0f}% | {:.0f}% | {:.0f}% | {:.0f}% |\n"  # noqa:E501 pylint:disable=C0301
                     ""
                 ).format(*[100 * data["result"][k] / num_checks for k in LOGLEVELS])
             )
             md += "\n" + summary_table
 
-        omitted = [l for l in LOGLEVELS if self.omit_loglevel(l)]
+        omitted = [loglvl for loglvl in LOGLEVELS if self.omit_loglevel(loglvl)]
         if omitted:
             md += (
                 "\n"

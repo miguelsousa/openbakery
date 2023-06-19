@@ -1,11 +1,9 @@
 from openbakery.callable import check
-from openbakery.status import FAIL, PASS, WARN
+from openbakery.status import FAIL, PASS
 from openbakery.message import Message
 
 # used to inform get_module_profile whether and how to create a profile
-from openbakery.fonts_profile import (
-    profile_factory,
-)  # NOQA pylint: disable=unused-import
+from openbakery.fonts_profile import profile_factory  # noqa:F401 pylint:disable=W0611
 
 profile_imports = [(".shared_conditions", ("glyph_metrics_stats", "is_ttf"))]
 
@@ -53,7 +51,8 @@ def com_google_fonts_check_maxadvancewidth(ttFont):
 
         For Italic fonts, you can set hhea.caretSlopeRise to head.unitsPerEm
         and calculate hhea.caretSlopeRun like this:
-        round(math.tan(math.radians(-1 * font["post"].italicAngle)) * font["head"].unitsPerEm)
+        round(math.tan(
+          math.radians(-1 * font["post"].italicAngle)) * font["head"].unitsPerEm)
 
         This check allows for a 0.1° rounding difference between the Italic angle
         as calculated by the caret slope and post.italicAngle

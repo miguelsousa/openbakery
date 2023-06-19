@@ -2,7 +2,7 @@ import io
 
 from fontTools.ttLib import TTFont
 
-from openbakery.checkrunner import WARN, FAIL
+from openbakery.status import WARN, FAIL
 from openbakery.codetesting import (
     assert_PASS,
     assert_results_contain,
@@ -52,7 +52,9 @@ def test_check_points_out_of_bounds():
 
 
 def test_check_glyf_non_transformed_duplicate_components():
-    """Check glyphs do not have duplicate components which have the same x,y coordinates."""
+    """
+    Check glyphs do not have duplicate components which have the same x,y coordinates.
+    """
     check = CheckTester(
         opentype_profile,
         "com.google.fonts/check/glyf_non_transformed_duplicate_components",

@@ -2,23 +2,25 @@
 # usage:
 # $ openbakery check-profile openbakery.profiles.googlefonts -h
 import argparse
+from collections import OrderedDict
 from importlib import import_module
 import os
 import sys
-from collections import OrderedDict
 
 from openbakery.checkrunner import (
-    distribute_generator,
     CheckRunner,
+    distribute_generator,
     get_module_from_file,
+)
+from openbakery.status import (
     DEBUG,
-    INFO,
-    WARN,
     ERROR,
-    SKIP,
-    PASS,
     FAIL,
+    INFO,
+    PASS,
     SECTIONSUMMARY,
+    SKIP,
+    WARN,
 )
 from openbakery.configuration import Configuration
 from openbakery.profile import Profile, get_module_profile

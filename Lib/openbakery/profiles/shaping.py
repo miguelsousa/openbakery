@@ -14,21 +14,21 @@
 # limitations under the License.
 
 import json
-import sys
-import textwrap
 from difflib import ndiff
 from pathlib import Path
-from openbakery.callable import check, condition
-from openbakery.checkrunner import FAIL, PASS, SKIP, WARN
+from os.path import basename, relpath
+
+from collidoscope import Collidoscope
+from fontTools.unicodedata import ot_tag_to_script
+from stringbrewer import StringBrewer
+from ufo2ft.constants import INDIC_SCRIPTS, USE_SCRIPTS
+from vharfbuzz import Vharfbuzz, FakeBuffer
+
+from openbakery.callable import check
+from openbakery.status import FAIL, PASS, SKIP, WARN
 from openbakery.fonts_profile import profile_factory
 from openbakery.message import Message
 from openbakery.section import Section
-from fontTools.unicodedata import ot_tag_to_script
-from ufo2ft.constants import INDIC_SCRIPTS, USE_SCRIPTS
-from vharfbuzz import Vharfbuzz, FakeBuffer
-from os.path import basename, relpath
-from stringbrewer import StringBrewer
-from collidoscope import Collidoscope
 
 shaping_basedir = Path("qa", "shaping_tests")
 
@@ -194,7 +194,7 @@ def run_a_set_of_shaping_tests(
             if not test_filter(test, configuration):
                 continue
 
-            if not "input" in test:
+            if "input" not in test:
                 yield FAIL, Message(
                     "shaping-missing-input",
                     f"{shaping_file}: test is missing an input key.",
@@ -241,7 +241,7 @@ def run_a_set_of_shaping_tests(
         that the rules are behaving as designed. This checks runs a shaping test
         suite and compares expected shaping against actual shaping, reporting
         any differences.
-        
+
         Shaping test suites should be written by the font engineer and referenced
         in the OpenBakery configuration file. For more information about write
         shaping test files and how to configure OpenBakery to read the shaping
@@ -314,7 +314,7 @@ def generate_shaping_regression_report(vharfbuzz, shaping_file, failed_shaping_t
         that the rules are behaving as designed. This checks runs a shaping test
         suite and reports if any glyphs are generated in the shaping which should
         not be produced. (For example, .notdef glyphs, visible viramas, etc.)
-        
+
         Shaping test suites should be written by the font engineer and referenced in
         the OpenBakery configuration file. For more information about write shaping
         test files and how to configure OpenBakery to read the shaping test suites,
@@ -378,7 +378,7 @@ def forbidden_glyph_test_results(vharfbuzz, shaping_file, failed_shaping_tests):
         Fonts with complex layout rules can benefit from regression tests to ensure
         that the rules are behaving as designed. This checks runs a shaping test
         suite and reports instances where the glyphs collide in unexpected ways.
-        
+
         Shaping test suites should be written by the font engineer and referenced
         in the OpenBakery configuration file. For more information about write
         shaping test files and how to configure OpenBakery to read the shaping
@@ -599,8 +599,9 @@ def com_google_fonts_check_soft_dotted(ttFont):
 
     # Soft dotted strings know to be used in orthographies.
     ortho_soft_dotted_strings = set(
-        "i̋ i̍ i᷆ i᷇ i̓ i̊ i̐ ɨ́ ɨ̀ ɨ̂ ɨ̋ ɨ̏ ɨ̌ ɨ̄ ɨ̃ ɨ̈ ɨ̧́ ɨ̧̀ ɨ̧̂ ɨ̧̌ ɨ̱́ ɨ̱̀ ɨ̱̈ į́ į̀ į̂ į̄ į̄́ į̄̀ į̄̂ į̄̌ į̃ į̌ ị́ ị̀ ị̂ "
-        "ị̄ ị̃ ḭ́ ḭ̀ ḭ̄ j́ j̀ j̄ j̑ j̃ j̈ і́".split()
+        "i̋ i̍ i᷆ i᷇ i̓ i̊ i̐ ɨ́ ɨ̀ ɨ̂ ɨ̋ ɨ̏ ɨ̌ ɨ̄ ɨ̃ ɨ̈ ɨ̧́ ɨ̧̀ ɨ̧̂ ɨ̧̌ ɨ̱́ ɨ̱̀ ɨ̱̈ "
+        "į́ į̀ į̂ į̄ į̄́ į̄̀ į̄̂ į̄̌ į̃ į̌ ị́ ị̀ ị̂ ị̄ ị̃ ḭ́ ḭ̀ ḭ̄ j́ j̀ j̄ j̑ j̃ "
+        "j̈ і́".split()
     )
     # Characters with Soft_Dotted property in Unicode.
     soft_dotted_chars = set(

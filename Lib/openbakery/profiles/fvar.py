@@ -1,12 +1,10 @@
 from openbakery.callable import check
+from openbakery.constants import REGISTERED_AXIS_TAGS
 from openbakery.status import FAIL, PASS, WARN
 from openbakery.message import Message
 
 # used to inform get_module_profile whether and how to create a profile
-from openbakery.fonts_profile import (
-    profile_factory,
-)  # NOQA pylint: disable=unused-import
-from openbakery.constants import REGISTERED_AXIS_TAGS
+from openbakery.fonts_profile import profile_factory  # noqa:F401 pylint:disable=W0611
 
 profile_imports = ((".", ("shared_conditions",)),)
 
@@ -55,7 +53,10 @@ def com_google_fonts_check_varfont_regular_wght_coord(ttFont, regular_wght_coord
     proposal="https://github.com/googlefonts/fontbakery/issues/1707",
 )
 def com_google_fonts_check_varfont_regular_wdth_coord(ttFont, regular_wdth_coord):
-    """The variable font 'wdth' (Width) axis coordinate must be 100 on the 'Regular' instance."""
+    """
+    The variable font 'wdth' (Width) axis coordinate must be 100 on the 'Regular'
+    instance.
+    """
 
     if regular_wdth_coord is None:
         yield FAIL, Message("no-regular-instance", '"Regular" instance not present.')
@@ -84,7 +85,10 @@ def com_google_fonts_check_varfont_regular_wdth_coord(ttFont, regular_wdth_coord
     proposal="https://github.com/googlefonts/fontbakery/issues/1707",
 )
 def com_google_fonts_check_varfont_regular_slnt_coord(ttFont, regular_slnt_coord):
-    """The variable font 'slnt' (Slant) axis coordinate must be zero on the 'Regular' instance."""
+    """
+    The variable font 'slnt' (Slant) axis coordinate must be zero on the 'Regular'
+    instance.
+    """
 
     if regular_slnt_coord is None:
         yield FAIL, Message("no-regular-instance", '"Regular" instance not present.')
@@ -113,7 +117,10 @@ def com_google_fonts_check_varfont_regular_slnt_coord(ttFont, regular_slnt_coord
     proposal="https://github.com/googlefonts/fontbakery/issues/1707",
 )
 def com_google_fonts_check_varfont_regular_ital_coord(ttFont, regular_ital_coord):
-    """The variable font 'ital' (Italic) axis coordinate must be zero on the 'Regular' instance."""
+    """
+    The variable font 'ital' (Italic) axis coordinate must be zero on the 'Regular'
+    instance.
+    """
 
     if regular_ital_coord is None:
         yield FAIL, Message("no-regular-instance", '"Regular" instance not present.')
@@ -143,7 +150,10 @@ def com_google_fonts_check_varfont_regular_ital_coord(ttFont, regular_ital_coord
     proposal="https://github.com/googlefonts/fontbakery/issues/1707",
 )
 def com_google_fonts_check_varfont_regular_opsz_coord(ttFont, regular_opsz_coord):
-    """The variable font 'opsz' (Optical Size) axis coordinate should be between 10 and 16 on the 'Regular' instance."""
+    """
+    The variable font 'opsz' (Optical Size) axis coordinate should be between 10 and 16
+    on the 'Regular' instance.
+    """
 
     if regular_opsz_coord is None:
         yield FAIL, Message("no-regular-instance", '"Regular" instance not present.')
@@ -176,7 +186,10 @@ def com_google_fonts_check_varfont_regular_opsz_coord(ttFont, regular_opsz_coord
     proposal="https://github.com/googlefonts/fontbakery/issues/1707",
 )
 def com_google_fonts_check_varfont_bold_wght_coord(ttFont, bold_wght_coord):
-    """The variable font 'wght' (Weight) axis coordinate must be 700 on the 'Bold' instance."""
+    """
+    The variable font 'wght' (Weight) axis coordinate must be 700 on the 'Bold'
+    instance.
+    """
 
     if bold_wght_coord is None:
         yield FAIL, Message("no-bold-instance", '"Bold" instance not present.')
@@ -231,7 +244,8 @@ def com_google_fonts_check_varfont_wght_valid_range(ttFont):
         registered design-variation tag 'wdth' available at
         https://docs.microsoft.com/en-gb/typography/opentype/spec/dvaraxistag_wdth
 
-        On the 'wdth' (Width) axis, the valid numeric range is strictly greater than zero.
+        On the 'wdth' (Width) axis, the valid numeric range is strictly greater than
+        zero.
     """,
     conditions=["is_variable_font", "has_wdth_axis"],
     proposal="https://github.com/googlefonts/fontbakery/pull/2520",
@@ -605,7 +619,7 @@ def com_adobe_fonts_check_varfont_distinct_instance_records(ttFont, has_name_tab
 @check(
     id="com.adobe.fonts/check/varfont/foundry_defined_tag_name",
     rationale="""
-        According to the Open-Type spec's syntactic requirements for 
+        According to the Open-Type spec's syntactic requirements for
         foundry-defined design-variation axis tags available at
         https://learn.microsoft.com/en-us/typography/opentype/spec/dvaraxisreg
 

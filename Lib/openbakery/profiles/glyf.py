@@ -1,13 +1,11 @@
+from fontTools.ttLib import TTLibError
+
 from openbakery.message import Message
 from openbakery.callable import check
 from openbakery.status import FAIL, PASS, WARN
 
 # used to inform get_module_profile whether and how to create a profile
-from openbakery.fonts_profile import (
-    profile_factory,
-)  # NOQA pylint: disable=unused-import
-
-import fontTools.ttLib
+from openbakery.fonts_profile import profile_factory  # noqa:F401 pylint:disable=W0611
 
 
 @check(
@@ -34,7 +32,7 @@ def com_google_fonts_check_glyf_unused_data(ttFont):
             yield PASS, "There is no unused data at the end of the glyf table."
         else:
             raise Exception("Bug: fontTools did not raise an expected exception.")
-    except fontTools.ttLib.TTLibError as error:
+    except TTLibError as error:
         if "not enough 'glyf' table data" in format(error):
             yield FAIL, Message(
                 "missing-data",
@@ -106,7 +104,9 @@ def com_google_fonts_check_points_out_of_bounds(ttFont, config):
     proposal="https://github.com/googlefonts/fontbakery/pull/2709",
 )
 def com_google_fonts_check_glyf_non_transformed_duplicate_components(ttFont, config):
-    """Check glyphs do not have duplicate components which have the same x,y coordinates."""
+    """
+    Check glyphs do not have duplicate components which have the same x,y coordinates.
+    """
     from openbakery.utils import pretty_print_list
 
     failed = []

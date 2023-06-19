@@ -6,39 +6,5 @@ show_source = false
 select = E,F,W
 extend-exclude = *_pb2.py
 extend-ignore =
-    # whitespace before ','
-    E203,
-    # inline comment should start with '# '
-    E262,
-    # block comment should start with '# '
-    E265,
-    # too many leading '#' for block comment
-    E266,
-    # module level import not at top of file
-    E402,
-    # line too long
-    E501,
-    # comparison to None should be 'if cond is None
-    E711,
-    # comparison to True should be 'if cond is True:' or 'if cond:'
-    E712,
-    # test for membership should be 'not in'
-    E713,
-    # do not use bare 'except'
-    E722,
-    # ambiguous variable name
-    E741,
-    # '<module>' imported but unused
-    F401,
-    # 'from <module> import *' used; unable to detect undefined names
-    F403,
-    # '<name>' may be undefined, or defined from star imports
-    F405,
-    # f-string is missing placeholders
-    F541,
-    # trailing whitespace
-    W291,
-    # blank line contains whitespace
-    W293,
     # line break before binary operator
     W503,

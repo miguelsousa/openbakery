@@ -15,7 +15,8 @@
 #
 import defcon
 
-from openbakery.checkrunner import CheckRunner, PASS, DEBUG, ERROR, SKIP
+from openbakery.checkrunner import CheckRunner
+from openbakery.status import PASS, DEBUG, ERROR, SKIP
 from openbakery.configuration import Configuration
 from openbakery.message import Message
 from openbakery.profile import Profile, get_module_profile
@@ -64,7 +65,8 @@ class CheckTester:
             for name_key, value in condition_overrides.items():
                 if isinstance(name_key, str):
                     # this is a simplified form of a cache key:
-                    # write the conditions directly to the iterargs of the check identity
+                    # write the conditions directly to the iterargs
+                    # of the check identity
                     used_iterargs = self.runner._filter_condition_used_iterargs(
                         name_key, self.check_iterargs
                     )

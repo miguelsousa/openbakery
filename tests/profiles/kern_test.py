@@ -1,7 +1,7 @@
 from fontTools.ttLib import TTFont, newTable
 from fontTools.ttLib.tables._k_e_r_n import KernTable_format_0, KernTable_format_unkown
 
-from openbakery.checkrunner import INFO, FAIL, WARN
+from openbakery.status import INFO, FAIL, WARN
 from openbakery.codetesting import (
     assert_PASS,
     assert_results_contain,

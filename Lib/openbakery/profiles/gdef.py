@@ -1,11 +1,9 @@
 from openbakery.callable import check
-from openbakery.status import FAIL, PASS, WARN, SKIP
+from openbakery.status import PASS, WARN, SKIP
 from openbakery.message import Message
 
 # used to inform get_module_profile whether and how to create a profile
-from openbakery.fonts_profile import (
-    profile_factory,
-)  # NOQA pylint: disable=unused-import
+from openbakery.fonts_profile import profile_factory  # noqa:F401 pylint:disable=W0611
 
 
 def _is_non_spacing_mark_char(charcode):
@@ -35,7 +33,7 @@ def _get_mark_class_glyphnames(ttFont):
     id="com.google.fonts/check/gdef_spacing_marks",
     rationale="""
         Glyphs in the GDEF mark glyph class should be non-spacing.
-        
+
         Spacing glyphs in the GDEF mark glyph class may have incorrect anchor
         positioning that was only intended for building composite glyphs during design.
     """,

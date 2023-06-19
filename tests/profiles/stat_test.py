@@ -1,13 +1,12 @@
 from fontTools.ttLib import TTFont
 from fontTools.ttLib.tables.otTables import AxisValueRecord
 
-from openbakery.checkrunner import FAIL, SKIP, WARN
+from openbakery.status import FAIL, SKIP, WARN
 from openbakery.codetesting import (
     assert_PASS,
     assert_results_contain,
     CheckTester,
     TEST_FILE,
-    portable_path,
 )
 from openbakery.profiles import opentype as opentype_profile
 

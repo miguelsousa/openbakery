@@ -6,7 +6,7 @@ import fontTools.ttLib
 from fontTools.ttLib import TTFont
 import fontTools.subset
 
-from openbakery.checkrunner import INFO, WARN, FAIL, PASS
+from openbakery.status import INFO, WARN, FAIL, PASS
 from openbakery.codetesting import (
     assert_PASS,
     assert_SKIP,

@@ -16,9 +16,11 @@
 import os
 import subprocess
 import sys
-
-from fontTools.ttLib import TTFont
 from typing import Text, Optional
+
+from fontTools.pens.basePen import BasePen
+from fontTools.ttLib import TTFont
+
 from openbakery.constants import NO_COLORS_THEME, DARK_THEME, LIGHT_THEME
 
 
@@ -142,7 +144,7 @@ def get_theme(args):
         # terminal app. Default to the light-theme only if we're sure that the terminal
         # app is Apple's Terminal and its background color is indeed white.
         return LIGHT_THEME if apple_terminal_bg_is_white() else DARK_THEME
-    # For orther systems like GNU+Linux and Windows, a dark terminal seems to be more common.
+    # For orther systems like GNU+Linux and Windows, a dark terminal may be more common.
     return DARK_THEME
 
 
@@ -366,7 +368,7 @@ def get_font_glyph_data(font):
             subtable = font["cmap"].tables[0]
 
         cmap = subtable.cmap
-    except:
+    except (AttributeError, IndexError):
         return None
 
     cmap_reversed = dict(zip(cmap.values(), cmap.keys()))
@@ -644,9 +646,6 @@ def axis(ttFont, tag):
     for axis in ttFont["fvar"].axes:
         if axis.axisTag == tag:
             return axis
-
-
-from fontTools.pens.basePen import BasePen
 
 
 class PointsPen(BasePen):

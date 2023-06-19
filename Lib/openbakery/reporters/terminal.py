@@ -12,30 +12,32 @@ Domain specific knowledge should be encoded only in the Profile (Checks,
 Conditions) and MAYBE in *customized* reporters e.g. subclasses.
 
 """
-import sys
-import os
-import subprocess
+import builtins  # using this to override print function somewhere
 from collections import Counter
 from functools import partial
-import builtins  # using this to override print function somewhere
 from io import StringIO
+import os
+import re
+import subprocess
+import sys
 from time import time
 
+from openbakery.constants import LIGHT_THEME
 from openbakery.reporters import OpenBakeryReporter
-from openbakery.checkrunner import (  # NOQA
-    INFO,
-    WARN,
-    ERROR,
-    STARTCHECK,
-    SKIP,
-    PASS,
-    FAIL,
-    ENDCHECK,
-    SECTIONSUMMARY,
-    START,
-    END,
-    DEBUG,
+from openbakery.status import (
     Status,
+    DEBUG,
+    END,
+    ENDCHECK,
+    ERROR,
+    FAIL,
+    INFO,
+    PASS,
+    SECTIONSUMMARY,
+    SKIP,
+    START,
+    STARTCHECK,
+    WARN,
 )
 
 statuses = (
@@ -149,9 +151,6 @@ class ThrottledOut:
         self._last_flush_time = time()
 
 
-from openbakery.constants import LIGHT_THEME
-
-
 class TerminalProgress(OpenBakeryReporter):
     def __init__(
         self,
@@ -160,10 +159,9 @@ class TerminalProgress(OpenBakeryReporter):
         structure_threshold=None,
         theme=LIGHT_THEME,
         succinct=None,
-        cupcake=True
+        cupcake=True,
         # a tuple of structural statuses to be skipped
         # e.g. (SECTIONSUMMARY, )
-        ,
         skip_status_report=None,
         **kwd,
     ):
@@ -206,7 +204,8 @@ class TerminalProgress(OpenBakeryReporter):
         if text:
             self.stdout.write(text)
         elif self._print_progress:
-            # the empty string will change the ticks counter when self.stdout is a ThrottledOut
+            # the empty string will change the ticks counter
+            # when self.stdout is a ThrottledOut
             self.stdout.write("")
         status, _, _ = event
         if status == END and self._print_progress:
@@ -415,8 +414,6 @@ class TerminalReporter(TerminalProgress):
             self._collected_results[key][message.name] += 1
 
     def _render_event_sync(self, print, event):
-        import re
-
         status, msg, (section, check, iterargs) = event
 
         if (
@@ -535,7 +532,7 @@ class TerminalReporter(TerminalProgress):
 
             try:
                 message = f"{msg.message}\n" f"[code: {msg.code}]"
-            except:
+            except AttributeError:
                 message = str(msg)
 
             if hasattr(msg, "traceback"):
@@ -629,7 +626,7 @@ class TerminalReporter(TerminalProgress):
                 f"\n"
                 f"    If you get {formatStatus(self.theme, 'ERROR')}s,"
                 f" please help us improve the tool by reporting them at\n"
-                f"    {self.theme['url']('https://github.com/miguelsousa/openbakery/issues')}\n"
+                f"    {self.theme['url']('https://github.com/miguelsousa/openbakery/issues')}\n"  # noqa:E501 pylint:disable=C0301
                 f"\n"
                 f"    (but other kinds of bug reports and/or\n"
                 f"     feature requests are also always welcome, of course!)\n"
@@ -683,7 +680,6 @@ class TerminalReporter(TerminalProgress):
 def parse_md(md):
     from rich.console import Console
     from rich.markdown import Markdown
-    import re
 
     table_re = r"(^|[^|]\n)((?:^\|[^\n]*\|(?:\n|$))+)([^|]|$)"
     md = re.sub(r"\n([\r\t ]*\n)+", r"\n\n", md, flags=re.MULTILINE)
@@ -711,7 +707,6 @@ def parse_md_table(match, tables_memo):
     from rich.style import Style
     from rich.align import Align
     from rich import box
-    import re
 
     [table_header, table_body, columns] = split_md_table(match.group(2))
     b = box.Box("    \n    \n══╪═\n    \n┈┈┼┈\n┈┈┼┈\n    \n    ")
@@ -750,8 +745,6 @@ def parse_md_table(match, tables_memo):
 
 
 def map_md_table_align_col(cell):
-    import re
-
     if re.match(r"^\s*:-+:\s*$", cell):
         return "center"
     if re.match(r"^\s*-+:\s*$", cell):
@@ -760,8 +753,6 @@ def map_md_table_align_col(cell):
 
 
 def split_md_table(md_table):
-    import re
-
     md_table = re.sub(r"^\||\|$", "", md_table, flags=re.MULTILINE)
     table_header = []
     table_body = []

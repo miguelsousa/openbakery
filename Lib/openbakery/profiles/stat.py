@@ -1,13 +1,12 @@
-from openbakery.callable import check
-from openbakery.message import Message
-from openbakery.status import FAIL, PASS, INFO, WARN, SKIP
-from openbakery.utils import bullet_list
 import os
 
+from openbakery.callable import check
+from openbakery.message import Message
+from openbakery.status import FAIL, PASS, WARN, SKIP
+from openbakery.utils import bullet_list
+
 # used to inform get_module_profile whether and how to create a profile
-from openbakery.fonts_profile import (  # NOQA pylint: disable=unused-import
-    profile_factory,
-)
+from openbakery.fonts_profile import profile_factory  # noqa:F401 pylint:disable=W0611
 
 profile_imports = ((".", ("shared_conditions",)),)
 
@@ -191,7 +190,7 @@ def com_google_fonts_check_italic_axis_in_stat(fonts, config):
 
         for filepath in (upright, italic):
             ttFont = TTFont(filepath)
-            if not "ital" in [
+            if "ital" not in [
                 axis.AxisTag for axis in ttFont["STAT"].table.DesignAxisRecord.Axis
             ]:
                 passed = False

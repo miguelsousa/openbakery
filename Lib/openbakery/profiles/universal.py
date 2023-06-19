@@ -1,6 +1,8 @@
 import os
 import re
 
+from packaging.version import VERSION_PATTERN
+
 from openbakery.status import PASS, FAIL, WARN, INFO, SKIP
 from openbakery.section import Section
 from openbakery.callable import check, disable
@@ -8,8 +10,6 @@ from openbakery.message import Message
 from openbakery.fonts_profile import profile_factory
 from openbakery.profiles.opentype import OPENTYPE_PROFILE_CHECKS
 from openbakery.profiles.shaping import SHAPING_PROFILE_CHECKS
-
-from packaging.version import VERSION_PATTERN
 
 re_version = re.compile(r"^\s*" + VERSION_PATTERN + r"\s*$", re.VERBOSE | re.IGNORECASE)
 
@@ -1133,7 +1133,10 @@ def com_google_fonts_check_superfamily_list(superfamily):
     proposal="https://github.com/googlefonts/fontbakery/issues/1487",
 )
 def com_google_fonts_check_superfamily_vertical_metrics(superfamily_ttFonts):
-    """Each font in set of sibling families must have the same set of vertical metrics values."""
+    """
+    Each font in set of sibling families must have the same set of vertical metrics
+    values.
+    """
     if len(superfamily_ttFonts) < 2:
         yield SKIP, "Sibling families were not detected."
         return
@@ -1730,12 +1733,12 @@ def com_adobe_fonts_check_sfnt_version(ttFont, is_ttf, is_cff, is_cff2):
         If the space and nbspace glyphs have different widths, then Google Workspace
         has problems with the font.
 
-        The nbspace is used to replace the space character in multiple situations
-        in documents; such as the space before punctuation in languages that do that.
-        It avoids the punctuation to be separated from the last word and go to next line.
+        The nbspace is used to replace the space character in multiple situations in
+        documents; such as the space before punctuation in languages that do that. It
+        avoids the punctuation to be separated from the last word and go to next line.
 
-        This is automatic substitution by the text editors, not by fonts. It is also
-        used by designers in text composition practice to create nicely shaped paragraphs.
+        This is automatic substitution by the text editors, not by fonts. It's also used
+        by designers in text composition practice to create nicely shaped paragraphs.
         If the space and the nbspace are not the same width, it breaks the text
         composition of documents.
     """,
@@ -1809,10 +1812,10 @@ def com_google_fonts_check_iterpolation_issues(ttFont, config):
     names.append("()")
     for loc in sorted(locs, key=lambda v: (len(v), v)):
         names.append(str(loc))
-        l = {}
+        location = {}
         for tag, val in loc:
-            l[tag] = val
-        new_locs.append(l)
+            location[tag] = val
+        new_locs.append(location)
 
     locs = new_locs
     glyphsets = [ttFont.getGlyphSet(location=loc, normalized=True) for loc in locs]
@@ -1897,7 +1900,7 @@ def com_google_fonts_check_math_signs_width(ttFont):
     most_common_width = None
     num_glyphs = 0
     for glyph_width, glyph_names in glyphs_by_width.items():
-        if most_common_width == None:
+        if most_common_width is None:
             num_glyphs = len(glyph_names)
             most_common_width = glyph_width
         else:
@@ -1966,7 +1969,7 @@ def com_google_fonts_check_linegaps(ttFont):
         Adobe feature syntax allows for the definition of a STAT table. Fonts built
         with a hand-coded STAT table in feature syntax may be built either as static
         or variable, but will end up with the same STAT table.
-        
+
         This is a problem, because a STAT table which works on variable fonts
         will not be appropriate for static instances. The examples in the OpenType spec
         of non-variable fonts with a STAT table show that the table entries must be
