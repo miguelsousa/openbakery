@@ -1,9 +1,10 @@
 from pathlib import Path
+import shutil
 import tempfile
 
 from openbakery.callable import check
 from openbakery.fonts_profile import profile_factory
-from openbakery.status import ERROR, FAIL, INFO, PASS, WARN
+from openbakery.status import FAIL, INFO, PASS, WARN
 from openbakery.section import Section
 from openbakery.message import Message
 from openbakery.utils import exit_with_install_instructions
@@ -33,6 +34,13 @@ def com_google_fonts_check_fontvalidator(font, config):
             "The check config must contain either enabled_checks or "
             "disabled_checks, but not both."
         )
+
+    if not shutil.which("FontValidator"):
+        yield FAIL, Message(
+            "fontval-not-available",
+            "Mono runtime and/or Microsoft Font Validator" " are not available!",
+        )
+        return
 
     # In some cases we want to override the severity level of
     # certain checks in FontValidator:
@@ -177,12 +185,6 @@ def com_google_fonts_check_fontvalidator(font, config):
                 " Output follows :\n\n{}\n"
             ).format("\n".join(filtered_output)),
         )
-    except (OSError, IOError) as error:
-        yield ERROR, Message(
-            "fontval-not-available",
-            "Mono runtime and/or Microsoft Font Validator" " are not available!",
-        )
-        raise error
 
     def report_message(msg, details):
         if details:
