@@ -3,7 +3,7 @@ from openbakery.status import ERROR, FAIL, PASS, WARN
 from openbakery.section import Section
 from openbakery.message import Message
 from openbakery.fonts_profile import profile_factory
-
+from openbakery.utils import exit_with_install_instructions
 
 profile = profile_factory(default_section=Section("UFO Sources"))
 
@@ -23,9 +23,12 @@ UFO_PROFILE_CHECKS = [
 def ufo_font(ufo):
     try:
         import defcon
+        from fontTools.ufoLib.errors import UFOLibError
 
         return defcon.Font(ufo)
-    except Exception:
+    except ImportError:
+        exit_with_install_instructions("ufo-sources")
+    except UFOLibError:
         return None
 
 

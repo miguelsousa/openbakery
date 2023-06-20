@@ -24,6 +24,14 @@ from fontTools.ttLib import TTFont
 from openbakery.constants import NO_COLORS_THEME, DARK_THEME, LIGHT_THEME
 
 
+def exit_with_install_instructions(extras_name):
+    sys.exit(
+        f"\nTo run the {extras_name} profile, one needs to install\n"
+        f"openbakery with the '{extras_name}' extra, like this:\n\n"
+        f"    python -m pip install -U 'openbakery[{extras_name}]'\n\n"
+    )
+
+
 # TODO: this should be part of OpenBakeryCheck and check.conditions
 # should be a tuple (negated, name)
 def is_negated(name):
