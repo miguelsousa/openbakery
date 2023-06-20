@@ -22,9 +22,8 @@ except IOError:
     readme = ""
 
 
-BEZIERS_VERSION = ">=0.5.0"
 FONTTOOLS_VERSION = ">=4.39.0"  # Python 3.8+ required
-UFO2FT_VERSION = ">=2.25.2"
+UFO2FT_VERSION = ">=2.25.2"  # 2.25.2 updated the script lists for Unicode 14.0
 
 # Profile-specific dependencies:
 ufo_sources_extras = [
@@ -40,7 +39,7 @@ googlefonts_extras = [
     "dehinter>=3.1.0",  # 3.1.0 added dehinter.font.hint function
     "font-v",
     f"fontTools[lxml,unicode]{FONTTOOLS_VERSION}",
-    "gflanguages>=0.3.0",  # There was an api simplification/update on v0.3.0
+    "gflanguages>=0.3.0",  # 0.3.0 had an api simplification/update
     # (see https://github.com/googlefonts/gflanguages/pull/7)
     "glyphsets>=0.5.0",
     "protobuf>=3.7.0, <4",  # 3.7.0 fixed a bug on parsing some METADATA.pb files.
@@ -49,7 +48,6 @@ googlefonts_extras = [
 ] + ufo_sources_extras
 
 iso15008_extras = [
-    f"beziers{BEZIERS_VERSION}",
     "uharfbuzz",
 ]
 
@@ -114,37 +112,42 @@ setup(
         "setuptools_scm[toml]>=6.2",
     ],
     install_requires=[
-        # --- core dependencies
+        # ---
+        # core dependencies
         f"fontTools{FONTTOOLS_VERSION}",
         "freetype-py!=2.4.0",  # Avoiding 2.4.0 due to seg-fault described at
         # https://github.com/googlefonts/fontbakery/issues/4143
-        "munkres",  # For interpolation compatibility checking (fontTools dependency)
         "opentypespec",
         "opentype-sanitizer>=7.1.9",  # 7.1.9 fixes caret value format = 3 bug
         # (see https://github.com/khaledhosny/ots/pull/182)
-        #
-        # --- for parsing Configuration files
+        # ---
+        # fontTools extra that is needed by 'interpolation_issues' check in
+        # Universal profile
+        "munkres",
+        # ---
+        # for parsing Configuration files (Lib/openbakery/configuration.py)
         "PyYAML",
         "toml",
-        #
-        # --- used by Reporters
-        "cmarkgfm",
-        "rich",
-        #
-        # --- for checking OpenBakery's version
-        "packaging",  # Universal profile
-        "pip-api",  # Universal profile
-        "requests",  # Universal & googlefonts profiles
+        # ---
+        # used by Reporters (Lib/openbakery/reporters)
+        "cmarkgfm",  # (html.py)
+        "rich",  # (terminal.py)
+        # ---
+        # used by 'openbakery_version' check in Universal profile
+        "packaging",
+        "pip-api",
+        "requests",  # also used by Google Fonts profile
+        # ---
+        # used by 'italic_angle' check in OpenType profile ('post' table);
+        # also used by ISO 15008 profile
+        "beziers>=0.5.0",  # 0.5.0 uses new fontTools glyph outline access
         #
         # TODO: Try to split the packages below into feature-specific extras.
-        f"beziers{BEZIERS_VERSION}",  # Opentype, Shaping (& Universal) profiles
-        # Uses new fontTools glyph outline access
         "collidoscope>=0.5.2",  # Shaping (& Universal) profiles
         # 0.5.1 did not yet support python 3.11
         # (see https://github.com/googlefonts/fontbakery/issues/3970)
         "stringbrewer",  # Shaping (& Universal) profiles
         f"ufo2ft{UFO2FT_VERSION}",  # Shaping
-        # 2.25.2 updated the script lists for Unicode 14.0
         "vharfbuzz>=0.2.0",  # Googlefonts, Shaping (& Universal) profiles
         # v0.2.0 had an API update
     ],
