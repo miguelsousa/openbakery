@@ -9,6 +9,7 @@ from openbakery.constants import (
     UnicodeEncodingID,
     WindowsLanguageID,
 )
+from openbakery.utils import exit_with_install_instructions
 
 # used to inform get_module_profile whether and how to create a profile
 from openbakery.fonts_profile import profile_factory  # noqa:F401 pylint:disable=W0611
@@ -183,14 +184,7 @@ def family_metadata(metadata_file):
     try:
         from google.protobuf import text_format
     except ImportError:
-        import sys
-
-        sys.exit(
-            "\nTo run the googlefonts profile, one needs to install\n"
-            "openbakery with the 'fontval' extra, like this:\n"
-            "\n"
-            "python -m pip install -U 'openbakery[googlefonts]'\n\n"
-        )
+        exit_with_install_instructions("googlefonts")
 
     from openbakery.utils import get_FamilyProto_Message
 
