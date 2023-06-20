@@ -8,7 +8,8 @@ on:
       - '**.txt'
 
   pull_request:
-    types: [opened]
+    types:
+      - opened
     paths-ignore:
       - 'docs/**'
       - '**.md'
@@ -29,8 +30,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        python -m pip install -r testing-requirements.txt
-        python -m pip install -r requirements.txt
+        python -m pip install -r requirements.txt -r requirements-tests.txt
 
     - name: Run black, flake8, and pylint
       run: |
@@ -61,8 +61,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        python -m pip install -r testing-requirements.txt
-        python -m pip install -r requirements.txt
+        python -m pip install -r requirements.txt -r requirements-tests.txt
         python -m pip freeze --all
 
     - name: Install Font Bakery
