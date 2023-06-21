@@ -12,7 +12,7 @@ from openbakery.utils import exit_with_install_instructions
 from .shared_conditions import is_cff, is_variable_font
 
 try:
-    from lxml import etree
+    import lxml.etree
 except ImportError:
     exit_with_install_instructions("fontval")
 
@@ -213,7 +213,7 @@ def com_google_fonts_check_fontvalidator(font, config):
 
     grouped_msgs = {}
     with open(report_file, "rb") as xml_report:
-        doc = etree.fromstring(xml_report.read())
+        doc = lxml.etree.fromstring(xml_report.read())
         for report in doc.iterfind(".//Report"):
             msg = report.get("Message")
             details = report.get("Details")
