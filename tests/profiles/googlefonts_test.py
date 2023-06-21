@@ -1,9 +1,13 @@
 import math
 import os
 import shutil
+import sys
+from unittest.mock import patch
 
 import pytest
 from fontTools.ttLib import TTFont
+
+from conftest import ImportRaiser, remove_import_raiser
 
 from openbakery.profiles.googlefonts import can_shape
 from openbakery.profiles.googlefonts_conditions import expected_font_names
@@ -155,6 +159,32 @@ def test_example_checkrunner_based(cabin_regular_path):
             break
 
 
+def test_extra_needed_exit_from_conditions(monkeypatch):
+    module_name = "google.protobuf"
+    sys.meta_path.insert(0, ImportRaiser(module_name))
+    monkeypatch.delitem(sys.modules, module_name, raising=False)
+
+    with pytest.raises(SystemExit):
+        check = CheckTester(
+            googlefonts_profile, "com.google.fonts/check/metadata/unknown_designer"
+        )
+        font = TEST_FILE("merriweather/Merriweather.ttf")
+        check(font)
+
+    remove_import_raiser(module_name)
+
+
+@patch("axisregistry.build_filename", side_effect=ImportError)
+def test_extra_needed_exit(mock_import_error):
+    ttFont = TTFont(TEST_FILE("cabinvfbeta/Cabin-VF.ttf"))
+    with patch("sys.exit") as mock_exit:
+        check = CheckTester(
+            googlefonts_profile, "com.google.fonts/check/canonical_filename"
+        )
+        check(ttFont)
+        mock_exit.assert_called()
+
+
 @pytest.mark.parametrize(
     """fp,result""",
     [
@@ -177,20 +207,16 @@ def test_example_checkrunner_based(cabin_regular_path):
         (TEST_FILE("montserrat/Montserrat-ExtraBoldItalic.ttf"), PASS),
         (TEST_FILE("montserrat/Montserrat-BlackItalic.ttf"), PASS),
         (TEST_FILE("cabinvfbeta/CabinVFBeta-Italic[wght].ttf"), PASS),
-        (
-            TEST_FILE("cabinvfbeta/CabinVFBeta[wdth,wght].ttf"),
-            PASS,
-        ),  # axis tags are sorted
         (TEST_FILE("cabinvfbeta/CabinVFBeta.ttf"), FAIL),
         (TEST_FILE("cabinvfbeta/Cabin-Italic.ttf"), FAIL),
         (TEST_FILE("cabinvfbeta/Cabin-Roman.ttf"), FAIL),
         (TEST_FILE("cabinvfbeta/Cabin-Italic-VF.ttf"), FAIL),
         (TEST_FILE("cabinvfbeta/Cabin-Roman-VF.ttf"), FAIL),
         (TEST_FILE("cabinvfbeta/Cabin-VF.ttf"), FAIL),
-        (
-            TEST_FILE("cabinvfbeta/CabinVFBeta[wght,wdth].ttf"),
-            FAIL,
-        ),  # axis tags are NOT sorted here
+        # axis tags are sorted
+        (TEST_FILE("cabinvfbeta/CabinVFBeta[wdth,wght].ttf"), PASS),
+        # axis tags are NOT sorted
+        (TEST_FILE("cabinvfbeta/CabinVFBeta[wght,wdth].ttf"), FAIL),
     ],
 )
 def test_check_canonical_filename(fp, result):

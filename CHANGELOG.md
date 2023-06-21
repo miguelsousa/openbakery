@@ -13,6 +13,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
         python -m pip install -U 'openbakery[iso15008]'
 
+### Changed
+
+- `com.google.fonts/check/fontvalidator`: The check emitted an ERROR if FontValidator isn't installed. It now emits a FAIL (#30).
+
+### Fixed
+
+- `com.google.fonts/check/interpolation_issues`: The check ERRORed when ran on CFF2 variable fonts. The check is now SKIPped for such fonts because it depends on the presence of the `gvar` table, which only apply to TrueType variable fonts (#28).
+- `com.google.fonts/check/fontvalidator`: ERROR caused by attempting to run FontValidator before checking if it's installed (#30).
 
 ## [0.1.0] - 2023-06-11
 
