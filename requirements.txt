@@ -9,7 +9,7 @@ fontTools[ufo,lxml,unicode]==4.40.0
 font-v==2.1.0
 freetype-py==2.3.0  # pinned for now. See: https://github.com/googlefonts/fontbakery/issues/4143
 gflanguages==0.8.9
-glyphsets==0.6.1
+glyphsets==0.6.2
 lxml==4.9.2
 munkres==1.1.4
 opentype-sanitizer==9.1.0
