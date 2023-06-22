@@ -1,10 +1,11 @@
 # Workflow for building and deploying a Jekyll site to GitHub Pages
-name: Deploy Jekyll site to Pages
+name: Docs
 
 on:
   push:
     branches:
       - "main"
+      - "renovate**"
     paths:
       - "docs/**"
 
