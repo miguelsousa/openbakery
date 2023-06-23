@@ -18,6 +18,16 @@ def test_list_subcommands_option(capfd):
     assert captured.out == f"{os.linesep.join(SUBCOMMANDS)}{os.linesep}"
 
 
+def test_list_checks_option(capfd):
+    """Test if 'openbakery <subcommand> --list-checks' can run successfully and output
+    the expected content."""
+    from openbakery.profiles.universal import UNIVERSAL_PROFILE_CHECKS
+
+    subprocess.check_call([TOOL_NAME, "universal", "--list-checks"])
+    output = capfd.readouterr().out
+    assert set(output.split()) == set(UNIVERSAL_PROFILE_CHECKS)
+
+
 def test_command_check_googlefonts():
     """Test if 'openbakery googlefonts' can run successfully."""
     subprocess.check_call([TOOL_NAME, "googlefonts", "-h"])
