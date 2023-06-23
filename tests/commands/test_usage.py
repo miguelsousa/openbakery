@@ -13,7 +13,7 @@ def test_list_subcommands_option(capfd):
     the expected content."""
     from openbakery.cli import SUBCOMMANDS
 
-    subprocess.check_call([TOOL_NAME, "--list-subcommands"])
+    subprocess.run([TOOL_NAME, "--list-subcommands"], check=True)
     captured = capfd.readouterr()
     assert captured.out == f"{os.linesep.join(SUBCOMMANDS)}{os.linesep}"
 
@@ -23,25 +23,26 @@ def test_list_checks_option(capfd):
     the expected content."""
     from openbakery.profiles.universal import UNIVERSAL_PROFILE_CHECKS
 
-    subprocess.check_call([TOOL_NAME, "universal", "--list-checks"])
+    subprocess.run([TOOL_NAME, "universal", "--list-checks"], check=True)
     output = capfd.readouterr().out
     assert set(output.split()) == set(UNIVERSAL_PROFILE_CHECKS)
 
 
 def test_command_check_googlefonts():
     """Test if 'openbakery googlefonts' can run successfully."""
-    subprocess.check_call([TOOL_NAME, "googlefonts", "-h"])
-    subprocess.check_call(
+    subprocess.run([TOOL_NAME, "googlefonts", "-h"], check=True)
+    subprocess.run(
         [
             TOOL_NAME,
             "googlefonts",
             "-c",
             "com.google.fonts/check/canonical_filename",
             os.path.join("data", "test", "nunito", "Nunito-Regular.ttf"),
-        ]
+        ],
+        check=True,
     )
     with pytest.raises(subprocess.CalledProcessError):
-        subprocess.check_call([TOOL_NAME, "googlefonts"])
+        subprocess.run([TOOL_NAME, "googlefonts"], check=True)
 
 
 @pytest.mark.parametrize(
@@ -54,10 +55,16 @@ def test_command_check_googlefonts():
 )
 def test_command_check_profile(subcommand):
     """Test if 'openbakery <subcommand>' can run successfully."""
-    subprocess.check_call([TOOL_NAME, subcommand, "-h"])
+    subprocess.run([TOOL_NAME, subcommand, "-h"], check=True)
 
     with pytest.raises(subprocess.CalledProcessError):
-        subprocess.check_call([TOOL_NAME, subcommand])
+        subprocess.run([TOOL_NAME, subcommand], check=True)
+
+
+def test_tool_help():
+    """Test if just 'openbakery' command can run successfully."""
+    assert subprocess.run([TOOL_NAME, "-h"]).returncode == 0
+    assert subprocess.run([TOOL_NAME]).returncode == 0
 
 
 @pytest.mark.xfail(
