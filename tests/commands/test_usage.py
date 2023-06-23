@@ -15,7 +15,7 @@ def test_list_subcommands_option(capfd):
 
     subprocess.check_call([TOOL_NAME, "--list-subcommands"])
     captured = capfd.readouterr()
-    assert captured.out == "\n".join(SUBCOMMANDS) + "\n"
+    assert captured.out == f"{os.linesep.join(SUBCOMMANDS)}{os.linesep}"
 
 
 def test_command_check_googlefonts():
