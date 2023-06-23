@@ -15,12 +15,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Removed the `check-` prefix from most subcommands (#35). As an example, now the command for running the Universal profile checks is,
+
+        openbakery universal font.ttf
+
+  instead of `openbakery check-universal font.ttf`.
+
 - `com.google.fonts/check/fontvalidator`: The check emitted an ERROR if FontValidator isn't installed. It now emits a FAIL (#30).
 
 ### Fixed
 
 - `com.google.fonts/check/interpolation_issues`: The check ERRORed when ran on CFF2 variable fonts. The check is now SKIPped for such fonts because it depends on the presence of the `gvar` table, which only apply to TrueType variable fonts (#28).
 - `com.google.fonts/check/fontvalidator`: ERROR caused by attempting to run FontValidator before checking if it's installed (#30).
+- `-L`/`--list-checks` option that can be used with subcommands. Previously this option only worked if a path to an input file was also provided in the command line (#35).
 
 ## [0.1.0] - 2023-06-11
 

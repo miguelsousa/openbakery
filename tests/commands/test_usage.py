@@ -5,45 +5,66 @@ import tempfile
 
 import pytest
 
+TOOL_NAME = "openbakery"
 
-def test_list_subcommands_has_all_scripts():
-    """Tests if the output from running `openbakery --list-subcommands` matches
-    the openbakery scripts within the bin folder and the promoted profiles."""
-    import openbakery.commands
-    from openbakery.cli import CLI_PROFILES
 
-    commands_dir = os.path.dirname(openbakery.commands.__file__)
+def test_list_subcommands_option(capfd):
+    """Test if 'openbakery --list-subcommands' can run successfully and output
+    the expected content."""
+    from openbakery.cli import SUBCOMMANDS
 
-    scripts = [
-        f.rstrip(".py").replace("_", "-")
-        for f in os.listdir(commands_dir)
-        if (f.endswith(".py") and not f.startswith("_"))
-    ]
-    scripts = scripts + [("check-" + i).replace("_", "-") for i in CLI_PROFILES]
-    subcommands = (
-        subprocess.check_output(["openbakery", "--list-subcommands"]).decode().split()
-    )
-    assert sorted(scripts) == sorted(subcommands)
+    subprocess.run([TOOL_NAME, "--list-subcommands"], check=True)
+    captured = capfd.readouterr()
+    assert captured.out == f"{os.linesep.join(SUBCOMMANDS)}{os.linesep}"
+
+
+def test_list_checks_option(capfd):
+    """Test if 'openbakery <subcommand> --list-checks' can run successfully and output
+    the expected content."""
+    from openbakery.profiles.universal import UNIVERSAL_PROFILE_CHECKS
+
+    subprocess.run([TOOL_NAME, "universal", "--list-checks"], check=True)
+    output = capfd.readouterr().out
+    assert set(output.split()) == set(UNIVERSAL_PROFILE_CHECKS)
 
 
 def test_command_check_googlefonts():
-    """Test if `openbakery check-googlefonts` can run successfully`."""
-    subprocess.check_output(["openbakery", "check-googlefonts", "-h"])
-
-    test_font = os.path.join("data", "test", "nunito", "Nunito-Regular.ttf")
-
-    subprocess.check_output(
+    """Test if 'openbakery googlefonts' can run successfully."""
+    subprocess.run([TOOL_NAME, "googlefonts", "-h"], check=True)
+    subprocess.run(
         [
-            "openbakery",
-            "check-googlefonts",
+            TOOL_NAME,
+            "googlefonts",
             "-c",
             "com.google.fonts/check/canonical_filename",
-            test_font,
-        ]
+            os.path.join("data", "test", "nunito", "Nunito-Regular.ttf"),
+        ],
+        check=True,
     )
+    with pytest.raises(subprocess.CalledProcessError):
+        subprocess.run([TOOL_NAME, "googlefonts"], check=True)
+
+
+@pytest.mark.parametrize(
+    "subcommand",
+    [
+        "check-profile",
+        "opentype",
+        "ufo-sources",
+    ],
+)
+def test_command_check_profile(subcommand):
+    """Test if 'openbakery <subcommand>' can run successfully."""
+    subprocess.run([TOOL_NAME, subcommand, "-h"], check=True)
 
     with pytest.raises(subprocess.CalledProcessError):
-        subprocess.check_output(["openbakery", "check-googlefonts"])
+        subprocess.run([TOOL_NAME, subcommand], check=True)
+
+
+def test_tool_help():
+    """Test if just 'openbakery' command can run successfully."""
+    assert subprocess.run([TOOL_NAME, "-h"]).returncode == 0
+    assert subprocess.run([TOOL_NAME]).returncode == 0
 
 
 @pytest.mark.xfail(
@@ -54,17 +75,15 @@ def test_command_check_googlefonts():
 # Please, only remove the xfail mark once the test is more robust / future proof.
 def test_status_log_is_indented():
     """Test if statuses are printed in a limited boundary."""
-    test_font = os.path.join("data", "test", "nunito", "Nunito-Regular.ttf")
-
     result = subprocess.run(
         [
-            "openbakery",
-            "check-googlefonts",
+            TOOL_NAME,
+            "googlefonts",
             "-c",
             "old_ttfautohint",
             "-c",
             "font_copyright",
-            test_font,
+            os.path.join("data", "test", "nunito", "Nunito-Regular.ttf"),
         ],
         capture_output=True,
     )
@@ -92,30 +111,6 @@ def test_status_log_is_indented():
     )
 
 
-def test_command_check_profile():
-    """Test if `openbakery check-profile` can run successfully`."""
-    subprocess.check_output(["openbakery", "check-profile", "-h"])
-
-    with pytest.raises(subprocess.CalledProcessError):
-        subprocess.check_output(["openbakery", "check-profile"])
-
-
-def test_command_check_opentype():
-    """Test if `openbakery check-opentype` can run successfully`."""
-    subprocess.check_output(["openbakery", "check-opentype", "-h"])
-
-    with pytest.raises(subprocess.CalledProcessError):
-        subprocess.check_output(["openbakery", "check-opentype"])
-
-
-def test_command_check_ufo_sources():
-    """Test if `openbakery check-ufo-sources` can run successfully`."""
-    subprocess.check_output(["openbakery", "check-ufo-sources", "-h"])
-
-    with pytest.raises(subprocess.CalledProcessError):
-        subprocess.check_output(["openbakery", "check-ufo-sources"])
-
-
 def test_command_config_file():
     """Test if we can set checks using a config file."""
     config = tempfile.NamedTemporaryFile(delete=False)
@@ -123,7 +118,7 @@ def test_command_config_file():
     config.close()
     test_font = os.path.join("data", "test", "nunito", "Nunito-Regular.ttf")
     result = subprocess.run(
-        ["openbakery", "check-googlefonts", "--config", config.name, test_font],
+        [TOOL_NAME, "googlefonts", "--config", config.name, test_font],
         stdout=subprocess.PIPE,
     )
     stdout = result.stdout.decode()
@@ -145,7 +140,7 @@ OK = 123
     test_profile = os.path.join("tests", "profiles", "a_test_profile.py")
     result = subprocess.run(
         [
-            "openbakery",
+            TOOL_NAME,
             "check-profile",
             "-C",
             "--config",
@@ -175,7 +170,7 @@ explicit_checks:
     config.close()
     test_font = os.path.join("data", "test", "varfont", "inter", "Inter[slnt,wght].ttf")
     result = subprocess.run(
-        ["openbakery", "check-googlefonts", "-C", "--config", config.name, test_font],
+        [TOOL_NAME, "googlefonts", "-C", "--config", config.name, test_font],
         stdout=subprocess.PIPE,
     )
     stdout = result.stdout.decode()

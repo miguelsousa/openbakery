@@ -45,13 +45,13 @@ jobs:
 
     - name: Run Universal checks
       run: >-
-        openbakery check-universal
+        openbakery universal
         -x win_ascent_and_descent
         -x os2_metrics_match_hhea
         -x soft_dotted
         data/test/source-sans-pro/OTF/SourceSansPro-Regular.otf
         data/test/source-sans-pro/OTF/SourceSansPro-Italic.otf;
-        openbakery check-universal
+        openbakery universal
         -x win_ascent_and_descent
         -x os2_metrics_match_hhea
         -x fsselection
@@ -59,9 +59,16 @@ jobs:
         -x soft_dotted
         data/test/source-sans-pro/VAR/SourceSansVariable-Roman.ttf
 
+    - name: Run Universal check using 'check-profile'
+      run: >-
+        openbakery check-profile openbakery.profiles.universal
+        data/test/mada/Mada-Regular.ttf
+        --verbose
+        -c required_tables
+
     - name: Try running UFO Sources checks
       run: >-
-        openbakery check-ufo-sources --verbose data/test/test.ufo
+        openbakery ufo-sources --verbose data/test/test.ufo
         || exit 0
       shell: bash
 
@@ -71,8 +78,8 @@ jobs:
 
     - name: Run UFO Sources checks
       run: >-
-        openbakery check-ufo-sources --verbose data/test/test.ufo;
-        openbakery check-ufo-sources -x designspace_has_consistent
+        openbakery ufo-sources --verbose data/test/test.ufo;
+        openbakery ufo-sources -x designspace_has_consistent
         "data/test/stupidfont/Stupid Font.designspace"
 
     - name: Install `googlefonts` extra
@@ -81,7 +88,7 @@ jobs:
 
     - name: Run Google Fonts checks
       run: >-
-        openbakery check-googlefonts
+        openbakery googlefonts
         -c canonical_filename
         -c vendor_id
         -c glyph_coverage
