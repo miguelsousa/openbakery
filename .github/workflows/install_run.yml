@@ -39,6 +39,7 @@ jobs:
 
     - name: Install OpenBakery (no extras)
       run: |
+        python -m pip install --upgrade pip
         python -m pip install .
         openbakery -h
         openbakery --version
@@ -81,6 +82,14 @@ jobs:
         openbakery ufo-sources --verbose data/test/test.ufo;
         openbakery ufo-sources -x designspace_has_consistent
         "data/test/stupidfont/Stupid Font.designspace"
+
+    - name: Install `shaping` extra
+      run: |
+        python -m pip install '.[shaping]'
+
+    - name: Run Shaping checks
+      run: >-
+        openbakery shaping data/test/mada/Mada-Regular.ttf
 
     - name: Install `googlefonts` extra
       run: |

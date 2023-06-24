@@ -18,17 +18,15 @@ from difflib import ndiff
 from pathlib import Path
 from os.path import basename, relpath
 
-from collidoscope import Collidoscope
 from fontTools.unicodedata import ot_tag_to_script
-from stringbrewer import StringBrewer
-from ufo2ft.constants import INDIC_SCRIPTS, USE_SCRIPTS
-from vharfbuzz import Vharfbuzz, FakeBuffer
 
 from openbakery.callable import check
 from openbakery.status import FAIL, PASS, SKIP, WARN
 from openbakery.fonts_profile import profile_factory
 from openbakery.message import Message
 from openbakery.section import Section
+from openbakery.utils import exit_with_install_instructions
+
 
 shaping_basedir = Path("qa", "shaping_tests")
 
@@ -82,6 +80,8 @@ def create_report_item(
     note=None,
     extra_data=None,
 ):
+    from vharfbuzz import FakeBuffer
+
     if text:
         message += f': <span class="tf">{text}</span>'
 
@@ -91,7 +91,7 @@ def create_report_item(
             message += f" ({note})"
         message += "</li>\n"
     elif kind == "header":
-        message = get_stylesheet(vharfbuzz) + f"\n<h4>{message}</h4>\n"
+        message = f"{get_stylesheet(vharfbuzz)}\n<h4>{message}</h4>\n"
 
     if extra_data:
         message += f"\n\n<pre>{extra_data}</pre>\n\n"
@@ -124,11 +124,11 @@ def create_report_item(
 
     # Now draw it as SVG
     if buf1:
-        message += "\nGot: " + fix_svg(vharfbuzz.buf_to_svg(buf1))
+        message += f"\nGot: {fix_svg(vharfbuzz.buf_to_svg(buf1))}"
 
     if buf2 and isinstance(buf2, FakeBuffer):
         try:
-            message += " Expected: " + fix_svg(vharfbuzz.buf_to_svg(buf2))
+            message += f" Expected: {fix_svg(vharfbuzz.buf_to_svg(buf2))}"
         except KeyError:
             pass
 
@@ -152,8 +152,14 @@ def get_shaping_parameters(test, configuration):
 def run_a_set_of_shaping_tests(
     config, ttFont, run_a_test, test_filter, generate_report, preparation=None
 ):
-    filename = Path(ttFont.reader.file.name)
-    vharfbuzz = Vharfbuzz(filename)
+    try:
+        from vharfbuzz import Vharfbuzz
+
+        filename = Path(ttFont.reader.file.name)
+        vharfbuzz = Vharfbuzz(filename)
+    except ImportError:
+        exit_with_install_instructions("shaping")
+
     shaping_file_found = False
     ran_a_test = False
     extra_data = None
@@ -336,6 +342,8 @@ def com_google_fonts_check_shaping_forbidden(config, ttFont):
 def run_forbidden_glyph_test(
     filename, vharfbuzz, test, configuration, failed_shaping_tests, extra_data
 ):
+    from stringbrewer import StringBrewer
+
     is_stringbrewer = (
         get_from_test_with_default(test, configuration, "input_type", "string")
         == "pattern"
@@ -400,6 +408,8 @@ def com_google_fonts_check_shaping_collides(config, ttFont):
 
 
 def setup_glyph_collides(ttFont, configuration):
+    from collidoscope import Collidoscope
+
     filename = Path(ttFont.reader.file.name)
     collidoscope_configuration = configuration.get("collidoscope")
     if not collidoscope_configuration:
@@ -420,6 +430,8 @@ def setup_glyph_collides(ttFont, configuration):
 def run_collides_glyph_test(
     filename, vharfbuzz, test, configuration, failed_shaping_tests, extra_data
 ):
+    from stringbrewer import StringBrewer
+
     col = extra_data["collidoscope"]
     is_stringbrewer = (
         get_from_test_with_default(test, configuration, "input_type", "string")
@@ -461,8 +473,7 @@ def collides_glyph_test_results(vharfbuzz, shaping_file, failed_shaping_tests):
         report_item = create_report_item(
             vharfbuzz,
             f"{',' .join(bumps)} collision found in"
-            f" e.g. <span class='tf'>{shaping_text}</span>"
-            f" <div>{draw}</div>",
+            f" e.g. <span class='tf'>{shaping_text}</span> <div>{draw}</div>",
             buf1=buf,
         )
         report_items.append(report_item)
@@ -470,6 +481,8 @@ def collides_glyph_test_results(vharfbuzz, shaping_file, failed_shaping_tests):
 
 
 def is_complex_shaper_font(ttFont):
+    from ufo2ft.constants import INDIC_SCRIPTS, USE_SCRIPTS
+
     for table in ["GSUB", "GPOS"]:
         if table not in ttFont:
             continue
@@ -530,7 +543,7 @@ def com_google_fonts_check_dotted_circle(ttFont, config):
         if is_complex_shaper_font(ttFont):
             yield FAIL, Message(
                 "missing-dotted-circle-complex",
-                "No dotted circle glyph present" "and font uses a complex shaper",
+                "No dotted circle glyph present and font uses a complex shaper",
             )
         else:
             yield WARN, Message(
@@ -563,8 +576,7 @@ def com_google_fonts_check_dotted_circle(ttFont, config):
     if unattached:
         yield FAIL, Message(
             "unattached-dotted-circle-marks",
-            f"The following glyphs could not be attached"
-            f" to the dotted circle glyph:\n\n"
+            "The following glyphs could not be attached to the dotted circle glyph:\n\n"
             f"{bullet_list(config, sorted(unattached))}",
         )
     else:
@@ -594,6 +606,7 @@ def com_google_fonts_check_soft_dotted(ttFont):
     import itertools
     from beziers.path import BezierPath
     from fontTools import unicodedata
+    from vharfbuzz import Vharfbuzz
 
     cmap = ttFont["cmap"].getBestCmap()
 
@@ -647,7 +660,7 @@ def com_google_fonts_check_soft_dotted(ttFont):
             unclear = True
     if unclear:
         yield SKIP, (
-            "It is not clear if the soft dotted" " characters have glyphs with dots."
+            "It is not clear if the soft dotted characters have glyphs with dots."
         )
         return
 
@@ -667,10 +680,10 @@ def com_google_fonts_check_soft_dotted(ttFont):
         soft, non_above, above = sequence
         if non_above:
             unchanged = f"{cmap[soft]}|{cmap[non_above]}|{cmap[above]}"
-            text = chr(soft) + chr(non_above) + chr(above)
+            text = f"{chr(soft)}{chr(non_above)}{chr(above)}"
         else:
             unchanged = f"{cmap[soft]}|{cmap[above]}"
-            text = chr(soft) + chr(above)
+            text = f"{chr(soft)}{chr(above)}"
 
         # Only check a few strings that we WARN about.
         if text not in ortho_soft_dotted_strings and len(warn_unchanged_strings) >= 20:
@@ -687,17 +700,15 @@ def com_google_fonts_check_soft_dotted(ttFont):
     message = ""
     if fail_unchanged_strings:
         message += (
-            f"The dot of soft dotted characters used in orthographies "
-            f"must disappear in the following strings: "
-            f"{' '.join(fail_unchanged_strings)}"
+            "The dot of soft dotted characters used in orthographies must disappear in"
+            f" the following strings: {' '.join(fail_unchanged_strings)}"
         )
     if warn_unchanged_strings:
         if message:
             message += "\n\n"
         message += (
-            f"The dot of soft dotted characters should disappear in "
-            f"other cases, for example: "
-            f"{' '.join(warn_unchanged_strings)}"
+            "The dot of soft dotted characters should disappear in other cases,"
+            f" for example: {' '.join(warn_unchanged_strings)}"
         )
     if fail_unchanged_strings:
         yield FAIL, Message("soft-dotted", message)
@@ -705,8 +716,8 @@ def com_google_fonts_check_soft_dotted(ttFont):
         yield WARN, Message("soft-dotted", message)
     else:
         yield PASS, (
-            "All soft dotted characters seem to lose their dot when "
-            "combined with a mark above."
+            "All soft dotted characters seem to lose their dot when combined with"
+            " a mark above."
         )
 
 

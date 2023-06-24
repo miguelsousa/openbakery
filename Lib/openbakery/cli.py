@@ -15,6 +15,7 @@ SUBCOMMANDS = [
     "iso15008",
     "notofonts",
     "opentype",
+    "shaping",
     "ufo-sources",
     "universal",
     "proposals",

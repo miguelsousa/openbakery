@@ -25,7 +25,7 @@ profile = profile_factory(default_section=Section("Adobe Fonts"))
 
 SET_EXPLICIT_CHECKS = {
     # This is the set of explict checks that will be invoked
-    # when openbakery is run with the 'check-adobefonts' subcommand.
+    # when openbakery is run with the 'adobefonts' subcommand.
     # The contents of this set were last updated on April 19, 2023.
     #
     # =======================================

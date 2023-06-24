@@ -60,23 +60,23 @@ OpenBakery's functionality is organized into profiles. Each profile invokes spec
     openbakery --list-subcommands
 
 ```
-check-adobefonts
-check-fontbureau
-check-fontval
-check-fontwerk
-check-googlefonts
-check-iso15008
-check-notofonts
-check-opentype
+adobefonts
+fontbureau
+fontval
+fontwerk
+googlefonts
+iso15008
+notofonts
+opentype
+ufo-sources
+universal
+proposals
 check-profile
-check-proposals
-check-ufo-sources
-check-universal
 ```
 
-The installation commands above enable you to run the `universal` and the `opentype` profiles on a font, like so:
+The installation commands above enable you to run the `universal` or the `opentype` profiles on a font, like so:
 
-    openbakery check-opentype MyFont-Regular.ttf
+    openbakery universal MyFont-Regular.ttf
 
 To test your fonts with other profiles, you need to install `openbakery` with a corresponding extra. The command below installs `openbakery` with all the necessary dependencies for running the checks in the `googlefonts` profile:
 

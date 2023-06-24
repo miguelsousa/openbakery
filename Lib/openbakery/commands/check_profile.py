@@ -350,7 +350,7 @@ def get_profile():
 
 
 def main(profile=None, values=None):
-    # profile can be injected by e.g. check-googlefonts injects it's own profile
+    # profile can be injected by e.g. 'googlefonts' subcommand
     add_profile_arg = False
     if profile is None:
         profile = get_profile()
