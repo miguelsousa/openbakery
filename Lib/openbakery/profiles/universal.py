@@ -9,11 +9,10 @@ from openbakery.callable import check, disable
 from openbakery.message import Message
 from openbakery.fonts_profile import profile_factory
 from openbakery.profiles.opentype import OPENTYPE_PROFILE_CHECKS
-from openbakery.profiles.shaping import SHAPING_PROFILE_CHECKS
 
 re_version = re.compile(r"^\s*" + VERSION_PATTERN + r"\s*$", re.VERBOSE | re.IGNORECASE)
 
-profile_imports = ((".", ("shared_conditions", "opentype", "shaping")),)
+profile_imports = ((".", ("shared_conditions", "opentype")),)
 profile = profile_factory(default_section=Section("Universal"))
 
 
@@ -24,7 +23,6 @@ SUPERFAMILY_CHECKS = [
 
 UNIVERSAL_PROFILE_CHECKS = (
     OPENTYPE_PROFILE_CHECKS
-    + SHAPING_PROFILE_CHECKS
     + SUPERFAMILY_CHECKS
     + [
         "com.google.fonts/check/name/trailing_spaces",
