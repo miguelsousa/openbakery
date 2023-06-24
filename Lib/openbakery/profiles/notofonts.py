@@ -42,7 +42,7 @@ NOTOFONTS_PROFILE_CHECKS = GOOGLEFONTS_PROFILE_CHECKS + [
 
 
 # For builds which target Google Fonts, we do want these checks, but as part of
-# onboarding we will be running check-googlefonts on such builds.
+# onboarding we will be running 'googlefonts' profile on such builds.
 # On other builds (e.g. targetting Android), we still want most of the Google
 # strictures but size is a premium and we will be expecting to deliver a
 # "minimal" font, so we accept the fact that there will be no Latin set and no

@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- `iso15008` extra. To run the `check-iso15008` profile it's now necessary to install **openbakery** like so:
+- `iso15008` extra. To run the `iso15008` profile it's now necessary to install **openbakery** like so:
 
         python -m pip install -U 'openbakery[iso15008]'
 
