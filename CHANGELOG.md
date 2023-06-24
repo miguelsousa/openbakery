@@ -9,9 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- `iso15008` extra. To run the `iso15008` profile it's now necessary to install **openbakery** like so:
+- `iso15008` extra (#21). To run the `iso15008` profile it's now necessary to install **openbakery** like so:
 
         python -m pip install -U 'openbakery[iso15008]'
+
+- `shaping` subcommand and extra (#36).
 
 ### Changed
 
@@ -21,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
   instead of `openbakery check-universal font.ttf`.
 
+- The shaping checks are no longer invoked by the Universal profile. To run them use the new `shaping` subcommand (#36).
 - `com.google.fonts/check/fontvalidator`: The check emitted an ERROR if FontValidator isn't installed. It now emits a FAIL (#30).
 
 ### Fixed
