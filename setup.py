@@ -158,7 +158,9 @@ setup(
     extras_require={
         "all": all_extras,
         "fontval": fontval_extras,
+        "fontwerk": googlefonts_extras,
         "googlefonts": googlefonts_extras,
+        "notofonts": googlefonts_extras,
         "iso15008": iso15008_extras,
         "shaping": shaping_extras,
         "ufo-sources": ufo_sources_extras,
