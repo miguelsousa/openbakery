@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - The shaping checks are no longer invoked by the Universal profile. To run them use the new `shaping` subcommand (#36).
 - `com.google.fonts/check/fontvalidator`: The check emitted an ERROR if FontValidator isn't installed. It now emits a FAIL (#30).
+- `com.google.fonts/check/valid_glyphnames`: The check now takes into account that OpenType-CFF2 fonts with `post` table format 3 contain no glyph names, and will yield SKIP.
 
 ### Fixed
 
