@@ -14,7 +14,9 @@ from openbakery.codetesting import (
     TEST_FILE,
 )
 from openbakery.profiles import universal as universal_profile
+from openbakery.profiles.shared_conditions import style, vmetrics, is_indic_font
 from openbakery.profiles.universal import is_up_to_date
+from openbakery.utils import glyph_has_ink
 
 
 @pytest.fixture
@@ -72,8 +74,6 @@ def cabin_condensed_ttFonts():
 
 
 def test_style_condition():
-    from openbakery.profiles.shared_conditions import style
-
     # VFs
     assert (
         style(TEST_FILE("shantell/ShantellSans[BNCE,INFM,SPAC,wght].ttf")) == "Regular"
@@ -775,8 +775,6 @@ def test_check_unwanted_tables():
 
 
 def test_glyph_has_ink():
-    from openbakery.utils import glyph_has_ink
-
     print()  # so next line doesn't start with '.....'
 
     cff_test_font = TTFont(TEST_FILE("source-sans-pro/OTF/SourceSansPro-Regular.otf"))
@@ -821,7 +819,6 @@ def test_check_family_win_ascent_and_descent(mada_ttFonts):
     check = CheckTester(
         universal_profile, "com.google.fonts/check/family/win_ascent_and_descent"
     )
-    from openbakery.profiles.shared_conditions import vmetrics
 
     # Our reference Mada Regular is know to be bad here.
     ttFont = TTFont(TEST_FILE("mada/Mada-Regular.ttf"))
@@ -953,7 +950,6 @@ def test_check_rupee():
     #
     #        But for now we have to do this:
     #
-    from openbakery.profiles.shared_conditions import is_indic_font
 
     print("Ensure the check will SKIP when dealing with a non-indic font...")
     non_indic = TTFont(TEST_FILE("mada/Mada-Regular.ttf"))
