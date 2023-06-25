@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
         python -m pip install -U 'openbakery[iso15008]'
 
 - `shaping` subcommand and extra (#36).
+- `fontwerk` extra (#37).
+- `notofonts` extra (#37).
 
 ### Changed
 
