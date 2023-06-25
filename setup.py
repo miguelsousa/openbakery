@@ -69,11 +69,8 @@ fontval_extras = [
     "lxml",
 ]
 
-docs_extras = []
-
 all_extras = set(
-    docs_extras
-    + fontval_extras
+    fontval_extras
     + googlefonts_extras
     + iso15008_extras
     + shaping_extras
@@ -160,9 +157,10 @@ setup(
     ],
     extras_require={
         "all": all_extras,
-        "docs": docs_extras,
         "fontval": fontval_extras,
+        "fontwerk": googlefonts_extras,
         "googlefonts": googlefonts_extras,
+        "notofonts": googlefonts_extras,
         "iso15008": iso15008_extras,
         "shaping": shaping_extras,
         "ufo-sources": ufo_sources_extras,
