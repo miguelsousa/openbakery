@@ -3,12 +3,23 @@ import re
 
 from packaging.version import VERSION_PATTERN
 
-from openbakery.status import PASS, FAIL, WARN, INFO, SKIP
-from openbakery.section import Section
-from openbakery.callable import check, disable
-from openbakery.message import Message
+from openbakery.callable import check
+from openbakery.constants import PlatformID, WindowsEncodingID
 from openbakery.fonts_profile import profile_factory
+from openbakery.glyphdata import desired_glyph_data
+from openbakery.message import Message
+from openbakery.profiles.layout import feature_tags
 from openbakery.profiles.opentype import OPENTYPE_PROFILE_CHECKS
+from openbakery.section import Section
+from openbakery.status import PASS, FAIL, WARN, INFO, SKIP
+from openbakery.utils import (
+    bullet_list,
+    get_font_glyph_data,
+    get_glyph_name,
+    glyph_has_ink,
+    iterate_lookup_list_with_extensions,
+    pretty_print_list,
+)
 
 re_version = re.compile(r"^\s*" + VERSION_PATTERN + r"\s*$", re.VERBOSE | re.IGNORECASE)
 
@@ -39,7 +50,6 @@ UNIVERSAL_PROFILE_CHECKS = (
         "com.google.fonts/check/unwanted_tables",
         "com.google.fonts/check/valid_glyphnames",
         "com.google.fonts/check/unique_glyphnames",
-        # "com.google.fonts/check/glyphnames_max_length",
         "com.google.fonts/check/family/vertical_metrics",
         "com.google.fonts/check/STAT_strings",
         "com.google.fonts/check/rupee",
@@ -102,20 +112,35 @@ def com_google_fonts_check_name_trailing_spaces(ttFont):
         (https://github.com/RedHatBrand/Overpass/issues/33).
 
         If the font includes tall/deep writing systems such as Arabic or Devanagari,
-        the winAscent and winDescent can be greater than the yMax and abs(yMin)
-        to accommodate vowel marks.
+        the winAscent and winDescent can be greater than the yMax and absolute yMin
+        values to accommodate vowel marks.
 
-        When the win Metrics are significantly greater than the upm, the linespacing
+        When the 'win' Metrics are significantly greater than the UPM, the linespacing
         can appear too loose. To counteract this, enabling the OS/2 fsSelection
-        bit 7 (Use_Typo_Metrics), will force Windows to use the OS/2 typo values
+        bit 7 (Use_Typo_Metrics), will force Windows to use the OS/2 'typo' values
         instead. This means the font developer can control the linespacing with
-        the typo values, whilst avoiding clipping by setting the win values to values
-        greater than the yMax and abs(yMin).
+        the 'typo' values, whilst avoiding clipping by setting the 'win' values to
+        values greater than the yMax and absolute yMin.
     """,
     proposal="legacy:check/040",
 )
 def com_google_fonts_check_family_win_ascent_and_descent(ttFont, vmetrics):
     """Checking OS/2 usWinAscent & usWinDescent."""
+
+    # NOTE:
+    # This check works on a single font file as well as on a group of font files.
+    # Even though one of this check's inputs is 'ttFont' (whereas other family-wide
+    # checks use 'ttFonts') the other input parameter, 'vmetrics', will collect vertical
+    # metrics values for all the font files provided in the command line. This means
+    # that running the check may yield more or less results depending on the set of font
+    # files that is provided in the command line. This behaviour is NOT a bug.
+    # For example, compare the results of these two commands:
+    #   openbakery universal -c win_ascent_and_descent data/test/mada/Mada-Regular.ttf
+    #   openbakery universal -c win_ascent_and_descent data/test/mada/*.ttf
+    #
+    # The second command will yield more FAIL results for each font. This happens
+    # because the check does a family-wide validation of the vertical metrics, instead
+    # of a single font validation.
 
     if "OS/2" not in ttFont:
         yield FAIL, Message("lacks-OS/2", "Font file lacks OS/2 table")
@@ -149,7 +174,7 @@ def com_google_fonts_check_family_win_ascent_and_descent(ttFont, vmetrics):
         yield FAIL, Message(
             "descent",
             f"OS/2.usWinDescent value should be equal or greater than {abs(y_min)},"
-            f" but got {win_descent} instead.",
+            f" but got {win_descent} instead",
         )
 
     if win_descent > abs(y_min) * 2:
@@ -401,27 +426,38 @@ def com_google_fonts_check_openbakery_version(font, config):
 )
 def com_google_fonts_check_mandatory_glyphs(ttFont):
     """Font contains '.notdef' as its first glyph?"""
-    from openbakery.utils import glyph_has_ink
-
     passed = True
-    if ttFont.getGlyphOrder()[0] != ".notdef":
+    NOTDEF = ".notdef"
+    glyph_order = ttFont.getGlyphOrder()
+
+    if NOTDEF not in glyph_order or len(glyph_order) == 0:
+        yield WARN, Message(
+            "notdef-not-found", f"Font should contain the {NOTDEF!r} glyph."
+        )
+        # The font doesn't even have the notdef. There's no point in testing further.
+        return
+
+    if glyph_order[0] != NOTDEF:
         passed = False
         yield WARN, Message(
-            "first-glyph", "Font should contain the .notdef glyph as the first glyph."
+            "notdef-not-first", f"The {NOTDEF!r} should be the font's first glyph."
         )
 
-    if ".notdef" in ttFont.getBestCmap().values():
+    cmap = ttFont.getBestCmap()  # e.g. {65: 'A', 66: 'B', 67: 'C'} or None
+    if cmap and NOTDEF in cmap.values():
         passed = False
+        rev_cmap = {name: val for val, name in reversed(sorted(cmap.items()))}
         yield WARN, Message(
-            "codepoint",
-            "Glyph '.notdef' should not have a Unicode codepoint value assigned,"
-            f" but got 0x{ttFont.getBestCmap().values()['.notdef']:04X}.",
+            "notdef-has-codepoint",
+            f"The {NOTDEF!r} glyph should not have a Unicode codepoint value assigned,"
+            f" but has 0x{rev_cmap[NOTDEF]:04X}.",
         )
 
-    if not glyph_has_ink(ttFont, ".notdef"):
+    if not glyph_has_ink(ttFont, NOTDEF):
         passed = False
         yield WARN, Message(
-            "empty", "Glyph '.notdef' should contain a drawing, but it is empty."
+            "notdef-is-blank",
+            f"The {NOTDEF!r} glyph should contain a drawing, but it is blank.",
         )
 
     if passed:
@@ -454,8 +490,6 @@ def com_google_fonts_check_whitespace_glyphs(ttFont, missing_whitespace_chars):
 )
 def com_google_fonts_check_whitespace_glyphnames(ttFont):
     """Font has **proper** whitespace glyph names?"""
-    from openbakery.utils import get_glyph_name
-
     # AGL recommended names, according to Adobe Glyph List for new fonts:
     AGL_RECOMMENDED_0020 = {"space"}
     AGL_RECOMMENDED_00A0 = {"uni00A0", "space"}
@@ -524,8 +558,6 @@ def com_google_fonts_check_whitespace_glyphnames(ttFont):
 @check(id="com.google.fonts/check/whitespace_ink", proposal="legacy:check/049")
 def com_google_fonts_check_whitespace_ink(ttFont):
     """Whitespace glyphs have ink?"""
-    from openbakery.utils import get_glyph_name, glyph_has_ink
-
     # This checks that certain glyphs are empty.
     # Some, but not all, are Unicode whitespace.
 
@@ -618,8 +650,6 @@ def com_google_fonts_check_whitespace_ink(ttFont):
 )
 def com_google_fonts_check_required_tables(ttFont, config, is_variable_font):
     """Font contains all required tables?"""
-    from openbakery.utils import bullet_list
-
     REQUIRED_TABLES = ["cmap", "head", "hhea", "hmtx", "maxp", "name", "OS/2", "post"]
 
     OPTIONAL_TABLES = [
@@ -812,42 +842,48 @@ def com_google_fonts_check_STAT_strings(ttFont):
 )
 def com_google_fonts_check_valid_glyphnames(ttFont, config):
     """Glyph names are all valid?"""
-    from openbakery.utils import pretty_print_list
-
     if (
-        ttFont.sfntVersion == b"\x00\x01\x00\x00"
+        ttFont.sfntVersion == "\x00\x01\x00\x00"
         and ttFont.get("post")
-        and ttFont["post"].formatType == 3.0
+        and ttFont["post"].formatType == 3
     ):
         yield SKIP, (
-            "TrueType fonts with a format 3.0 post table contain no glyph names."
+            "TrueType fonts with a format 3 post table contain no glyph names."
+        )
+    elif (
+        ttFont.sfntVersion == "OTTO"
+        and ttFont.get("CFF2")
+        and ttFont.get("post")
+        and ttFont["post"].formatType == 3
+    ):
+        yield SKIP, (
+            "OpenType-CFF2 fonts with a format 3 post table contain no glyph names."
         )
     else:
-        bad_names = []
-        warn_names = []
-        for _, glyphName in enumerate(ttFont.getGlyphOrder()):
+        bad_names = set()
+        warn_names = set()
+        for glyphName in ttFont.getGlyphOrder():
+            # The first two names are explicit exceptions in the glyph naming rules.
+            # The third was added in https://github.com/googlefonts/fontbakery/pull/2003
             if glyphName.startswith((".null", ".notdef", ".ttfautohint")):
-                # These 2 names are explicit exceptions
-                # in the glyph naming rules
                 continue
             if not re.match(r"^(?![.0-9])[a-zA-Z._0-9]{1,63}$", glyphName):
-                bad_names.append(glyphName)
+                bad_names.add(glyphName)
             if len(glyphName) > 31 and len(glyphName) <= 63:
-                warn_names.append(glyphName)
+                warn_names.add(glyphName)
 
-        if len(bad_names) == 0:
-            if len(warn_names) == 0:
+        if not bad_names:
+            if not warn_names:
                 yield PASS, "Glyph names are all valid."
             else:
                 yield WARN, Message(
                     "legacy-long-names",
-                    "The following glyph names may be too"
-                    " long for some legacy systems which may"
-                    " expect a maximum 31-char length limit:\n"
-                    f"{pretty_print_list(config, warn_names)}",
+                    "The following glyph names may be too long for some legacy systems"
+                    " which may expect a maximum 31-characters length limit:\n"
+                    f"{pretty_print_list(config, sorted(warn_names))}",
                 )
         else:
-            bad_names_list = pretty_print_list(config, bad_names)
+            bad_names_list = pretty_print_list(config, sorted(bad_names))
             yield FAIL, Message(
                 "found-invalid-names",
                 "The following glyph names do not comply"
@@ -872,57 +908,40 @@ def com_google_fonts_check_valid_glyphnames(ttFont, config):
 def com_google_fonts_check_unique_glyphnames(ttFont):
     """Font contains unique glyph names?"""
     if (
-        ttFont.sfntVersion == b"\x00\x01\x00\x00"
+        ttFont.sfntVersion == "\x00\x01\x00\x00"
         and ttFont.get("post")
-        and ttFont["post"].formatType == 3.0
+        and ttFont["post"].formatType == 3
     ):
         yield SKIP, (
-            "TrueType fonts with a format 3.0 post table contain no glyph names."
+            "TrueType fonts with a format 3 post table contain no glyph names."
+        )
+    elif (
+        ttFont.sfntVersion == "OTTO"
+        and ttFont.get("CFF2")
+        and ttFont.get("post")
+        and ttFont["post"].formatType == 3
+    ):
+        yield SKIP, (
+            "OpenType-CFF2 fonts with a format 3 post table contain no glyph names."
         )
     else:
-        glyphs = []
-        duplicated_glyphIDs = []
-        for _, g in enumerate(ttFont.getGlyphOrder()):
-            glyphID = re.sub(r"#\w+", "", g)
-            if glyphID in glyphs:
-                duplicated_glyphIDs.append(glyphID)
+        glyph_names = set()
+        dup_glyph_names = set()
+        for gname in ttFont.getGlyphOrder():
+            # On font load, Fonttools adds #1, #2, ... suffixes to duplicate glyph names
+            glyph_name = re.sub(r"#\w+", "", gname)
+            if glyph_name in glyph_names:
+                dup_glyph_names.add(glyph_name)
             else:
-                glyphs.append(glyphID)
+                glyph_names.add(glyph_name)
 
-        if len(duplicated_glyphIDs) == 0:
-            yield PASS, "Font contains unique glyph names."
+        if not dup_glyph_names:
+            yield PASS, "Glyph names are all unique."
         else:
             yield FAIL, Message(
                 "duplicated-glyph-names",
-                f"The following glyph names occur twice: {duplicated_glyphIDs}",
+                f"These glyph names occur more than once: {sorted(dup_glyph_names)}",
             )
-
-
-@disable  # until we know the rationale.
-@check(
-    id="com.google.fonts/check/glyphnames_max_length",
-    proposal="https://github.com/googlefonts/fontbakery/issues/735",
-)
-def com_google_fonts_check_glyphnames_max_length(ttFont):
-    """Check that glyph names do not exceed max length."""
-    if (
-        ttFont.sfntVersion == b"\x00\x01\x00\x00"
-        and ttFont.get("post")
-        and ttFont["post"].formatType == 3.0
-    ):
-        yield PASS, (
-            "TrueType fonts with a format 3.0 post table contain no glyph names."
-        )
-    else:
-        failed = False
-        for name in ttFont.getGlyphOrder():
-            if len(name) > 109:
-                failed = True
-                yield FAIL, Message(
-                    "glyphname-too-long", f"Glyph name is too long: '{name}'"
-                )
-        if not failed:
-            yield PASS, "No glyph names exceed max allowed length."
 
 
 @check(
@@ -1300,8 +1319,6 @@ def com_google_fonts_check_unreachable_glyphs(ttFont, config):
                 all_glyphs -= set(base_glyph.getComponentNames(ttFont["glyf"]))
 
     if all_glyphs:
-        from openbakery.utils import bullet_list
-
         yield WARN, Message(
             "unreachable-glyphs",
             "The following glyphs could not be reached"
@@ -1343,9 +1360,6 @@ def com_google_fonts_check_contour_count(ttFont, config):
     In the future, additional glyph data can be included. A good addition would
     be the 'recommended' anchor counts for each glyph.
     """
-    from openbakery.glyphdata import desired_glyph_data as glyph_data
-    from openbakery.constants import PlatformID, WindowsEncodingID
-    from openbakery.utils import bullet_list, get_font_glyph_data, pretty_print_list
 
     def in_PUA_range(codepoint):
         """
@@ -1365,7 +1379,7 @@ def com_google_fonts_check_contour_count(ttFont, config):
     # rearrange data structure:
     desired_glyph_data_by_codepoint = {}
     desired_glyph_data_by_glyphname = {}
-    for glyph in glyph_data:
+    for glyph in desired_glyph_data:
         desired_glyph_data_by_glyphname[glyph["name"]] = glyph
         # since the glyph in PUA ranges have unspecified meaning,
         # it doesnt make sense for us to have an expected contour cont for them
@@ -1511,8 +1525,6 @@ def com_google_fonts_check_soft_hyphen(ttFont):
 )
 def com_google_fonts_check_cjk_chws_feature(ttFont):
     """Does the font contain chws and vchw features?"""
-    from openbakery.profiles.layout import feature_tags
-
     passed = True
     tags = feature_tags(ttFont)
     FEATURE_NOT_FOUND = (
@@ -1609,8 +1621,6 @@ def com_google_fonts_check_transformed_components(ttFont, is_hinted):
 )
 def com_google_fonts_check_gpos7(ttFont):
     """Ensure no GPOS7 lookups are present."""
-    from openbakery.utils import iterate_lookup_list_with_extensions
-
     has_gpos7 = False
 
     def find_gpos7(lookup):
@@ -1714,8 +1724,6 @@ def com_adobe_fonts_check_sfnt_version(ttFont, is_ttf, is_cff, is_cff2):
 )
 def com_google_fonts_check_whitespace_widths(ttFont):
     """Space and non-breaking space have the same width?"""
-    from openbakery.utils import get_glyph_name
-
     space_name = get_glyph_name(ttFont, 0x0020)
     nbsp_name = get_glyph_name(ttFont, 0x00A0)
 
@@ -1754,7 +1762,6 @@ def com_google_fonts_check_whitespace_widths(ttFont):
 def com_google_fonts_check_iterpolation_issues(ttFont, config):
     """Detect any interpolation issues in the font."""
     from fontTools.varLib.interpolatable import test as interpolation_test
-    from openbakery.utils import bullet_list
 
     gvar = ttFont["gvar"]
     # This code copied from fontTools.varLib.interpolatable
@@ -1822,8 +1829,6 @@ def com_google_fonts_check_iterpolation_issues(ttFont, config):
 )
 def com_google_fonts_check_math_signs_width(ttFont):
     """Check math signs have the same width."""
-    from openbakery.utils import get_glyph_name
-
     # Ironically, the block of text below may not have
     # uniform widths for these glyphs depending on
     # which font your text editor is using while you
@@ -1923,7 +1928,7 @@ def com_google_fonts_check_linegaps(ttFont):
 
 @check(
     id="com.google.fonts/check/STAT_in_statics",
-    conditions=["not is_variable_font"],
+    conditions=["not is_variable_font", "has_STAT_table"],
     rationale="""
         Adobe feature syntax allows for the definition of a STAT table. Fonts built
         with a hand-coded STAT table in feature syntax may be built either as static
@@ -1960,28 +1965,27 @@ def com_google_fonts_check_STAT_in_statics(ttFont):
             entries[tag_name] = 1
 
     passed = True
-    if "STAT" in ttFont:
-        stat = ttFont["STAT"].table
-        designAxes = stat.DesignAxisRecord.Axis
-        for axisValueTable in stat.AxisValueArray.AxisValue:
-            axisValueFormat = axisValueTable.Format
-            if axisValueFormat in (1, 2, 3):
-                axisTag = designAxes[axisValueTable.AxisIndex].AxisTag
+    stat = ttFont["STAT"].table
+    designAxes = stat.DesignAxisRecord.Axis
+    for axisValueTable in stat.AxisValueArray.AxisValue:
+        axisValueFormat = axisValueTable.Format
+        if axisValueFormat in (1, 2, 3):
+            axisTag = designAxes[axisValueTable.AxisIndex].AxisTag
+            count_entries(axisTag)
+        elif axisValueFormat == 4:
+            for rec in axisValueTable.AxisValueRecord:
+                axisTag = designAxes[rec.AxisIndex].AxisTag
                 count_entries(axisTag)
-            elif axisValueFormat == 4:
-                for rec in axisValueTable.AxisValueRecord:
-                    axisTag = designAxes[rec.AxisIndex].AxisTag
-                    count_entries(axisTag)
 
-        for tag_name in entries:
-            if entries[tag_name] > 1:
-                passed = False
-                yield FAIL, Message(
-                    "multiple-STAT-entries",
-                    "The STAT table has more than a single entry for the"
-                    f" '{tag_name}' axis ({entries[tag_name]}) on this"
-                    " static font which will causes problems on Windows.",
-                )
+    for tag_name in entries:
+        if entries[tag_name] > 1:
+            passed = False
+            yield FAIL, Message(
+                "multiple-STAT-entries",
+                "The STAT table has more than a single entry for the"
+                f" '{tag_name}' axis ({entries[tag_name]}) on this"
+                " static font which will causes problems on Windows.",
+            )
 
     if passed:
         yield PASS, "Looks good!"

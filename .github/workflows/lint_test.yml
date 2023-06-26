@@ -1,4 +1,4 @@
-name: Lint & Test
+name: 🧑‍🔬 Lint & Test
 
 on:
   push:
@@ -7,10 +7,10 @@ on:
       - '**.md'
       - '**.txt'
       - '!requirements*.txt'
+    tags-ignore:
+      - '**'
 
   pull_request:
-    types:
-      - opened
     paths-ignore:
       - 'docs/**'
       - '**.md'

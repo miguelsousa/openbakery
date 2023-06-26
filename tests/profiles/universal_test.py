@@ -1,3 +1,4 @@
+import os
 import io
 from unittest.mock import patch, MagicMock
 
@@ -14,7 +15,9 @@ from openbakery.codetesting import (
     TEST_FILE,
 )
 from openbakery.profiles import universal as universal_profile
+from openbakery.profiles.shared_conditions import style
 from openbakery.profiles.universal import is_up_to_date
+from openbakery.utils import glyph_has_ink
 
 
 @pytest.fixture
@@ -72,8 +75,6 @@ def cabin_condensed_ttFonts():
 
 
 def test_style_condition():
-    from openbakery.profiles.shared_conditions import style
-
     # VFs
     assert (
         style(TEST_FILE("shantell/ShantellSans[BNCE,INFM,SPAC,wght].ttf")) == "Regular"
@@ -116,15 +117,18 @@ def test_style_condition():
 def test_check_valid_glyphnames():
     """Glyph names are all valid?"""
     check = CheckTester(universal_profile, "com.google.fonts/check/valid_glyphnames")
+    pass_msg = "Glyph names are all valid."
 
     # We start with a good font file:
     ttFont = TTFont(TEST_FILE("nunito/Nunito-Regular.ttf"))
-    assert_PASS(check(ttFont))
+    message = assert_PASS(check(ttFont))
+    assert message == pass_msg
 
     # There used to be a 31 char max-length limit.
     # This was considered good:
     ttFont.glyphOrder[2] = "a" * 31
-    assert_PASS(check(ttFont))
+    message = assert_PASS(check(ttFont))
+    assert message == pass_msg
 
     # And this was considered bad:
     legacy_too_long = "a" * 32
@@ -152,28 +156,43 @@ def test_check_valid_glyphnames():
     assert bad_name2 in message
     assert bad_name3 in message
 
-    # TrueType fonts with a format 3.0 post table contain
+    # TrueType fonts with a format 3 post table contain
     # no glyph names, so the check must be SKIP'd in that case.
     #
-    # Upgrade to post format 3.0 and roundtrip data to update TTF object.
+    # Upgrade to post format 3 and roundtrip data to update TTF object.
+    ttf_skip_msg = "TrueType fonts with a format 3 post table"
     ttFont = TTFont(TEST_FILE("nunito/Nunito-Regular.ttf"))
-    ttFont["post"].formatType = 3.0
+    ttFont["post"].formatType = 3
     _file = io.BytesIO()
     _file.name = ttFont.reader.file.name
     ttFont.save(_file)
     ttFont = TTFont(_file)
-    assert_SKIP(check(ttFont))
+    message = assert_SKIP(check(ttFont))
+    assert ttf_skip_msg in message
+
+    # Also test with CFF...
+    ttFont = TTFont(TEST_FILE("source-sans-pro/OTF/SourceSansPro-Regular.otf"))
+    message = assert_PASS(check(ttFont))
+    assert message == pass_msg
+
+    # ... and CFF2 fonts
+    cff2_skip_msg = "OpenType-CFF2 fonts with a format 3 post table"
+    ttFont = TTFont(TEST_FILE("source-sans-pro/VAR/SourceSansVariable-Roman.otf"))
+    message = assert_SKIP(check(ttFont))
+    assert cff2_skip_msg in message
 
 
 def test_check_unique_glyphnames():
     """Font contains unique glyph names?"""
     check = CheckTester(universal_profile, "com.google.fonts/check/unique_glyphnames")
+    pass_msg = "Glyph names are all unique."
 
     ttFont = TTFont(TEST_FILE("nunito/Nunito-Regular.ttf"))
-    assert_PASS(check(ttFont))
+    message = assert_PASS(check(ttFont))
+    assert message == pass_msg
 
     # Fonttools renames duplicate glyphs with #1, #2, ... on load.
-    # Code snippet from https://github.com/fonttools/fonttools/issues/149.
+    # Code snippet from https://github.com/fonttools/fonttools/issues/149
     glyph_names = ttFont.getGlyphOrder()
     glyph_names[2] = glyph_names[3]
 
@@ -188,66 +207,28 @@ def test_check_unique_glyphnames():
     message = assert_results_contain(check(ttFont), FAIL, "duplicated-glyph-names")
     assert "space" in message
 
-    # Upgrade to post format 3.0 and roundtrip data to update TTF object.
+    # Upgrade to post format 3 and roundtrip data to update TTF object.
+    ttf_skip_msg = "TrueType fonts with a format 3 post table"
     ttFont = TTFont(TEST_FILE("nunito/Nunito-Regular.ttf"))
     ttFont.setGlyphOrder(glyph_names)
-    ttFont["post"].formatType = 3.0
+    ttFont["post"].formatType = 3
     _file = io.BytesIO()
     _file.name = ttFont.reader.file.name
     ttFont.save(_file)
     ttFont = TTFont(_file)
-    assert_SKIP(check(ttFont))
+    message = assert_SKIP(check(ttFont))
+    assert ttf_skip_msg in message
 
-
-def DISABLED_test_check_glyphnames_max_length():
-    """Check that glyph names do not exceed max length."""
-    check = CheckTester(
-        universal_profile, "com.google.fonts/check/glyphnames_max_length"
-    )
-    import defcon
-    import ufo2ft
-
-    # TTF
-    test_font = defcon.Font(TEST_FILE("test.ufo"))
-    ttFont = ufo2ft.compileTTF(test_font)
-    assert_PASS(check(ttFont))
-
-    test_glyph = defcon.Glyph()
-    test_glyph.unicode = 0x1234
-    test_glyph.name = (
-        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-    )
-    test_font.insertGlyph(test_glyph)
-    ttFont = ufo2ft.compileTTF(test_font, useProductionNames=False)
-    assert_results_contain(check(ttFont), FAIL, "glyphname-too-long")
-
-    ttFont = ufo2ft.compileTTF(test_font, useProductionNames=True)
-    assert_PASS(check(ttFont))
-
-    # Upgrade to post format 3.0 and roundtrip data to update TTF object.
-    ttFont["post"].formatType = 3.0
-    _file = io.BytesIO()
-    _file.name = ttFont.reader.file.name
-    ttFont.save(_file)
-    ttFont = TTFont(_file)
+    # Also test with CFF...
+    ttFont = TTFont(TEST_FILE("source-sans-pro/OTF/SourceSansPro-Regular.otf"))
     message = assert_PASS(check(ttFont))
-    assert "format 3.0" in message
+    assert message == pass_msg
 
-    del test_font, ttFont, _file  # Prevent copypasta errors.
-
-    # CFF
-    test_font = defcon.Font(TEST_FILE("test.ufo"))
-    ttFont = ufo2ft.compileOTF(test_font)
-    assert_PASS(check(ttFont))
-
-    test_font.insertGlyph(test_glyph)
-    ttFont = ufo2ft.compileOTF(test_font, useProductionNames=False)
-    assert_results_contain(check(ttFont), FAIL, "glyphname-too-long")
-
-    ttFont = ufo2ft.compileOTF(test_font, useProductionNames=True)
-    assert_PASS(check(ttFont))
+    # ... and CFF2 fonts
+    cff2_skip_msg = "OpenType-CFF2 fonts with a format 3 post table"
+    ttFont = TTFont(TEST_FILE("source-sans-pro/VAR/SourceSansVariable-Roman.otf"))
+    message = assert_SKIP(check(ttFont))
+    assert cff2_skip_msg in message
 
 
 def test_check_ttx_roundtrip():
@@ -317,12 +298,19 @@ def test_check_ots():
     """Checking with ots-sanitize."""
     check = CheckTester(universal_profile, "com.google.fonts/check/ots")
 
-    sanitary_font = TEST_FILE("cabin/Cabin-Regular.ttf")
-    assert_PASS(check(sanitary_font))
+    fine_font = TEST_FILE("cabin/Cabin-Regular.ttf")
+    assert_PASS(check(fine_font))
 
-    bogus_font = TEST_FILE("cabin/OFL.txt")
-    message = assert_results_contain(check(bogus_font), FAIL, "ots-sanitize-error")
-    assert "invalid sfntVersion" in message
+    warn_font = TEST_FILE("bad_fonts/ots/bad_post_version.otf")
+    message = assert_results_contain(check(warn_font), WARN, "ots-sanitize-warn")
+    assert (
+        "WARNING: post: Only version supported for fonts with CFF table is"
+        " 0x00030000 not 0x20000" in message
+    )
+
+    bad_font = TEST_FILE("bad_fonts/ots/no_glyph_data.ttf")
+    message = assert_results_contain(check(bad_font), FAIL, "ots-sanitize-error")
+    assert "ERROR: no supported glyph data table(s) present" in message
     assert "Failed to sanitize file!" in message
 
 
@@ -437,26 +425,44 @@ def test_check_openbakery_version_live_apis():
 
 def test_check_mandatory_glyphs():
     """Font contains the first few mandatory glyphs (.null or NULL, CR and space)?"""
+    from fontTools import subset
+
     check = CheckTester(universal_profile, "com.google.fonts/check/mandatory_glyphs")
 
     ttFont = TTFont(TEST_FILE("nunito/Nunito-Regular.ttf"))
-    assert_PASS(check(ttFont))
+    assert assert_PASS(check(ttFont)) == "OK"
 
-    import fontTools.subset
-
-    subsetter = fontTools.subset.Subsetter()
-    subsetter.populate(glyphs="n")  # Arbitrarily remove everything except n.
+    options = subset.Options()
+    options.glyph_names = True  # Preserve glyph names
+    # By default, the subsetter keeps the '.notdef' glyph but removes its outlines
+    subsetter = subset.Subsetter(options)
+    subsetter.populate(text="mn")  # Arbitrarily remove everything except 'm' and 'n'
     subsetter.subset(ttFont)
-    # It seems that fontTools automatically adds '.notdef' as the 1st glyph
-    # but as an empty one, so the check should complain about it:
-    assert_results_contain(check(ttFont), WARN, "empty")
-    # FIXME: The assumption above should be double-checked!
+    message = assert_results_contain(check(ttFont), WARN, "notdef-is-blank")
+    assert message == "The '.notdef' glyph should contain a drawing, but it is blank."
 
-    # TODO: assert_results_contain(check(ttFont),
-    #                              WARN, 'codepoint')
+    options.notdef_glyph = False  # Drop '.notdef' glyph
+    subsetter = subset.Subsetter(options)
+    subsetter.populate(text="mn")
+    subsetter.subset(ttFont)
+    message = assert_results_contain(check(ttFont), WARN, "notdef-not-found")
+    assert message == "Font should contain the '.notdef' glyph."
 
-    # TODO: assert_results_contain(check(ttFont),
-    #                              WARN, 'first-glyph')
+    # Change the glyph name from 'n' to '.notdef'
+    ttFont.glyphOrder = ["m", ".notdef"]
+    for subtable in ttFont["cmap"].tables:
+        if subtable.isUnicode():
+            subtable.cmap[110] = ".notdef"
+
+    results = check(ttFont)
+    message = assert_results_contain([results[0]], WARN, "notdef-not-first")
+    assert message == "The '.notdef' should be the font's first glyph."
+
+    message = assert_results_contain([results[1]], WARN, "notdef-has-codepoint")
+    assert message == (
+        "The '.notdef' glyph should not have a Unicode codepoint value assigned,"
+        " but has 0x006E."
+    )
 
 
 def _remove_cmap_entry(font, cp):
@@ -795,8 +801,6 @@ def test_check_unwanted_tables():
 
 
 def test_glyph_has_ink():
-    from openbakery.utils import glyph_has_ink
-
     print()  # so next line doesn't start with '.....'
 
     cff_test_font = TTFont(TEST_FILE("source-sans-pro/OTF/SourceSansPro-Regular.otf"))
@@ -821,13 +825,14 @@ def test_glyph_has_ink():
 
 
 mada_fonts = [
+    # ⚠️ 'test_check_family_win_ascent_and_descent' expects the Regular font to be first
+    TEST_FILE("mada/Mada-Regular.ttf"),
     TEST_FILE("mada/Mada-Black.ttf"),
+    TEST_FILE("mada/Mada-Bold.ttf"),
     TEST_FILE("mada/Mada-ExtraLight.ttf"),
+    TEST_FILE("mada/Mada-Light.ttf"),
     TEST_FILE("mada/Mada-Medium.ttf"),
     TEST_FILE("mada/Mada-SemiBold.ttf"),
-    TEST_FILE("mada/Mada-Bold.ttf"),
-    TEST_FILE("mada/Mada-Light.ttf"),
-    TEST_FILE("mada/Mada-Regular.ttf"),
 ]
 
 
@@ -841,32 +846,53 @@ def test_check_family_win_ascent_and_descent(mada_ttFonts):
     check = CheckTester(
         universal_profile, "com.google.fonts/check/family/win_ascent_and_descent"
     )
-    from openbakery.profiles.shared_conditions import vmetrics
 
-    # Our reference Mada Regular is know to be bad here.
-    ttFont = TTFont(TEST_FILE("mada/Mada-Regular.ttf"))
-
-    # But we fix it first to test the PASS code-path:
-    vm = vmetrics(mada_ttFonts)
-    ttFont["OS/2"].usWinAscent = vm["ymax"]
-    ttFont["OS/2"].usWinDescent = abs(vm["ymin"])
-    assert_PASS(check(ttFont), "with a good font...")
-
-    # Then we break it:
-    ttFont["OS/2"].usWinAscent = 0  # FIXME: this should be bad as well: vm['ymax'] - 1
-    ttFont["OS/2"].usWinDescent = abs(vm["ymin"])
-    assert_results_contain(
-        check(ttFont), FAIL, "ascent", "with a bad OS/2.usWinAscent..."
+    # Mada Regular is know to be bad
+    # single font input
+    ttFont = TTFont(mada_fonts[0])
+    message = assert_results_contain(check(ttFont), FAIL, "ascent")
+    assert message == (
+        "OS/2.usWinAscent value should be"
+        " equal or greater than 880, but got 776 instead"
+    )
+    # multi font input
+    check_results = check(mada_ttFonts)
+    message = assert_results_contain([check_results[0]], FAIL, "ascent")
+    assert message == (
+        "OS/2.usWinAscent value should be"
+        " equal or greater than 918, but got 776 instead"
+    )
+    message = assert_results_contain([check_results[1]], FAIL, "descent")
+    assert message == (
+        "OS/2.usWinDescent value should be"
+        " equal or greater than 406, but got 322 instead"
     )
 
-    # and also this other way of breaking it:
-    ttFont["OS/2"].usWinAscent = vm["ymax"]
-    ttFont[
-        "OS/2"
-    ].usWinDescent = 0  # FIXME: this should be bad as well: abs(vm['ymin']) - 1
-    assert_results_contain(
-        check(ttFont), FAIL, "descent", "with a bad OS/2.usWinDescent..."
+    # Fix usWinAscent
+    ttFont["OS/2"].usWinAscent = 880
+    message = assert_PASS(check(ttFont))
+    assert message == "OS/2 usWinAscent & usWinDescent values look good!"
+
+    # Make usWinAscent too large
+    ttFont["OS/2"].usWinAscent = 880 * 2 + 1
+    message = assert_results_contain(check(ttFont), FAIL, "ascent")
+    assert message == (
+        "OS/2.usWinAscent value 1761 is too large. "
+        "It should be less than double the yMax. Current yMax value is 880"
     )
+
+    # Make usWinDescent too large
+    ttFont["OS/2"].usWinDescent = 292 * 2 + 1
+    message = assert_results_contain(check(ttFont), FAIL, "descent")
+    assert message == (
+        "OS/2.usWinDescent value 585 is too large."
+        " It should be less than double the yMin. Current absolute yMin value is 292"
+    )
+
+    # Delete OS/2 table
+    del ttFont["OS/2"]
+    message = assert_results_contain(check(ttFont), FAIL, "lacks-OS/2")
+    assert message == "Font file lacks OS/2 table"
 
 
 def test_check_os2_metrics_match_hhea():
@@ -906,26 +932,44 @@ def test_check_os2_metrics_match_hhea():
         check(ttFont), FAIL, "descender", "with a bad OS/2.sTypoDescender font..."
     )
 
+    # Delete OS/2 table
+    del ttFont["OS/2"]
+    message = assert_results_contain(check(ttFont), FAIL, "lacks-OS/2")
+    assert message == "Mada-Black.ttf lacks a 'OS/2' table."
+
 
 def test_check_family_vertical_metrics(montserrat_ttFonts):
     check = CheckTester(
         universal_profile, "com.google.fonts/check/family/vertical_metrics"
     )
 
-    assert_PASS(check(montserrat_ttFonts), "with multiple good fonts...")
+    msg = assert_PASS(check(montserrat_ttFonts), "with multiple good fonts...")
+    assert msg == "Vertical metrics are the same across the family."
 
-    montserrat_ttFonts[0]["OS/2"].usWinAscent = 4000
-    assert_results_contain(
-        check(montserrat_ttFonts),
-        FAIL,
-        "usWinAscent-mismatch",
-        "with one bad font that has one different vertical metric val...",
+    montserrat_ttFonts[0]["OS/2"].sTypoAscender = 3333
+    montserrat_ttFonts[1]["OS/2"].usWinAscent = 4444
+    results = check(montserrat_ttFonts)
+    msg = assert_results_contain([results[0]], FAIL, "sTypoAscender-mismatch")
+    assert "Montserrat Black: 3333" in msg
+    msg = assert_results_contain([results[1]], FAIL, "usWinAscent-mismatch")
+    assert "Montserrat Black Italic: 4444" in msg
+
+    del montserrat_ttFonts[2]["OS/2"]
+    del montserrat_ttFonts[3]["hhea"]
+    results = check(montserrat_ttFonts)
+    msg = assert_results_contain([results[0]], FAIL, "lacks-OS/2")
+    assert msg == "Montserrat-Bold.ttf lacks an 'OS/2' table."
+    msg = assert_results_contain([results[1]], FAIL, "lacks-hhea")
+    assert msg == "Montserrat-BoldItalic.ttf lacks a 'hhea' table."
+
+
+def test_check_superfamily_list():
+    check = CheckTester(universal_profile, "com.google.fonts/check/superfamily/list")
+
+    msg = assert_results_contain(
+        check([], {"superfamily": [cabin_fonts]}), INFO, "family-path"
     )
-
-    # TODO: Also test these code-paths:
-    # FAIL, 'mismatch-<other values>'
-    # FAIL, 'lacks-OS/2'
-    # FAIL, 'lacks-hhea'
+    assert msg == os.path.normpath("data/test/cabin")
 
 
 def test_check_superfamily_vertical_metrics(
@@ -934,6 +978,9 @@ def test_check_superfamily_vertical_metrics(
     check = CheckTester(
         universal_profile, "com.google.fonts/check/superfamily/vertical_metrics"
     )
+
+    msg = assert_SKIP(check([], {"superfamily_ttFonts": [cabin_ttFonts[0]]}))
+    assert msg == "Sibling families were not detected."
 
     assert_PASS(
         check([], {"superfamily_ttFonts": [cabin_ttFonts, cabin_condensed_ttFonts]}),
@@ -962,36 +1009,22 @@ def test_check_rupee():
     """Ensure indic fonts have the Indian Rupee Sign glyph."""
     check = CheckTester(universal_profile, "com.google.fonts/check/rupee")
 
-    # FIXME: This should be possible:
-    #          The `assert_SKIP` helper should be able to detect when a
-    #          check skips due to unmet @conditions.
-    #          For now it only detects explicit SKIP messages instead.
-    #
-    # non_indic = TTFont(TEST_FILE("mada/Mada-Regular.ttf"))
-    # assert_SKIP(check(non_indic),
-    #             "with a non-indic font.")
-    #
-    #        But for now we have to do this:
-    #
-    from openbakery.profiles.shared_conditions import is_indic_font
-
-    print("Ensure the check will SKIP when dealing with a non-indic font...")
-    non_indic = TTFont(TEST_FILE("mada/Mada-Regular.ttf"))
-    assert is_indic_font(non_indic) is False
+    ttFont = TTFont(TEST_FILE("mada/Mada-Regular.ttf"))
+    msg = assert_results_contain(check(ttFont), SKIP, "unfulfilled-conditions")
+    assert msg == "Unfulfilled Conditions: is_indic_font"
 
     # This one is good:
     ttFont = TTFont(
         TEST_FILE("indic-font-with-rupee-sign/NotoSerifDevanagari-Regular.ttf")
     )
-    assert_PASS(check(ttFont), "with a sample font that has the Indian Rupee Sign.")
+    assert assert_PASS(check(ttFont)) == "Looks good!"
 
     # But this one lacks the glyph:
     ttFont = TTFont(
         TEST_FILE("indic-font-without-rupee-sign/NotoSansOlChiki-Regular.ttf")
     )
-    assert_results_contain(
-        check(ttFont), FAIL, "missing-rupee", "with a sample font missing it."
-    )
+    msg = assert_results_contain(check(ttFont), FAIL, "missing-rupee")
+    assert msg == "Please add a glyph for Indian Rupee Sign (₹) at codepoint U+20B9."
 
 
 def test_check_unreachable_glyphs():
@@ -1059,14 +1092,36 @@ def test_check_soft_hyphen(montserrat_ttFonts):
 
 def test_check_contour_count(montserrat_ttFonts):
     """Check glyphs contain the recommended contour count"""
+    from fontTools import subset
+
     check = CheckTester(universal_profile, "com.google.fonts/check/contour_count")
-    # TODO: test FAIL, "lacks-cmap"
-    # TODO: test PASS
+
+    ttFont = TTFont(TEST_FILE("rokkitt/Rokkitt-Regular.otf"))
+    msg = assert_results_contain(check(ttFont), SKIP, "unfulfilled-conditions")
+    assert msg == "Unfulfilled Conditions: is_ttf"
+
+    ttFont = TTFont(TEST_FILE("mutatorsans-vf/MutatorSans-VF.ttf"))
+    msg = assert_results_contain(check(ttFont), SKIP, "unfulfilled-conditions")
+    assert msg == "Unfulfilled Conditions: not is_variable_font"
+
+    ttFont = montserrat_ttFonts[0]
 
     # Lets swap the glyf 'a' (2 contours) with glyf 'c' (1 contour)
-    for ttFont in montserrat_ttFonts:
-        ttFont["glyf"]["a"] = ttFont["glyf"]["c"]
-        assert_results_contain(check(ttFont), WARN, "contour-count")
+    ttFont["glyf"]["a"] = ttFont["glyf"]["c"]
+    msg = assert_results_contain(check(ttFont), WARN, "contour-count")
+    assert "Glyph name: a\tContours detected: 1\tExpected: 2" in msg
+
+    # Subset the font to just the 'c' glyph to get a PASS
+    subsetter = subset.Subsetter()
+    subsetter.populate(text="c")
+    subsetter.subset(ttFont)
+    msg = assert_PASS(check(ttFont))
+    assert msg == "All glyphs have the recommended amount of contours"
+
+    # Now delete the 'cmap' table to trigger a FAIL
+    del ttFont["cmap"]
+    msg = assert_results_contain(check(ttFont), FAIL, "lacks-cmap")
+    assert msg == "This font lacks cmap data."
 
 
 def test_check_cjk_chws_feature():
@@ -1272,8 +1327,13 @@ def test_check_STAT_in_statics():
     """Checking STAT table on static fonts."""
     check = CheckTester(universal_profile, "com.google.fonts/check/STAT_in_statics")
 
+    ttFont = TTFont(TEST_FILE("cabin/Cabin-Regular.ttf"))
+    msg = assert_results_contain(check(ttFont), SKIP, "unfulfilled-conditions")
+    assert msg == "Unfulfilled Conditions: has_STAT_table"
+
     ttFont = TTFont(TEST_FILE("varfont/RobotoSerif[GRAD,opsz,wdth,wght].ttf"))
-    assert_SKIP(check(ttFont), "with a variable font...")
+    msg = assert_results_contain(check(ttFont), SKIP, "unfulfilled-conditions")
+    assert msg == "Unfulfilled Conditions: not is_variable_font"
 
     # Remove fvar table to make OpenBakery think it is dealing with a static font
     del ttFont["fvar"]
@@ -1281,18 +1341,13 @@ def test_check_STAT_in_statics():
     # We know that our reference RobotoSerif varfont (which the check is induced
     # here to think it is a static font) has multiple records per design axis in its
     # STAT table:
-    assert_results_contain(
-        check(ttFont),
-        FAIL,
-        "multiple-STAT-entries",
-        "with a static font with a bad STAT table...",
-    )
+    msg = assert_results_contain(check(ttFont), FAIL, "multiple-STAT-entries")
+    assert "The STAT table has more than a single entry for the 'opsz' axis (5)" in msg
 
     # Remove all entries except the very first one:
     stat = ttFont["STAT"].table
     stat.AxisValueArray.AxisCount = 1
     stat.AxisValueArray.AxisValue = [stat.AxisValueArray.AxisValue[0]]
 
-    # And finally, completely remove STAT and it should PASS:
-    del ttFont["STAT"]
-    assert_PASS(check(ttFont))
+    # It should PASS now
+    assert assert_PASS(check(ttFont)) == "Looks good!"
