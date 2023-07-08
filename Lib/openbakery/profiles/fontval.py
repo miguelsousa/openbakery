@@ -38,7 +38,7 @@ def com_google_fonts_check_fontvalidator(font, config):
     if not shutil.which("FontValidator"):
         yield FAIL, Message(
             "fontval-not-available",
-            "Mono runtime and/or Microsoft Font Validator" " are not available!",
+            "Mono runtime and/or Microsoft Font Validator are not available!",
         )
         return
 

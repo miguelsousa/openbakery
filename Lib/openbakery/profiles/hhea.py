@@ -36,7 +36,7 @@ def com_google_fonts_check_maxadvancewidth(ttFont):
         )
     else:
         yield PASS, (
-            "MaxAdvanceWidth is consistent" " with values in the Hmtx and Hhea tables."
+            "MaxAdvanceWidth is consistent with values in the Hmtx and Hhea tables."
         )
 
 
@@ -85,8 +85,8 @@ def com_google_fonts_check_caret_slope(ttFont):
     if abs(postItalicAngle - hheaItalicAngle) > 0.1:
         yield FAIL, Message(
             "caretslope-mismatch",
-            f"hhea.caretSlopeRise and hhea.caretSlopeRun"
-            f" do not match with post.italicAngle.\n"
+            "hhea.caretSlopeRise and hhea.caretSlopeRun"
+            " do not match with post.italicAngle.\n"
             f"Got: caretSlopeRise {ttFont['hhea'].caretSlopeRise}"
             f" and caretSlopeRun {ttFont['hhea'].caretSlopeRun}\n"
             f"Expected: caretSlopeRise {expectedCaretSlopeRise}"
@@ -94,5 +94,5 @@ def com_google_fonts_check_caret_slope(ttFont):
         )
     else:
         yield PASS, (
-            "hhea.caretSlopeRise and hhea.caretSlopeRun" " match with post.italicAngle."
+            "hhea.caretSlopeRise and hhea.caretSlopeRun match with post.italicAngle."
         )

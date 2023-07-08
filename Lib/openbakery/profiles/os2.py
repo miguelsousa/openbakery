@@ -156,7 +156,7 @@ def com_google_fonts_check_xavgcharwidth(ttFont):
         if not all(character in glyph_order for character in weightFactors):
             yield FAIL, Message(
                 "missing-glyphs",
-                "Font is missing the required" " latin lowercase letters and/or space.",
+                "Font is missing the required latin lowercase letters and/or space.",
             )
             return
 
@@ -223,7 +223,7 @@ def com_adobe_fonts_check_fsselection_matches_macstyle(ttFont):
         failed = True
         yield FAIL, Message(
             "fsselection-macstyle-bold",
-            "The OS/2.fsSelection and head.macStyle " "bold settings do not match.",
+            "The OS/2.fsSelection and head.macStyle bold settings do not match.",
         )
     head_italic = (ttFont["head"].macStyle & MacStyle.ITALIC) != 0
     os2_italic = (ttFont["OS/2"].fsSelection & FsSelection.ITALIC) != 0
@@ -231,11 +231,11 @@ def com_adobe_fonts_check_fsselection_matches_macstyle(ttFont):
         failed = True
         yield FAIL, Message(
             "fsselection-macstyle-italic",
-            "The OS/2.fsSelection and head.macStyle " "italic settings do not match.",
+            "The OS/2.fsSelection and head.macStyle italic settings do not match.",
         )
     if not failed:
         yield PASS, (
-            "The OS/2.fsSelection and head.macStyle " "bold and italic settings match."
+            "The OS/2.fsSelection and head.macStyle bold and italic settings match."
         )
 
 
@@ -260,7 +260,7 @@ def com_adobe_fonts_check_family_bold_italic_unique_for_nameid1(RIBBI_ttFonts):
     from openbakery.constants import NameID, FsSelection
 
     failed = False
-    family_name_and_bold_italic = list()
+    family_name_and_bold_italic = []
     for ttFont in RIBBI_ttFonts:
         names_list = get_name_entry_strings(ttFont, NameID.FONT_FAMILY_NAME)
         # names_list will likely contain multiple entries, e.g. multiple copies
@@ -392,9 +392,6 @@ def com_thetypefounders_check_vendor_id(config, ttFont):
 )
 def com_google_fonts_check_fsselection(ttFont, style):
     """Checking OS/2 fsSelection value."""
-    import logging
-
-    logging.warning(f"{ttFont}, {style}")
     from openbakery.utils import check_bit_entry
     from openbakery.constants import STATIC_STYLE_NAMES, RIBBI_STYLE_NAMES, FsSelection
 

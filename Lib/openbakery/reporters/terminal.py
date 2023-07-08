@@ -157,7 +157,7 @@ class TerminalProgress(OpenBakeryReporter):
         print_progress=True,
         stdout=sys.stdout,
         structure_threshold=None,
-        theme=LIGHT_THEME,
+        theme=None,
         succinct=None,
         cupcake=True,
         # a tuple of structural statuses to be skipped
@@ -167,7 +167,7 @@ class TerminalProgress(OpenBakeryReporter):
     ):
         super().__init__(**kwd)
 
-        self.theme = theme
+        self.theme = theme or LIGHT_THEME
         self.succinct = succinct
         self._print_progress = stdout.isatty() and print_progress
 
@@ -287,7 +287,7 @@ class TerminalProgress(OpenBakeryReporter):
 
         # together with unicode_literals `str('status')` seems the best
         # py2 and py3 compatible solution
-        status = type(str("status"), (object,), dict(count=0, progressbar=[]))
+        status = type(str("status"), (object,), {"count": 0, "progressbar": []})
 
         def _append(status, item, length=1, separator=""):
             # * assuming a standard item will take one column in the tty
@@ -378,7 +378,9 @@ class TerminalReporter(TerminalProgress):
         # FAIL, PASS and SKIP are only expected within checks though
         # Log statuses have weights >= 0
         log_threshold = (
-            log_threshold if type(log_threshold) is not Status else log_threshold.weight
+            log_threshold
+            if not isinstance(log_threshold, Status)
+            else log_threshold.weight
         )
         self._log_threshold = min(ERROR.weight + 1, max(0, log_threshold))
 
@@ -390,7 +392,7 @@ class TerminalReporter(TerminalProgress):
         # default: no DEBUG output
         check_threshold = (
             check_threshold
-            if type(check_threshold) is not Status
+            if not isinstance(check_threshold, Status)
             else check_threshold.weight
         )
         self._check_threshold = min(ERROR.weight + 1, max(PASS.weight, check_threshold))

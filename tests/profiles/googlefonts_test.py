@@ -124,10 +124,9 @@ def test_example_checkrunner_based(cabin_regular_path):
     from openbakery.checkrunner import CheckRunner
     from openbakery.profiles.googlefonts import profile
 
-    values = dict(fonts=[cabin_regular_path])
     runner = CheckRunner(
         profile,
-        values,
+        {"fonts": [cabin_regular_path]},
         Configuration(explicit_checks=["com.google.fonts/check/vendor_id"]),
     )
 
@@ -325,7 +324,7 @@ def test_check_description_valid_html():
         check(font), "with description file that contains a good HTML snippet..."
     )
 
-    bad_desc = open(TEST_FILE("cabin/FONTLOG.txt"), "r").read()  # :-)
+    bad_desc = open(TEST_FILE("cabin/FONTLOG.txt"), "r", encoding="utf-8").read()
     assert_results_contain(
         check(font, {"description": bad_desc}),
         FAIL,
@@ -402,7 +401,7 @@ def test_check_description_eof_linebreak():
         "when we lack an end-of-file linebreak...",
     )
 
-    good = "On the other hand, this one\n" "is good enough.\n"
+    good = "On the other hand, this one\nis good enough.\n"
     assert_PASS(check(font, {"description": good}), "when we add one...")
 
 
@@ -712,7 +711,7 @@ def test_check_metadata_designer_values():
         check(font, {"family_metadata": md}),
         FAIL,
         "slash",
-        "with a bad multiple-designers string" " (names separated by a slash char)...",
+        "with a bad multiple-designers string (names separated by a slash char)...",
     )
 
 
@@ -2763,7 +2762,7 @@ def test_check_metadata_nameid_copyright():
         check(font, {"font_metadata": md}),
         FAIL,
         "mismatch",
-        "with a bad METADATA.pb" " (with a copyright string not matching this font)...",
+        "with a bad METADATA.pb (with a copyright string not matching this font)...",
     )
 
 
@@ -3486,13 +3485,13 @@ def test_check_family_control_chars():
     )
 
     good_font = TEST_FILE(
-        "bad_character_set/control_chars/" "FontbakeryTesterCCGood-Regular.ttf"
+        "bad_character_set/control_chars/FontbakeryTesterCCGood-Regular.ttf"
     )
     onebad_cc_font = TEST_FILE(
-        "bad_character_set/control_chars/" "FontbakeryTesterCCOneBad-Regular.ttf"
+        "bad_character_set/control_chars/FontbakeryTesterCCOneBad-Regular.ttf"
     )
     multibad_cc_font = TEST_FILE(
-        "bad_character_set/control_chars/" "FontbakeryTesterCCMultiBad-Regular.ttf"
+        "bad_character_set/control_chars/FontbakeryTesterCCMultiBad-Regular.ttf"
     )
 
     # No unacceptable control characters should pass with one file
@@ -3631,7 +3630,7 @@ def test_check_repo_vf_has_static_fonts(tmp_path):
         check(dir_path, {"family_directory": family_dir}),
         FAIL,
         "empty",
-        "for a VF family which has a static dir" " but no fonts in the static dir.",
+        "for a VF family which has a static dir but no fonts in the static dir.",
     )
 
     static_fonts = portable_path("data/test/cabin")
@@ -3695,7 +3694,7 @@ def test_check_repo_fb_report(tmp_path):
     )
 
     # Add a json file that is not a FB report
-    open(os.path.join(family_dir, "something_else.json"), "w+").write(
+    open(os.path.join(family_dir, "something_else.json"), "w+", encoding="utf-8").write(
         "this is not a FB report"
     )
 
@@ -3713,7 +3712,9 @@ def test_check_repo_fb_report(tmp_path):
     # should not rely only on filename (such as "Jura-Regular.fb-report.json")
     # but should instead inspect the contents of the file:
     open(
-        os.path.join(family_dir, "jura", "static", "my_fontfamily_name.json"), "w+"
+        os.path.join(family_dir, "jura", "static", "my_fontfamily_name.json"),
+        "w+",
+        encoding="utf-8",
     ).write(FB_REPORT_SNIPPET)
     assert_results_contain(
         check([], {"family_directory": family_dir}),
@@ -3741,7 +3742,7 @@ def test_check_repo_zip_files(tmp_path):
         # ZIP files must be detected even if placed on subdirectories:
         filepath = os.path.join(family_dir, "jura", "static", f"fonts-release.{ext}")
         # create an empty file. The check won't care about the contents:
-        open(filepath, "w+")
+        open(filepath, "w+", encoding="utf-8")
         assert_results_contain(
             check([], {"family_directory": family_dir}),
             FAIL,
@@ -3901,7 +3902,7 @@ def test_check_vertical_metrics_regressions(cabin_ttFonts):
         "enabled and the fonts being checked don't.",
     )
 
-    if 0:  # FIXME:
+    if 0:  # FIXME: pylint:disable=W0125
         # Pass if family on Google Fonts doesn't have fsSelection bit 7 enabled
         # but checked fonts have taken this into consideration
         check(ttFonts)
@@ -3927,7 +3928,7 @@ def test_check_vertical_metrics_regressions(cabin_ttFonts):
             " fonts win metrics.",
         )
 
-    if 0:  # FIXME:
+    if 0:  # FIXME: pylint:disable=W0125
         # Same as previous check but using a remote font which has a different upm
         check(ttFonts)
         remote_regular = check["regular_remote_style"]
@@ -4176,7 +4177,7 @@ def test_check_varfont_instance_coordinates(vf_ttFont):
         check(vf_ttFont2),
         FAIL,
         "bad-fvar-instances",
-        "with a variable font which does not have" " correct instance coordinates.",
+        "with a variable font which does not have correct instance coordinates.",
     )
 
 
@@ -4505,7 +4506,7 @@ def test_check_description_family_update():
     )
     import requests
 
-    desc = requests.get(ABEEZEE_DESC).text
+    desc = requests.get(ABEEZEE_DESC, timeout=10).text
     assert_results_contain(
         check(font, {"description": desc}), WARN, "description-not-updated"
     )
@@ -4839,30 +4840,42 @@ def test_check_fvar_instances(fp, mod, result):
             ],
             # STAT for Cabin[wdth,wght].ttf
             [
-                dict(
-                    name="Weight",
-                    tag="wght",
-                    values=[
-                        dict(value=400, name="Regular", linkedValue=700.0, flags=0x2),
-                        dict(value=500, name="Medium"),
-                        dict(value=600, name="SemiBold"),
-                        dict(value=700, name="Bold"),
+                {
+                    "name": "Weight",
+                    "tag": "wght",
+                    "values": [
+                        {
+                            "value": 400,
+                            "name": "Regular",
+                            "linkedValue": 700.0,
+                            "flags": 0x2,
+                        },
+                        {"value": 500, "name": "Medium"},
+                        {"value": 600, "name": "SemiBold"},
+                        {"value": 700, "name": "Bold"},
                     ],
-                ),
-                dict(
-                    name="Width",
-                    tag="wdth",
-                    values=[
-                        dict(value=75, name="Condensed"),
-                        dict(value=87.5, name="SemiCondensed"),
-                        dict(value=100, name="Normal", flags=0x2),
+                },
+                {
+                    "name": "Width",
+                    "tag": "wdth",
+                    "values": [
+                        {"value": 75, "name": "Condensed"},
+                        {"value": 87.5, "name": "SemiCondensed"},
+                        {"value": 100, "name": "Normal", "flags": 0x2},
                     ],
-                ),
-                dict(
-                    name="Italic",
-                    tag="ital",
-                    values=[dict(value=0.0, name="Normal", linkedValue=1.0, flags=0x2)],
-                ),
+                },
+                {
+                    "name": "Italic",
+                    "tag": "ital",
+                    "values": [
+                        {
+                            "value": 0.0,
+                            "name": "Normal",
+                            "linkedValue": 1.0,
+                            "flags": 0x2,
+                        }
+                    ],
+                },
             ],
             PASS,
         ),

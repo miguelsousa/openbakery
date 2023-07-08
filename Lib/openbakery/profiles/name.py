@@ -292,7 +292,7 @@ def com_google_fonts_check_monospace(ttFont, glyph_metrics_stats):
             )
         if passed:
             yield PASS, Message(
-                "good", "Font is not monospaced and" " all related metadata look good."
+                "good", "Font is not monospaced and all related metadata look good."
             )
 
 
@@ -594,7 +594,7 @@ def com_adobe_fonts_check_name_postscript_name_consistency(ttFont):
         )
     else:
         yield PASS, (
-            'Entries in the "name" table for ID 6 ' "(PostScript name) are consistent."
+            'Entries in the "name" table for ID 6 (PostScript name) are consistent.'
         )
 
 
@@ -613,7 +613,7 @@ def com_adobe_fonts_check_family_max_4_fonts_per_family_name(ttFonts):
     from collections import Counter
     from openbakery.utils import get_name_entry_strings
 
-    family_names = list()
+    family_names = []
     for ttFont in ttFonts:
         names_list = get_name_entry_strings(
             ttFont,
@@ -775,7 +775,7 @@ def com_google_fonts_check_name_italic_names(ttFont, style):
             if not get_name(NameID.TYPOGRAPHIC_SUBFAMILY_NAME).endswith("Italic"):
                 yield FAIL, Message(
                     "bad-typographicsubfamilyname",
-                    "Name ID 17 (Typographic Subfamily Name)" " must contain 'Italic'.",
+                    "Name ID 17 (Typographic Subfamily Name) must contain 'Italic'.",
                 )
                 passed = False
 

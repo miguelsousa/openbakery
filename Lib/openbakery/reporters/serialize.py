@@ -60,15 +60,15 @@ class SerializeReporter(OpenBakeryReporter):
             self._items[key] = item
             # init
             if status in (START, END) and not item:
-                item.update(dict(result=None, sections=[]))
+                item.update({"result": None, "sections": []})
                 if self._results_by:
                     # give the consumer a clue that/how the sections
                     # are structured differently.
                     item["clusteredBy"] = self._results_by
             if status == SECTIONSUMMARY:
-                item.update(dict(key=key, result=None, checks=[]))
+                item.update({"key": key, "result": None, "checks": []})
             if check:
-                item.update(dict(key=key, result=None, logs=[]))
+                item.update({"key": key, "result": None, "logs": []})
                 if self._results_by:
                     if self._results_by == "*check":
                         if check.id not in self._observed_checks:
@@ -140,7 +140,7 @@ class SerializeReporter(OpenBakeryReporter):
 
             check = self._items[key]
             if self._results_by:
-                if not len(sectionDoc["checks"]):
+                if not sectionDoc["checks"]:
                     clusterlen = self._max_cluster_by_index + 1
                     if self._results_by != "*check":
                         # + 1 for rests bucket
@@ -162,6 +162,6 @@ class SerializeReporter(OpenBakeryReporter):
     def write(self):
         import json
 
-        with open(self.output_file, "w") as fh:
+        with open(self.output_file, "w", encoding="utf-8") as fh:
             json.dump(self.getdoc(), fh, sort_keys=True, indent=4)
         print(f'A report in JSON format has been saved to "{self.output_file}"')

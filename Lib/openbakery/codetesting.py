@@ -58,6 +58,7 @@ class CheckTester:
         self.check_section = None
         self.check = None
         self.check_iterargs = None
+        self.runner = None
         self._args = None
 
     def _get_args(self, condition_overrides=None):
@@ -97,7 +98,7 @@ class CheckTester:
         if key in self.runner._cache["conditions"]:
             return self.runner._cache["conditions"][key][1]
 
-    def __call__(self, values, condition_overrides={}):
+    def __call__(self, values, condition_overrides=None):
         from fontTools.ttLib import TTFont
         from openbakery.profiles.googlefonts_conditions import family_metadata
         from glyphsLib import GSFont
@@ -197,7 +198,7 @@ def GLYPHSAPP_TEST_FILE(f):
     import glyphsLib
 
     the_file = portable_path(f"{PATH_TEST_DATA_GLYPHS_FILES}{f}")
-    return glyphsLib.load(open(the_file))
+    return glyphsLib.load(open(the_file, encoding="utf-8"))
 
 
 def assert_PASS(check_results, reason="with a good font...", ignore_error=None):

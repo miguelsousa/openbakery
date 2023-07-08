@@ -199,7 +199,8 @@ def test_check_unique_glyphnames():
     # Load again, we changed the font directly.
     ttFont = TTFont(TEST_FILE("nunito/Nunito-Regular.ttf"))
     ttFont.setGlyphOrder(glyph_names)
-    ttFont["post"]  # Just access the data to make fonttools generate it.
+    # Just access the data to make fonttools generate it.
+    ttFont["post"]  # pylint:disable=pointless-statement
     _file = io.BytesIO()
     _file.name = ttFont.reader.file.name
     ttFont.save(_file)
@@ -663,7 +664,7 @@ def test_check_required_tables():
     # Here we confirm that the check also yields INFO with
     # a list of table tags specific to the font.
     msg = assert_results_contain(check(ttFont), INFO, "optional-tables")
-    for tag in {"loca", "GPOS", "GSUB"}:
+    for tag in ("loca", "GPOS", "GSUB"):
         assert tag in msg
 
     # The OpenType-CFF font contains all required tables, so it must PASS the check.
@@ -673,7 +674,7 @@ def test_check_required_tables():
     # Here we confirm that the check also yields INFO with
     # a list of table tags specific to the OpenType-CFF font.
     msg = assert_results_contain(check(cff_font), INFO, "optional-tables")
-    for tag in {"BASE", "GPOS", "GSUB"}:
+    for tag in ("BASE", "GPOS", "GSUB"):
         assert tag in msg
 
     # The font must also contain the table that holds the outlines, "CFF " in this case.
@@ -688,7 +689,7 @@ def test_check_required_tables():
     # Here we confirm that the check also yields INFO with
     # a list of table tags specific to the OpenType-CFF2 font.
     msg = assert_results_contain(check(cff2_font), INFO, "optional-tables")
-    for tag in {"BASE", "GPOS", "GSUB"}:
+    for tag in ("BASE", "GPOS", "GSUB"):
         assert tag in msg
 
     # The font must also contain the table that holds the outlines, "CFF2" in this case.
