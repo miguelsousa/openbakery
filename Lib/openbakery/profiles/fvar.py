@@ -336,7 +336,7 @@ def com_adobe_fonts_check_varfont_valid_axis_nameid(ttFont, has_name_table):
     name_table = ttFont["name"]
 
     font_axis_nameids = [axis.axisNameID for axis in ttFont["fvar"].axes]
-    invalid_axis_nameids = [val for val in font_axis_nameids if not (255 < val < 32768)]
+    invalid_axis_nameids = [val for val in font_axis_nameids if not 255 < val < 32768]
 
     for nameid in invalid_axis_nameids:
         inst_name = name_table.getDebugName(nameid) or "Unnamed"

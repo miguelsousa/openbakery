@@ -233,12 +233,12 @@ def com_google_fonts_check_outline_jaggy_segments(ttFont, outlines_dict, config)
                 this = segments[i]
                 in_vector = prev.tangentAtTime(1) * -1
                 out_vector = this.tangentAtTime(0)
-                if not (in_vector.magnitude * out_vector.magnitude):
+                if not in_vector.magnitude * out_vector.magnitude:
                     continue
                 angle = (in_vector @ out_vector) / (
                     in_vector.magnitude * out_vector.magnitude
                 )
-                if not (-1 <= angle <= 1):
+                if not -1 <= angle <= 1:
                     continue
                 jag_angle = math.acos(angle)
                 if abs(jag_angle) > JAG_ANGLE or jag_angle == 0:

@@ -227,9 +227,9 @@ def com_fontwerk_check_style_linking(ttFont):
 
     errs = []
     if is_bold(ttFont):
-        if not (ttFont["OS/2"].fsSelection & FsSelection.BOLD):
+        if not ttFont["OS/2"].fsSelection & FsSelection.BOLD:
             errs.append("OS/2 fsSelection flag should be (most likely) 'Bold'.")
-        if not (ttFont["head"].macStyle & MacStyle.BOLD):
+        if not ttFont["head"].macStyle & MacStyle.BOLD:
             errs.append("head macStyle flag should be (most likely) 'Bold'.")
         if ttFont["name"].getDebugName(2) not in ("Bold", "Bold Italic"):
             name_id_2_should_be = "Bold"
@@ -242,9 +242,9 @@ def com_fontwerk_check_style_linking(ttFont):
             errs.append(
                 "post talbe italic angle should be (most likely) different to 0."
             )
-        if not (ttFont["OS/2"].fsSelection & FsSelection.ITALIC):
+        if not ttFont["OS/2"].fsSelection & FsSelection.ITALIC:
             errs.append("OS/2 fsSelection flag should be (most likely) 'Italic'.")
-        if not (ttFont["head"].macStyle & MacStyle.ITALIC):
+        if not ttFont["head"].macStyle & MacStyle.ITALIC:
             errs.append("head macStyle flag should be (most likely) 'Italic'.")
         if ttFont["name"].getDebugName(2) not in ("Italic", "Bold Italic"):
             name_id_2_should_be = "Italic"
