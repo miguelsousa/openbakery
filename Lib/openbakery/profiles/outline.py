@@ -144,7 +144,7 @@ def com_google_fonts_check_outline_short_segments(ttFont, outlines_dict, config)
                 prev_was_line = len(seg) == 2
         if len(warnings) > FALSE_POSITIVE_CUTOFF:
             yield PASS, (
-                "So many short segments were found" " that this was probably by design."
+                "So many short segments were found that this was probably by design."
             )
             return
 

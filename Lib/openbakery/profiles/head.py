@@ -106,7 +106,7 @@ def parse_version_string(name: str) -> float:
 
     if version_string is None:
         raise ValueError(
-            "The version string didn't contain a" " number of the format `major.minor`."
+            "The version string didn't contain a number of the format `major.minor`."
         )
 
     return fractions.Fraction(version_string.group(1))

@@ -72,7 +72,7 @@ def com_google_fonts_check_gdef_spacing_marks(ttFont, config):
             )
         else:
             yield PASS, (
-                "Font does not has spacing glyphs" " in the GDEF mark glyph class."
+                "Font does not has spacing glyphs in the GDEF mark glyph class."
             )
     else:
         yield SKIP, (

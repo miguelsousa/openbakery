@@ -203,7 +203,7 @@ def com_google_fonts_check_iso15008_intercharacter_spacing(font, ttFont):
     if l_l is None:
         yield FAIL, Message(
             "glyph-not-present",
-            "There was no 'l' glyph in the font," " so the spacing could not be tested",
+            "There was no 'l' glyph in the font, so the spacing could not be tested",
         )
         return
     if 1.5 <= (l_l / width) <= 2.4:
@@ -231,7 +231,7 @@ def com_google_fonts_check_iso15008_intercharacter_spacing(font, ttFont):
     if l_v is None:
         yield FAIL, Message(
             "glyph-not-present",
-            "There was no 'v' glyph in the font," " so the spacing could not be tested",
+            "There was no 'v' glyph in the font, so the spacing could not be tested",
         )
         return
 
@@ -276,7 +276,7 @@ def com_google_fonts_check_iso15008_interword_spacing(font, ttFont):
     if len(l_intersections) < 2:
         yield FAIL, Message(
             "glyph-not-present",
-            "There was no 'l' glyph in the font," " so the spacing could not be tested",
+            "There was no 'l' glyph in the font, so the spacing could not be tested",
         )
         return
 

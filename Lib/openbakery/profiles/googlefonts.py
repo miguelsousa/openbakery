@@ -477,7 +477,7 @@ def com_google_fonts_check_description_min_length(description):
     if len(description) <= 200:
         yield FAIL, Message(
             "too-short",
-            "DESCRIPTION.en_us.html must" " have size larger than 200 bytes.",
+            "DESCRIPTION.en_us.html must have size larger than 200 bytes.",
         )
     else:
         yield PASS, "DESCRIPTION.en_us.html is larger than 200 bytes."
@@ -858,7 +858,7 @@ def com_google_fonts_check_family_equal_numbers_of_glyphs(ttFonts):
             )
     if passed:
         yield PASS, (
-            "All font files in this family have" " an equal total ammount of glyphs."
+            "All font files in this family have an equal total ammount of glyphs."
         )
 
 
@@ -1810,7 +1810,7 @@ def com_google_fonts_check_has_ttfautohint_params(ttFont):
             passed = True
             yield SKIP, Message(
                 "not-hinted",
-                "Font appears to our heuristic as" " not hinted using ttfautohint.",
+                "Font appears to our heuristic as not hinted using ttfautohint.",
             )
 
     if not passed:
@@ -1846,7 +1846,7 @@ def com_google_fonts_check_old_ttfautohint(ttFont):
     if len(version_strings) == 0:
         yield FAIL, Message(
             "lacks-version-strings",
-            "This font file lacks mandatory " "version strings in its name table.",
+            "This font file lacks mandatory version strings in its name table.",
         )
     elif ttfa_version is None:
         yield INFO, Message(
@@ -2105,10 +2105,10 @@ def com_google_fonts_check_metadata_unique_full_name_values(family_metadata):
     if len(set(fonts.keys())) != len(family_metadata.fonts):
         yield FAIL, Message(
             "duplicated",
-            'Found duplicated "full_name" values' " in METADATA.pb fonts field.",
+            'Found duplicated "full_name" values in METADATA.pb fonts field.',
         )
     else:
-        yield PASS, ('METADATA.pb "fonts" field only has' ' unique "full_name" values.')
+        yield PASS, 'METADATA.pb "fonts" field only has unique "full_name" values.'
 
 
 @check(
@@ -2127,10 +2127,10 @@ def com_google_fonts_check_metadata_unique_weight_style_pairs(family_metadata):
     if len(set(pairs.keys())) != len(family_metadata.fonts):
         yield FAIL, Message(
             "duplicated",
-            "Found duplicated style:weight pair" " in METADATA.pb fonts field.",
+            "Found duplicated style:weight pair in METADATA.pb fonts field.",
         )
     else:
-        yield PASS, ('METADATA.pb "fonts" field only has' " unique style:weight pairs.")
+        yield PASS, 'METADATA.pb "fonts" field only has unique style:weight pairs.'
 
 
 @check(
@@ -2252,7 +2252,7 @@ def com_google_fonts_check_metadata_copyright(family_metadata):
     if fail:
         yield FAIL, Message(
             "inconsistency",
-            "METADATA.pb: Copyright field value" " is inconsistent across family",
+            "METADATA.pb: Copyright field value is inconsistent across family",
         )
     else:
         yield PASS, "Copyright is consistent across family"
@@ -2279,7 +2279,7 @@ def com_google_fonts_check_metadata_familyname(family_metadata):
         )
     else:
         yield PASS, (
-            "METADATA.pb: Family name is the same" ' in all metadata "fonts" items.'
+            'METADATA.pb: Family name is the same in all metadata "fonts" items.'
         )
 
 
@@ -2584,9 +2584,7 @@ def com_google_fonts_check_metadata_valid_name_values(
                 f' correct font name format ("{font_familyname}").',
             )
     if passed:
-        yield PASS, (
-            "METADATA.pb font.name field contains" " font name in right format."
-        )
+        yield PASS, "METADATA.pb font.name field contains font name in right format."
 
 
 @check(
@@ -2643,7 +2641,7 @@ def com_google_fonts_check_metadata_valid_filename_values(font, family_metadata)
         if font_metadata.filename == expected:
             passed = True
             yield PASS, (
-                "METADATA.pb filename field contains" " font name in right format."
+                "METADATA.pb filename field contains font name in right format."
             )
             break
 
@@ -2840,7 +2838,7 @@ def com_google_fonts_check_metadata_reserved_font_name(font_metadata):
         )
     else:
         yield PASS, (
-            "METADATA.pb copyright field" ' does not contain "Reserved Font Name".'
+            'METADATA.pb copyright field does not contain "Reserved Font Name".'
         )
 
 
@@ -2952,7 +2950,7 @@ def com_google_fonts_check_metadata_italic_style(ttFont, font_metadata):
                 )
             else:
                 yield PASS, (
-                    'OK: METADATA.pb font.style "italic"' " matches font internals."
+                    'OK: METADATA.pb font.style "italic" matches font internals.'
                 )
 
 
@@ -2973,11 +2971,9 @@ def com_google_fonts_check_metadata_normal_style(ttFont, font_metadata):
         font_familyname = get_name_entry_strings(ttFont, NameID.FONT_FAMILY_NAME)
         font_fullname = get_name_entry_strings(ttFont, NameID.FULL_FONT_NAME)
         if len(font_familyname) == 0 or len(font_fullname) == 0:
-            yield SKIP, (
-                "Font lacks familyname and/or" " fullname entries in name table."
-            )
             # FIXME: This is the same SKIP condition as in check/metadata/italic_style
             #        so we definitely need to address them with a common condition!
+            yield SKIP, "Font lacks familyname and/or fullname entries in name table."
         else:
             font_familyname = font_familyname[0]
             font_fullname = font_fullname[0]
@@ -2994,26 +2990,24 @@ def com_google_fonts_check_metadata_normal_style(ttFont, font_metadata):
                 yield FAIL, Message(
                     "familyname-italic",
                     (
-                        f"Font macStyle indicates a non-Italic font,"
+                        "Font macStyle indicates a non-Italic font,"
                         f" but nameID {NameID.FONT_FAMILY_NAME}"
                         f' (FONT_FAMILY_NAME: "{font_familyname}")'
-                        f' ends with "Italic".'
+                        ' ends with "Italic".'
                     ),
                 )
             elif font_fullname.split("-")[-1].endswith("Italic"):
                 yield FAIL, Message(
                     "fullfont-italic",
                     (
-                        f"Font macStyle indicates a non-Italic font,"
+                        "Font macStyle indicates a non-Italic font,"
                         f" but nameID {NameID.FULL_FONT_NAME}"
                         f' (FULL_FONT_NAME: "{font_fullname}")'
-                        f' ends with "Italic".'
+                        ' ends with "Italic".'
                     ),
                 )
             else:
-                yield PASS, (
-                    'METADATA.pb font.style "normal"' " matches font internals."
-                )
+                yield PASS, 'METADATA.pb font.style "normal" matches font internals.'
 
 
 @check(
@@ -3075,8 +3069,7 @@ def com_google_fonts_check_metadata_match_name_familyname(
         yield FAIL, Message(
             "mismatch",
             f"METADATA.pb: {font_metadata.filename}:\n"
-            f' Family name "{family_metadata.name}"'
-            f" does not match"
+            f' Family name "{family_metadata.name}" does not match'
             f' font name: "{font_metadata.name}"',
         )
     else:
@@ -3473,7 +3466,7 @@ def com_google_fonts_check_production_glyphs_similarity(
             f" Google Fonts version:\n{formatted_list}"
         )
     else:
-        yield PASS, ("Glyphs are similar in" " comparison to the Google Fonts version.")
+        yield PASS, "Glyphs are similar in comparison to the Google Fonts version."
 
 
 @condition
@@ -4011,7 +4004,7 @@ def com_google_fonts_check_varfont_generate_static(ttFont):
         with tempfile.TemporaryFile() as instance:
             font = mutator.instantiateVariableFont(ttFont, loc)
             font.save(instance)
-            yield PASS, ("fontTools.varLib.mutator" " generated a static font instance")
+            yield PASS, "fontTools.varLib.mutator generated a static font instance"
     except Exception as e:
         yield FAIL, Message(
             "varlib-mutator",
@@ -4091,7 +4084,7 @@ def com_google_fonts_check_smart_dropout(ttFont):
 
     if "prep" in ttFont and INSTRUCTIONS in ttFont["prep"].program.getBytecode():
         yield PASS, (
-            "'prep' table contains instructions" " enabling smart dropout control."
+            "'prep' table contains instructions enabling smart dropout control."
         )
     else:
         yield FAIL, Message(
@@ -4631,7 +4624,7 @@ def com_google_fonts_check_kerning_for_non_ligated_sequences(
             )
         else:
             yield PASS, (
-                "GPOS table provides kerning info for " "all non-ligated sequences."
+                "GPOS table provides kerning info for all non-ligated sequences."
             )
 
 
@@ -4745,9 +4738,7 @@ def com_google_fonts_check_name_line_breaks(ttFont):
                 f" contains a line-break.",
             )
     if passed:
-        yield PASS, (
-            "Name table entries are all single-line" " (no line-breaks found)."
-        )
+        yield PASS, "Name table entries are all single-line (no line-breaks found)."
 
 
 @check(
@@ -4860,7 +4851,7 @@ def com_google_fonts_check_name_family_name_compliance(ttFont):
                 known_exception = True
                 yield PASS, Message(
                     "known-camelcase-exception",
-                    "Family name is a known exception" " to the CamelCase rule.",
+                    "Family name is a known exception to the CamelCase rule.",
                 )
                 break
 
@@ -4887,7 +4878,7 @@ def com_google_fonts_check_name_family_name_compliance(ttFont):
                 known_exception = True
                 yield PASS, Message(
                     "known-abbreviation-exception",
-                    "Family name is a known exception" " to the abbreviation rule.",
+                    "Family name is a known exception to the abbreviation rule.",
                 )
                 break
 
@@ -5858,7 +5849,7 @@ def com_google_fonts_check_varfont_grade_reflow(ttFont, config):
     # Check kerning here
     if not bad_glyphs and not bad_kerning:
         yield PASS, (
-            "No variations or kern rules vary " "horizontal advance along the GRAD axis"
+            "No variations or kern rules vary horizontal advance along the GRAD axis"
         )
 
 
@@ -6224,7 +6215,7 @@ def com_google_fonts_check_metadata_escaped_strings(metadata_file):
 def com_google_fonts_check_metadata_designer_profiles(family_metadata, config):
     """METADATA.pb: Designers are listed correctly on the Google Fonts catalog?"""
     DESIGNER_INFO_RAW_URL = (
-        "https://raw.githubusercontent.com/google/" "fonts/master/catalog/designers/{}/"
+        "https://raw.githubusercontent.com/google/fonts/master/catalog/designers/{}/"
     )
     from openbakery.utils import get_DesignerInfoProto_Message
     import requests
@@ -6584,8 +6575,7 @@ def com_google_fonts_check_meta_script_lang_tags(ttFont):
         if "dlng" not in ttFont["meta"].data:
             yield FAIL, Message(
                 "missing-dlng-tag",
-                "Please specify which languages and scripts"
-                " this font is designed for.",
+                "Please specify which languages and scripts this font is designed for.",
             )
         else:
             yield INFO, Message("dlng-tag", f"{ttFont['meta'].data['dlng']}")
@@ -6593,7 +6583,7 @@ def com_google_fonts_check_meta_script_lang_tags(ttFont):
         if "slng" not in ttFont["meta"].data:
             yield FAIL, Message(
                 "missing-slng-tag",
-                "Please specify which languages and scripts" " this font supports.",
+                "Please specify which languages and scripts this font supports.",
             )
         else:
             yield INFO, Message("slng-tag", f"{ttFont['meta'].data['slng']}")
