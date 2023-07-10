@@ -249,13 +249,6 @@ def markdown_table(items):
     return "\n".join(res)
 
 
-def get_regular(fonts):
-    # TODO: Maybe also support getting a regular instance from a variable font?
-    for font in fonts:
-        if "-Regular.ttf" in font:
-            return font
-
-
 def filesize_formatting(s):
     if s < 1024:
         return f"{s} bytes"

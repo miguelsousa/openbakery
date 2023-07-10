@@ -5059,9 +5059,9 @@ def com_google_fonts_check_repo_dirname_match_nameid_1(fonts):
     """Directory name in GFonts repo structure must
     match NameID 1 of the regular."""
     from fontTools.ttLib import TTFont
-    from openbakery.utils import get_name_entry_strings, get_regular
+    from openbakery.utils import get_name_entry_strings
 
-    regular = get_regular(fonts)
+    regular = next((pth for pth in fonts if "-Regular.ttf" in pth), None)
     if not regular:
         yield FAIL, Message(
             "lacks-regular",
