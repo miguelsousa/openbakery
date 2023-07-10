@@ -5055,13 +5055,13 @@ def com_google_fonts_check_family_italics_have_roman_counterparts(fonts, config)
     conditions=["gfonts_repo_structure", "not is_variable_font"],
     proposal="https://github.com/googlefonts/fontbakery/issues/2302",
 )
-def com_google_fonts_check_repo_dirname_match_nameid_1(fonts, gfonts_repo_structure):
+def com_google_fonts_check_repo_dirname_match_nameid_1(fonts):
     """Directory name in GFonts repo structure must
     match NameID 1 of the regular."""
     from fontTools.ttLib import TTFont
-    from openbakery.utils import get_name_entry_strings, get_absolute_path, get_regular
+    from openbakery.utils import get_name_entry_strings
 
-    regular = get_regular(fonts)
+    regular = next((pth for pth in fonts if "-Regular.ttf" in pth), None)
     if not regular:
         yield FAIL, Message(
             "lacks-regular",
@@ -5077,7 +5077,7 @@ def com_google_fonts_check_repo_dirname_match_nameid_1(fonts, gfonts_repo_struct
     expected = "".join(expected.split(" "))
     expected = "".join(expected.split("-"))
 
-    _, familypath, _ = get_absolute_path(regular).split(os.path.sep)[-3:]
+    _, familypath, _ = os.path.abspath(regular).split(os.path.sep)[-3:]
     if familypath == expected:
         yield PASS, "OK"
     else:

@@ -1,11 +1,28 @@
+import argparse
+import sys
 from unittest.mock import patch
 
 import pytest
 
+from openbakery.constants import (
+    NO_COLORS_THEME,
+    DARK_THEME,
+    LIGHT_THEME,
+    color,
+    WHITE,
+    BLACK,
+)
 from openbakery.utils import (
+    apple_terminal_bg_is_white,
     bullet_list,
+    colorless_len,
     exit_with_install_instructions,
+    get_apple_terminal_bg_color,
+    get_theme,
+    html5_collapsible,
+    is_negated,
     pretty_print_list,
+    split_camel_case,
     text_flow,
     unindent_and_unwrap_rationale,
 )
@@ -22,6 +39,46 @@ def test_exit_with_install_instructions():
         )
 
 
+@pytest.mark.parametrize(
+    "input_str, expected_tup",
+    [
+        ("", (False, "")),
+        (" ", (False, "")),
+        ("abc", (False, "abc")),
+        (" abc ", (False, "abc")),
+        ("not", (False, "not")),
+        ("not ", (False, "not")),
+        (" not ", (False, "not")),
+        ("notabc", (False, "notabc")),
+        ("not abc", (True, "abc")),
+        ("not  abc", (True, "abc")),
+        (" not  abc ", (True, "abc")),
+    ],
+)
+def test_is_negated(input_str, expected_tup):
+    assert is_negated(input_str) == expected_tup
+
+
+@pytest.mark.parametrize(
+    "input_str, expected_len",
+    [
+        ("", 0),
+        ("abc", 3),
+        (" abc ", 5),
+        (color(WHITE, BLACK, bold=True)("abc"), 3),
+        (color(WHITE, BLACK)("abc"), 3),
+    ],
+)
+def test_colorless_len(input_str, expected_len):
+    assert colorless_len(input_str) == expected_len
+
+
+# NOTE: The 'color()' method is in 'constants.py'
+def test_color():
+    assert color(WHITE, BLACK, bold=True)("abc") == "\x1b[1;37;40mabc\x1b[0m"
+    assert color(WHITE, BLACK)("abc") == "\x1b[0;37;40mabc\x1b[0m"
+
+
 def test_text_flow():
     assert text_flow("") == ""
 
@@ -29,39 +86,72 @@ def test_text_flow():
 
     assert text_flow("One Two Three") == "One Two Three"
 
-    assert text_flow("One Two Three", width=5) == ("One\n" "Two\n" "Three")
+    assert text_flow("One Two Three", width=5) == "One\nTwo\nThree"
 
-    assert text_flow("One Two Three", width=6, space_padding=True) == (
-        "One   \n" "Two   \n" "Three "
+    assert (
+        text_flow("One Two\n\nThree", width=5, space_padding=True)
+        == "One  \nTwo  \n     \nThree"
     )
 
-    assert text_flow("One Two Three", width=7, space_padding=True) == (
-        "One Two\n" "Three  "
+    assert (
+        text_flow("One Two Three", width=6, space_padding=True)
+        == "One   \nTwo   \nThree "
     )
 
-    assert text_flow("One Two Three", width=9, left_margin=2, space_padding=True) == (
-        "  One Two\n" "  Three  "
+    assert text_flow("One Two\n\nThree", width=10) == "One Two\nThree"
+
+    assert text_flow("One Two Three", width=7, space_padding=True) == "One Two\nThree  "
+
+    assert (
+        text_flow("One Two Three", width=9, left_margin=2, space_padding=True)
+        == "  One Two\n  Three  "
     )
 
-    assert text_flow("One Two Three", width=7, left_margin=1, space_padding=True) == (
-        " One   \n" " Two   \n" " Three "
+    assert (
+        text_flow("One Two Three", width=7, left_margin=1, space_padding=True)
+        == " One   \n Two   \n Three "
     )
 
-    assert text_flow(
-        "One Two Three", width=9, left_margin=1, right_margin=1, space_padding=True
-    ) == (" One Two \n" " Three   ")
+    assert (
+        text_flow(
+            "One Two Three", width=9, left_margin=1, right_margin=1, space_padding=True
+        )
+        == " One Two \n Three   "
+    )
 
-    assert text_flow(
-        "One Two Three", width=8, left_margin=1, right_margin=1, space_padding=True
-    ) == (" One    \n" " Two    \n" " Three  ")
+    assert (
+        text_flow(
+            "One Two Three", width=8, left_margin=1, right_margin=1, space_padding=True
+        )
+        == " One    \n Two    \n Three  "
+    )
 
-    assert text_flow(
-        "One Two Three Four", width=7, left_margin=1, right_margin=1, space_padding=True
-    ) == (" One   \n" " Two   \n" " Three \n" " Four  ")
+    assert (
+        text_flow(
+            "One Two Three Four",
+            width=7,
+            left_margin=1,
+            right_margin=1,
+            space_padding=True,
+        )
+        == " One   \n Two   \n Three \n Four  "
+    )
 
-    assert text_flow(
-        "One Two Three Four", width=6, left_margin=1, right_margin=1, space_padding=True
-    ) == (" One  \n" " Two  \n" " Thre \n" " e    \n" " Four ")
+    assert (
+        text_flow(
+            "One Two Three Four",
+            width=6,
+            left_margin=1,
+            right_margin=1,
+            space_padding=True,
+        )
+        == " One  \n Two  \n Thre \n e    \n Four "
+    )
+
+    assert (
+        text_flow("https://learn.microsoft.com/typography/opentype/spec/name", width=30)
+        == "https://learn.microsoft.com\n/typography/opentype/spec/name"
+    )
 
 
 # FIXME!
@@ -72,6 +162,85 @@ def test_text_flow():
 #                     space_padding=True) == (     " One   \n"
 #                                             "      Two   \n"
 #                                             "      Three ")
+
+
+@patch("subprocess.run")
+def test_get_apple_terminal_bg_color(mock_subproc):
+    subproc_output = "6424, 6425, 6425\n"
+    mock_subproc.return_value.stdout = subproc_output
+    assert get_apple_terminal_bg_color() == subproc_output.strip()
+
+
+@pytest.mark.parametrize(
+    "rgb_str, term_prog, expected_bool",
+    [
+        (None, "", False),
+        (None, "iTerm.app", False),
+        ("", "Apple_Terminal", False),
+        ("65535, 65535, 65535", "Apple_Terminal", True),
+    ],
+)
+@patch("openbakery.utils.get_apple_terminal_bg_color")
+def test_apple_terminal_bg_is_white(
+    mock_get_bg_color, rgb_str, term_prog, expected_bool, monkeypatch
+):
+    monkeypatch.setenv("TERM_PROGRAM", term_prog)
+    mock_get_bg_color.return_value = rgb_str
+    assert apple_terminal_bg_is_white() is expected_bool
+
+
+@pytest.mark.parametrize(
+    "args, expected_theme",
+    [
+        (
+            # args.no_colors is True
+            argparse.Namespace(no_colors=True, light_theme=False, dark_theme=False),
+            NO_COLORS_THEME,
+        ),
+        (
+            # args.light_theme is True
+            argparse.Namespace(no_colors=False, light_theme=True, dark_theme=False),
+            LIGHT_THEME,
+        ),
+        (
+            # args.dark_theme is True
+            argparse.Namespace(no_colors=False, light_theme=False, dark_theme=True),
+            DARK_THEME,
+        ),
+        (
+            # None of the theme flags is True
+            argparse.Namespace(no_colors=False, light_theme=False, dark_theme=False),
+            DARK_THEME,
+        ),
+        (
+            # Multiple theme flags are True (Should return the first True theme)
+            argparse.Namespace(no_colors=True, light_theme=True, dark_theme=True),
+            NO_COLORS_THEME,
+        ),
+    ],
+)
+def test_get_theme(args, expected_theme):
+    assert get_theme(args) == expected_theme
+
+
+@pytest.mark.parametrize(
+    "platform, bg_is_white, expected_theme",
+    [
+        ("", None, DARK_THEME),
+        ("linux", None, DARK_THEME),
+        ("win32", None, DARK_THEME),
+        ("darwin", True, LIGHT_THEME),
+        ("darwin", False, DARK_THEME),
+    ],
+)
+@patch("openbakery.utils.apple_terminal_bg_is_white")
+def test_get_theme_on_macos(
+    mock_bg_is_white, platform, bg_is_white, expected_theme, monkeypatch
+):
+    mock_bg_is_white.return_value = bg_is_white
+    monkeypatch.setattr(sys, "platform", platform)
+    args = argparse.Namespace(no_colors=False, light_theme=False, dark_theme=False)
+    assert get_theme(args) == expected_theme
 
 
 def test_unindent_and_unwrap_rationale():
@@ -104,6 +273,24 @@ def test_unindent_and_unwrap_rationale():
         "\n"
     )
     assert unindent_and_unwrap_rationale(rationale) == expected_rationale
+
+
+def test_html5_collapsible():
+    assert (
+        html5_collapsible("abc", "ABC")
+        == "<details><summary>abc</summary><div>ABC</div></details>"
+    )
+
+
+def test_split_camel_case():
+    assert split_camel_case("") == ""
+    assert split_camel_case("abc") == "abc"
+    assert split_camel_case("Abc") == "Abc"
+    assert split_camel_case("abC") == "ab C"
+    assert split_camel_case("AbC") == "Ab C"
+    assert split_camel_case("ABC") == "A B C"
+    assert split_camel_case("Lobster") == "Lobster"
+    assert split_camel_case("LibreCaslonText") == "Libre Caslon Text"
 
 
 def _make_values(count: int) -> list:

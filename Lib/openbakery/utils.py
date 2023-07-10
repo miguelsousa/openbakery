@@ -14,6 +14,7 @@
 # limitations under the License.
 #
 import os
+import re
 import subprocess
 import sys
 from typing import Text, Optional
@@ -38,14 +39,11 @@ def is_negated(name):
     stripped = name.strip()
     if stripped.startswith("not "):
         return True, stripped[4:].strip()
-    if stripped.startswith("!"):
-        return True, stripped[1:].strip()
     return False, stripped
 
 
 def colorless_len(string):
-    import re
-
+    """Returns the lenght of a string without its color prefix"""
     return len(re.sub("\x1b(\\[[0-9;]+|\\].+)m", "", string))
 
 
@@ -57,8 +55,8 @@ def text_flow(
     right_margin=0,
     first_line_indent=0,
     space_padding=False,
-    text_color="{}".format,
-):  # pylint: disable=consider-using-f-string
+    text_color="{}".format,  # pylint: disable=consider-using-f-string
+):
     result = []
     line_num = 0
     for line in content.split("\n"):
@@ -122,9 +120,12 @@ def get_apple_terminal_bg_color():
     line_1 = 'tell application "Terminal"'
     line_2 = "    get background color of selected tab of window 1"
     line_3 = "end tell"
-    output = subprocess.check_output(
-        ["osascript", "-e", line_1, "-e", line_2, "-e", line_3], text=True
-    )
+    output = subprocess.run(
+        ["osascript", "-e", line_1, "-e", line_2, "-e", line_3],
+        text=True,
+        check=True,
+        stdout=subprocess.PIPE,
+    ).stdout
     return output.strip()
 
 
@@ -182,34 +183,18 @@ def unindent_and_unwrap_rationale(rationale, checkid=None):
 
 
 def html5_collapsible(summary, details) -> str:
-    """Return nestable, collapsible <detail> tag for check grouping and sub-
-    results."""
-
+    """Return nestable, collapsible <detail> tag for check grouping and sub-results."""
     return f"<details><summary>{summary}</summary><div>{details}</div></details>"
 
 
 def split_camel_case(camelcase):
-    result = []
-    word = ""
-    for char in camelcase:
-        if char.isupper():
-            if word != "":
-                result.append(word)
-            word = char
-        else:
-            word += char
+    chars = []
+    for i, char in enumerate(camelcase):
+        if char.isupper() and i > 0:
+            chars.append(" ")
+        chars.append(char)
 
-    if word != "":
-        result.append(word)
-    return " ".join(result)
-
-
-def suffix(font):
-    filename = os.path.basename(font)
-    basename = os.path.splitext(filename)[0]
-    s = basename.split("-")
-    s.pop(0)
-    return "-".join(s)
+    return "".join(chars)
 
 
 def pretty_print_list(config, values, shorten=10, sep=", ", glue=" and "):
@@ -262,19 +247,6 @@ def markdown_table(items):
         r = "| " + " | ".join(map(str, vals)) + " |"
         res.append(r)
     return "\n".join(res)
-
-
-def get_regular(fonts):
-    # TODO: Maybe also support getting a regular instance from a variable font?
-    for font in fonts:
-        if "-Regular.ttf" in font:
-            return font
-
-
-def get_absolute_path(p):
-    if not os.path.isabs(p):
-        p = os.path.abspath(p)
-    return p
 
 
 def filesize_formatting(s):

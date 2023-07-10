@@ -101,7 +101,6 @@ def stylenames_are_canonical(fonts):
 @condition
 def canonical_stylename(font):
     """Returns the canonical stylename of a given font."""
-    from openbakery.utils import suffix
     from openbakery.constants import STATIC_STYLE_NAMES, VARFONT_SUFFIXES
     from .shared_conditions import is_variable_font
     from fontTools.ttLib import TTFont
@@ -111,7 +110,7 @@ def canonical_stylename(font):
 
     filename = os.path.basename(font)
     basename = os.path.splitext(filename)[0]
-    s = suffix(font)
+    s = "-".join(basename.split("-")[1:])
     varfont = os.path.exists(font) and is_variable_font(TTFont(font))
     if (
         "-" in basename
@@ -658,11 +657,10 @@ def gfonts_repo_structure(fonts):
     follows the files and directory structure
     typical of a font project hosted on
     the Google Fonts repo on GitHub?"""
-    from openbakery.utils import get_absolute_path
 
     # FIXME: Improve this with more details
     #        about the expected structure.
-    abspath = get_absolute_path(fonts[0])
+    abspath = os.path.abspath(fonts[0])
     return abspath.split(os.path.sep)[-3] in ["ufl", "ofl", "apache"]
 
 
