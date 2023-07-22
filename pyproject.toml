@@ -84,3 +84,36 @@ disable = [
 	# Information
 	"c-extension-no-member",
 ]
+
+# ============================================================================
+[tool.coverage.run]
+# Measure 'branch' coverage in addition to 'statement' coverage
+# See: http://coverage.readthedocs.org/en/latest/branch.html#branch
+branch = true
+
+parallel = true
+
+# List of directories or packages to measure
+source = ["openbakery"]
+
+# These are treated as equivalent when combining data
+[tool.coverage.paths]
+source = ["Lib/openbakery"]
+
+[tool.coverage.report]
+# Regexes for lines to exclude from consideration
+exclude_also = [
+    # Don't complain if tests don't hit defensive assertion code:
+    "raise AssertionError",
+    "raise NotImplementedError",
+
+    # Don't complain if non-runnable code isn't run:
+    "if 0:",
+    "if __name__ == .__main__.:",
+
+    # Don't complain about abstract methods, they aren't run:
+    "@(abc\\.)?abstractmethod",
+    ]
+
+# Ignore source code that can’t be found, emitting a warning instead of an exception
+ignore_errors = true
