@@ -39,6 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `com.google.fonts/check/fontvalidator`: ERROR caused by attempting to run FontValidator before checking if it's installed (#30).
 - `com.google.fonts/check/mandatory_glyphs`: Improved the check's resilience to edge cases that could result in ERRORs (#38).
 - `-L`/`--list-checks` option that can be used with subcommands. Previously this option only worked if a path to an input file was also provided in the command line (#35).
+- Summary statistics on HTML reporter (https://github.com/fonttools/fontbakery/issues/3997).
 
 ## [0.1.0] - 2023-06-11
 
