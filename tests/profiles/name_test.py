@@ -655,8 +655,8 @@ def test_check_name_postscript():
     ttFont = TTFont(TEST_FILE("source-sans-pro/OTF/SourceSansPro-Bold.otf"))
     assert_PASS(check(ttFont), "psname-ok")
 
-    # Change the name-table string. Check should FAIL.
-    bad_ps_name = "this-is-a (bad) name".encode("utf-16-be")
+    # Change the PostScript name string to more than one hyphen. Should FAIL.
+    bad_ps_name = "more-than-one-hyphen".encode("utf-16-be")
     ttFont["name"].setName(
         bad_ps_name,
         NameID.POSTSCRIPT_NAME,
@@ -666,5 +666,17 @@ def test_check_name_postscript():
     )
     msg = assert_results_contain(check(ttFont), FAIL, "bad-psname-entries")
     assert "PostScript name does not follow requirements" in msg
-    assert "May contain only a-zA-Z0-9 characters and a hyphen" in msg
-    assert "May contain not more than a single hyphen" in msg
+    assert "May contain not more than a single hyphen." in msg
+
+    # Now change it to a string with illegal characters. Should FAIL.
+    bad_ps_name = "(illegal) characters".encode("utf-16-be")
+    ttFont["name"].setName(
+        bad_ps_name,
+        NameID.POSTSCRIPT_NAME,
+        PlatformID.WINDOWS,
+        WindowsEncodingID.UNICODE_BMP,
+        WindowsLanguageID.ENGLISH_USA,
+    )
+    msg = assert_results_contain(check(ttFont), FAIL, "bad-psname-entries")
+    assert "PostScript name does not follow requirements" in msg
+    assert "May contain only a-zA-Z0-9 characters and a hyphen." in msg
