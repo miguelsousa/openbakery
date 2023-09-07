@@ -649,22 +649,20 @@ def test_check_italic_names():
 
 
 def test_check_name_postscript():
-    check = CheckTester(
-        opentype_profile, "com.adobe.fonts/check/postscript_name"
-    )
+    check = CheckTester(opentype_profile, "com.adobe.fonts/check/postscript_name")
 
     # Test a font that has OK psname. Check should PASS.
     ttFont = TTFont(TEST_FILE("source-sans-pro/OTF/SourceSansPro-Bold.otf"))
     assert_PASS(check(ttFont), "psname-ok")
 
     # Change the name-table string. Check should FAIL.
-    bad_ps_name = "this-is-a (bad) name".encode('utf-16-be')
+    bad_ps_name = "this-is-a (bad) name".encode("utf-16-be")
     ttFont["name"].setName(
         bad_ps_name,
         NameID.POSTSCRIPT_NAME,
         PlatformID.WINDOWS,
         WindowsEncodingID.UNICODE_BMP,
-        WindowsLanguageID.ENGLISH_USA
+        WindowsLanguageID.ENGLISH_USA,
     )
     msg = assert_results_contain(check(ttFont), FAIL, "bad-psname-entries")
     assert "PostScript name does not follow requirements" in msg

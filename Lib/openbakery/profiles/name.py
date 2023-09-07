@@ -420,7 +420,8 @@ def com_google_fonts_check_name_match_familyname_fullfont(ttFont):
 
 @check(
     id="com.adobe.fonts/check/postscript_name",
-    proposal="https://github.com/miguelsousa/openbakery/issues/62")
+    proposal="https://github.com/miguelsousa/openbakery/issues/62",
+)
 def com_adobe_fonts_check_postscript_name(ttFont):
     """PostScript name follows Adobe requirements?"""
     import re
@@ -437,8 +438,7 @@ def com_adobe_fonts_check_postscript_name(ttFont):
                 {
                     "field": "PostScript Name",
                     "value": string,
-                    "rec": ("May contain only a-zA-Z0-9"
-                            " characters and a hyphen."),
+                    "rec": ("May contain only a-zA-Z0-9" " characters and a hyphen."),
                 }
             )
         if string.count("-") > 1:
@@ -457,10 +457,7 @@ def com_adobe_fonts_check_postscript_name(ttFont):
             table += "| {} | {} | {} |\n".format(bad["field"], bad["value"], bad["rec"])
         yield FAIL, Message(
             "bad-psname-entries",
-            "PostScript name does not follow "
-            "requirements:\n"
-            "\n"
-            f"{table}"
+            "PostScript name does not follow " "requirements:\n" "\n" f"{table}",
         )
     else:
         yield PASS, Message("psname-ok", "PostScript name follows Adobe requirements.")
