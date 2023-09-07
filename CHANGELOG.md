@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `com.google.fonts/check/valid_glyphnames`: The check now takes into account that OpenType-CFF2 fonts with `post` table format 3 contain no glyph names, and will yield SKIP (#38).
 - `com.google.fonts/check/unique_glyphnames`: The check now takes into account that OpenType-CFF2 fonts with `post` table format 3 contain no glyph names, and will yield SKIP (#38).
 - `com.google.fonts/check/STAT_in_statics`: The check now skips fonts that do not have a `STAT` table (#38).
+- `com.google.fonts/check/family_naming_recommendations`: Two validations of PostScript name were moved out of this check and into `com.adobe.fonts/check/postscript_name` which yields FAIL (#62).
 
 ### Fixed
 
