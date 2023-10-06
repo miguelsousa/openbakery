@@ -419,48 +419,55 @@ def com_google_fonts_check_name_match_familyname_fullfont(ttFont):
 
 
 @check(
-    id="com.adobe.fonts/check/postscript_name",
+    id="com.adobe.fonts/check/postscript_name_characters",
     proposal="https://github.com/miguelsousa/openbakery/issues/62",
 )
-def com_adobe_fonts_check_postscript_name(ttFont):
-    """PostScript name follows OpenType specification requirements?"""
+def com_adobe_fonts_check_postscript_name_characters(ttFont):
+    """PostScript name contains only allowed characters a-ZA-Z and hyphen?"""
     import re
     from openbakery.utils import get_name_entry_strings
 
-    bad_entries = []
+    bad_entry_count = 0
 
     # <Postscript name> may contain only a-zA-Z0-9
-    # and one hyphen
     bad_psname = re.compile("[^A-Za-z0-9-]")
     for string in get_name_entry_strings(ttFont, NameID.POSTSCRIPT_NAME):
         if bad_psname.search(string):
-            bad_entries.append(
-                {
-                    "field": "PostScript Name",
-                    "value": string,
-                    "rec": ("May contain only a-zA-Z0-9 characters and a hyphen."),
-                }
-            )
-        if string.count("-") > 1:
-            bad_entries.append(
-                {
-                    "field": "Postscript Name",
-                    "value": string,
-                    "rec": ("May contain not more than a single hyphen."),
-                }
+            bad_entry_count += 1
+            yield FAIL, Message(
+                "bad-psname-characters",
+                f"PostScript name {string} contains disallowed characters.",
             )
 
-    if len(bad_entries) > 0:
-        table = "| Field | Value | Recommendation |\n"
-        table += "|:----- |:----- |:-------------- |\n"
-        for bad in bad_entries:
-            table += "| {} | {} | {} |\n".format(bad["field"], bad["value"], bad["rec"])
-        yield FAIL, Message(
-            "bad-psname-entries",
-            f"PostScript name does not follow requirements:\n\n{table}",
+    if bad_entry_count == 0:
+        yield PASS, Message(
+            "psname-chracters-ok", "PostScript name contains only allowed characters."
         )
-    else:
-        yield PASS, Message("psname-ok", "PostScript name follows requirements.")
+
+
+@check(
+    id="com.adobe.fonts/check/postscript_name_hyphens",
+    proposal="https://github.com/miguelsousa/openbakery/issues/62",
+)
+def com_adobe_fonts_check_postscript_name_hyphens(ttFont):
+    """PostScript name contains at most one hyphen?"""
+    from openbakery.utils import get_name_entry_strings
+
+    bad_entry_count = 0
+
+    # <Postscript name> may contain only one hyphen
+    for string in get_name_entry_strings(ttFont, NameID.POSTSCRIPT_NAME):
+        if string.count("-") > 1:
+            bad_entry_count += 1
+            yield FAIL, Message(
+                "bad-psname-hyphens",
+                f"PostScript name {string} contains more than one hyphen.",
+            )
+
+    if bad_entry_count == 0:
+        yield PASS, Message(
+            "psname-hyphens-ok", "PostScript name contains at most one hyphen."
+        )
 
 
 @check(
