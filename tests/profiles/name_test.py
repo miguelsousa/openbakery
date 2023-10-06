@@ -648,8 +648,32 @@ def test_check_italic_names():
     assert_results_contain(check(ttFont), FAIL, "bad-typographicsubfamilyname")
 
 
-def test_check_name_postscript():
-    check = CheckTester(opentype_profile, "com.adobe.fonts/check/postscript_name")
+def test_check_name_postscript_characters():
+    check = CheckTester(
+        opentype_profile, "com.adobe.fonts/check/postscript_name_characters"
+    )
+
+    # Test a font that has psname with allowed characters. Check should PASS.
+    ttFont = TTFont(TEST_FILE("source-sans-pro/OTF/SourceSansPro-Bold.otf"))
+    assert_PASS(check(ttFont), "psname-ok")
+
+    # Change it to a string with disallowed characters. Should FAIL.
+    bad_ps_name = "(disallowed) characters".encode("utf-16-be")
+    ttFont["name"].setName(
+        bad_ps_name,
+        NameID.POSTSCRIPT_NAME,
+        PlatformID.WINDOWS,
+        WindowsEncodingID.UNICODE_BMP,
+        WindowsLanguageID.ENGLISH_USA,
+    )
+    msg = assert_results_contain(check(ttFont), FAIL, "bad-psname-characters")
+    assert "name (disallowed) characters contains disallowed characters." in msg
+
+
+def test_check_name_postscript_hyphens():
+    check = CheckTester(
+        opentype_profile, "com.adobe.fonts/check/postscript_name_hyphens"
+    )
 
     # Test a font that has OK psname. Check should PASS.
     ttFont = TTFont(TEST_FILE("source-sans-pro/OTF/SourceSansPro-Bold.otf"))
@@ -664,19 +688,5 @@ def test_check_name_postscript():
         WindowsEncodingID.UNICODE_BMP,
         WindowsLanguageID.ENGLISH_USA,
     )
-    msg = assert_results_contain(check(ttFont), FAIL, "bad-psname-entries")
-    assert "PostScript name does not follow requirements" in msg
-    assert "May contain not more than a single hyphen." in msg
-
-    # Now change it to a string with illegal characters. Should FAIL.
-    bad_ps_name = "(illegal) characters".encode("utf-16-be")
-    ttFont["name"].setName(
-        bad_ps_name,
-        NameID.POSTSCRIPT_NAME,
-        PlatformID.WINDOWS,
-        WindowsEncodingID.UNICODE_BMP,
-        WindowsLanguageID.ENGLISH_USA,
-    )
-    msg = assert_results_contain(check(ttFont), FAIL, "bad-psname-entries")
-    assert "PostScript name does not follow requirements" in msg
-    assert "May contain only a-zA-Z0-9 characters and a hyphen." in msg
+    msg = assert_results_contain(check(ttFont), FAIL, "bad-psname-hyphens")
+    assert "PostScript name more-than-one-hyphen contains more than one hyphen." in msg
