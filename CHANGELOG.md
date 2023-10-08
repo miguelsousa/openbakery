@@ -31,7 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `com.google.fonts/check/valid_glyphnames`: The check now takes into account that OpenType-CFF2 fonts with `post` table format 3 contain no glyph names, and will yield SKIP (https://github.com/miguelsousa/openbakery/pull/38).
 - `com.google.fonts/check/unique_glyphnames`: The check now takes into account that OpenType-CFF2 fonts with `post` table format 3 contain no glyph names, and will yield SKIP (https://github.com/miguelsousa/openbakery/pull/38).
 - `com.google.fonts/check/STAT_in_statics`: The check now skips fonts that do not have a `STAT` table (https://github.com/miguelsousa/openbakery/pull/38).
-- `com.google.fonts/check/family_naming_recommendations`: Two validations of PostScript name were moved out of this check and into `com.adobe.fonts/check/postscript_name` which yields FAIL (https://github.com/miguelsousa/openbakery/pull/62).
+- `com.google.fonts/check/family_naming_recommendations`: Two validations of PostScript name were moved out of this check and into separate new checks `com.adobe.fonts/check/postscript_name_characters` and `com.adobe.fonts/postscript_name_hyphens` which yield FAIL (https://github.com/miguelsousa/openbakery/pull/62).
 - `com.google.fonts/check/cjk_not_enough_glyphs`: This check is now only run when a font has CJK codepages or ranges declared in the `OS/2` table. Other CJK-related checks are run on fonts with a minimum of 150 CJK glyphs (https://github.com/fonttools/fontbakery/issues/3846).
 - `com.google.fonts/check/family/panose_familytype` and `com.google.fonts/check/family/panose_proportion`: Failures have been downgraded to warnings (https://github.com/fonttools/fontbakery/issues/4192).
 
