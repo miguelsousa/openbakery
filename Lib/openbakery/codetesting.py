@@ -209,6 +209,11 @@ def assert_PASS(check_results, reason="with a good font...", ignore_error=None):
         return None
     else:
         assert status == PASS
+        # If the yielded result if of type Message, validate its code string.
+        if isinstance(message, Message):
+            assert (
+                message.code == reason
+            ), f"Expected {reason!r} but got {message.code!r}"
         return str(message)
 
 
