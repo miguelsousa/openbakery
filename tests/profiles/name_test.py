@@ -655,7 +655,7 @@ def test_check_name_postscript_characters():
 
     # Test a font that has psname with allowed characters. Check should PASS.
     ttFont = TTFont(TEST_FILE("source-sans-pro/OTF/SourceSansPro-Bold.otf"))
-    assert_PASS(check(ttFont), "psname-ok")
+    assert_results_contain(check(ttFont), PASS, "psname-characters-ok")
 
     # Change it to a string with disallowed characters. Should FAIL.
     bad_ps_name = "(disallowed) characters".encode("utf-16-be")
@@ -677,7 +677,7 @@ def test_check_name_postscript_hyphens():
 
     # Test a font that has OK psname. Check should PASS.
     ttFont = TTFont(TEST_FILE("source-sans-pro/OTF/SourceSansPro-Bold.otf"))
-    assert_PASS(check(ttFont), "psname-ok")
+    assert_results_contain(check(ttFont), PASS, "psname-hyphens-ok")
 
     # Change the PostScript name string to more than one hyphen. Should FAIL.
     bad_ps_name = "more-than-one-hyphen".encode("utf-16-be")
