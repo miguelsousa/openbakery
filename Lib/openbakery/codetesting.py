@@ -202,10 +202,8 @@ def GLYPHSAPP_TEST_FILE(f):
 
 
 def assert_PASS(check_results, reason="with a good font...", ignore_error=None):
-    print(f"Test PASS {reason}")
     status, message = list(check_results)[-1]
     if ignore_error and status == ERROR:
-        print(ignore_error)
         return None
     else:
         assert status == PASS
@@ -218,7 +216,6 @@ def assert_PASS(check_results, reason="with a good font...", ignore_error=None):
 
 
 def assert_SKIP(check_results, reason=""):
-    print(f"Test SKIP {reason}")
     status, message = list(check_results)[-1]
     assert status == SKIP
     return str(message)

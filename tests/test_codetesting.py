@@ -36,7 +36,7 @@ def test_GLYPHSAPP_TEST_FILE():
 # assert_SKIP tests
 
 
-def test_assert_SKIP_success(capsys):
+def test_assert_SKIP_success():
     skip_msg = "SKIP message"
     skip_reason = "SKIP reason"
     results = [
@@ -45,11 +45,8 @@ def test_assert_SKIP_success(capsys):
     ]
     assert assert_SKIP(results, skip_reason) == skip_msg
 
-    captured = capsys.readouterr()
-    assert captured.out == f"Test SKIP {skip_reason}\n"
 
-
-def test_assert_SKIP_failure(capsys):
+def test_assert_SKIP_failure():
     pass_msg = "PASS message"
     skip_reason = "SKIP reason"
     results = [
@@ -59,28 +56,21 @@ def test_assert_SKIP_failure(capsys):
     with pytest.raises(AssertionError):
         assert_SKIP(results, skip_reason)
 
-    captured = capsys.readouterr()
-    assert captured.out == f"Test SKIP {skip_reason}\n"
-
 
 # ========================================================================
 # assert_PASS tests
 
 
-def test_assert_PASS_success_no_reason(capsys):
+def test_assert_PASS_success_no_reason():
     pass_msg = "PASS message"
-    dflt_reason = "with a good font..."
     results = [
         (SKIP,),
         (PASS, pass_msg),
     ]
     assert assert_PASS(results) == pass_msg
 
-    captured = capsys.readouterr()
-    assert captured.out == f"Test PASS {dflt_reason}\n"
 
-
-def test_assert_PASS_success_custom_reason(capsys):
+def test_assert_PASS_success_custom_reason():
     pass_msg = "PASS message"
     pass_reason = "custom reason"
     results = [
@@ -89,11 +79,8 @@ def test_assert_PASS_success_custom_reason(capsys):
     ]
     assert assert_PASS(results, pass_reason) == pass_msg
 
-    captured = capsys.readouterr()
-    assert captured.out == f"Test PASS {pass_reason}\n"
 
-
-def test_assert_PASS_failure_no_reason_message_yield(capsys):
+def test_assert_PASS_failure_no_reason_message_yield():
     msg_code = "message-code"
     pass_msg = Message(msg_code, "custom message")
     dflt_reason = "with a good font..."
@@ -105,11 +92,8 @@ def test_assert_PASS_failure_no_reason_message_yield(capsys):
         assert_PASS(results)
     assert str(err.value) == f"Expected {dflt_reason!r} but got {msg_code!r}"
 
-    captured = capsys.readouterr()
-    assert captured.out == f"Test PASS {dflt_reason}\n"
 
-
-def test_assert_PASS_success_message_yield(capsys):
+def test_assert_PASS_success_message_yield():
     msg_code = "message-code"
     pass_msg = Message(msg_code, "custom message")
     pass_reason = msg_code
@@ -119,11 +103,8 @@ def test_assert_PASS_success_message_yield(capsys):
     ]
     assert assert_PASS(results, pass_reason) == str(pass_msg)
 
-    captured = capsys.readouterr()
-    assert captured.out == f"Test PASS {pass_reason}\n"
 
-
-def test_assert_PASS_failure_message_yield(capsys):
+def test_assert_PASS_failure_message_yield():
     msg_code = "message-code"
     pass_msg = Message(msg_code, "custom message")
     pass_reason = f"different-{msg_code}"
@@ -135,13 +116,9 @@ def test_assert_PASS_failure_message_yield(capsys):
         assert_PASS(results, pass_reason)
     assert str(err.value) == f"Expected {pass_reason!r} but got {msg_code!r}"
 
-    captured = capsys.readouterr()
-    assert captured.out == f"Test PASS {pass_reason}\n"
 
-
-def test_assert_PASS_failure(capsys):
+def test_assert_PASS_failure():
     skip_msg = "SKIP message"
-    pass_reason = "with a good font..."
     results = [
         (PASS,),
         (SKIP, skip_msg),
@@ -149,13 +126,9 @@ def test_assert_PASS_failure(capsys):
     with pytest.raises(AssertionError):
         assert_PASS(results)
 
-    captured = capsys.readouterr()
-    assert captured.out == f"Test PASS {pass_reason}\n"
 
-
-def test_assert_PASS_ignore_error_true(capsys):
+def test_assert_PASS_ignore_error_true():
     error_msg = "ERROR message"
-    pass_reason = "with a good font..."
     ignore = "an error"
     results = [
         (PASS,),
@@ -163,22 +136,15 @@ def test_assert_PASS_ignore_error_true(capsys):
     ]
     assert assert_PASS(results, ignore_error=ignore) is None
 
-    captured = capsys.readouterr()
-    assert captured.out == f"Test PASS {pass_reason}\n{ignore}\n"
 
-
-def test_assert_PASS_ignore_error_false(capsys):
+def test_assert_PASS_ignore_error_false():
     error_msg = "ERROR message"
-    pass_reason = "with a good font..."
     results = [
         (PASS,),
         (ERROR, error_msg),
     ]
     with pytest.raises(AssertionError):
         assert_PASS(results)
-
-    captured = capsys.readouterr()
-    assert captured.out == f"Test PASS {pass_reason}\n"
 
 
 # ========================================================================
