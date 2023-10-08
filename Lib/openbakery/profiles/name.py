@@ -441,7 +441,7 @@ def com_adobe_fonts_check_postscript_name_characters(ttFont):
 
     if bad_entry_count == 0:
         yield PASS, Message(
-            "psname-chracters-ok", "PostScript name contains only allowed characters."
+            "psname-characters-ok", "PostScript name contains only allowed characters."
         )
 
 
