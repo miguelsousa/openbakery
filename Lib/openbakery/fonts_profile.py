@@ -143,11 +143,8 @@ class FontsProfile(Profile):
 
 
 def profile_factory(**kwds):
-    from openbakery.profiles.shared_conditions import ttFont
-
     profile = FontsProfile(
         iterargs=FontsProfile._iterargs(),
-        conditions={ttFont.name: ttFont},
         derived_iterables={"ttFonts": ("ttFont", True)},
         expected_values=FontsProfile._expected_values(),
         **kwds,
