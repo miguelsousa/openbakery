@@ -201,12 +201,13 @@ def GLYPHSAPP_TEST_FILE(f):
     return glyphsLib.load(open(the_file, encoding="utf-8"))
 
 
-def assert_PASS(check_results, reason="with a good font...", ignore_error=None):
-    status, message = list(check_results)[-1]
-    if ignore_error and status == ERROR:
+def _assert_last_status(status, check_results, reason, ignore_error=None):
+    """Validates the status of the last check result, as well as its code string"""
+    last_status, message = list(check_results)[-1]
+    if ignore_error and last_status == ERROR:
         return None
     else:
-        assert status == PASS
+        assert last_status == status
         # If the yielded result if of type Message, validate its code string.
         if isinstance(message, Message):
             assert (
@@ -215,10 +216,14 @@ def assert_PASS(check_results, reason="with a good font...", ignore_error=None):
         return str(message)
 
 
+def assert_PASS(check_results, reason="with a good font...", ignore_error=None):
+    """Validates that the last check result is a PASS"""
+    return _assert_last_status(PASS, check_results, reason, ignore_error)
+
+
 def assert_SKIP(check_results, reason=""):
-    status, message = list(check_results)[-1]
-    assert status == SKIP
-    return str(message)
+    """Validates that the last check result is a SKIP"""
+    return _assert_last_status(SKIP, check_results, reason)
 
 
 def assert_results_contain(
