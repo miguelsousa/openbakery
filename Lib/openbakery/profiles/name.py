@@ -423,14 +423,14 @@ def com_google_fonts_check_name_match_familyname_fullfont(ttFont):
     proposal="https://github.com/miguelsousa/openbakery/issues/62",
 )
 def com_adobe_fonts_check_postscript_name_characters(ttFont):
-    """PostScript name contains only allowed characters a-ZA-Z and hyphen?"""
+    """PostScript name contains only allowed characters?"""
     import re
     from openbakery.utils import get_name_entry_strings
 
     bad_entry_count = 0
 
-    # <Postscript name> may contain only a-zA-Z0-9
-    bad_psname = re.compile("[^A-Za-z0-9-]")
+    # <Postscript name> may contain only the characters a-z A-Z 0-9 - and _
+    bad_psname = re.compile("[^A-Za-z0-9-_]")
     for string in get_name_entry_strings(ttFont, NameID.POSTSCRIPT_NAME):
         if bad_psname.search(string):
             bad_entry_count += 1
