@@ -430,7 +430,7 @@ def com_adobe_fonts_check_postscript_name_characters(ttFont):
     bad_entry_count = 0
 
     # <Postscript name> may contain only a-zA-Z0-9
-    bad_psname = re.compile("[^A-Za-z0-9-]")
+    bad_psname = re.compile("[^A-Za-z0-9-_]")
     for string in get_name_entry_strings(ttFont, NameID.POSTSCRIPT_NAME):
         if bad_psname.search(string):
             bad_entry_count += 1
