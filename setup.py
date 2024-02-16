@@ -44,7 +44,7 @@ ufo_sources_extras = [
 
 googlefonts_extras = (
     [
-        "axisregistry>=0.3.0",
+        "axisregistry>=0.4.8",
         "beautifulsoup4",  # For parsing registered vendor IDs from Microsoft's webpage
         "dehinter>=3.1.0",  # 3.1.0 added dehinter.font.hint function
         "font-v",
