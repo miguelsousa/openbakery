@@ -15,7 +15,7 @@ munkres==1.1.4
 opentype-sanitizer==9.1.0
 opentypespec==1.9.1
 packaging==23.2
-pip-api==0.0.30
+pip-api==0.0.33
 protobuf==3.20.3
 PyYAML==6.0.1
 requests==2.31.0
