@@ -1,6 +1,7 @@
 """
 OpenBakery CheckRunner is the driver of a openbakery suite of checks.
 """
+
 import glob
 import logging
 import argparse

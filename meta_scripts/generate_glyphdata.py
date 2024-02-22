@@ -15,6 +15,7 @@ display family.
 In the future, additional glyph data can be included. A good addition would
 be the 'recommended' anchor counts for each glyph.
 """
+
 import json
 import os
 import sys

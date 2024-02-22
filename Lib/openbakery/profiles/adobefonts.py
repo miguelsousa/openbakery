@@ -1,6 +1,7 @@
 """
 Checks for Adobe Fonts (formerly known as Typekit).
 """
+
 import unicodedata
 
 from openbakery.callable import check

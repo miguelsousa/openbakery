@@ -1,6 +1,7 @@
 """
 Checks for suitability for in-car displays (ISO 15008).
 """
+
 from beziers.line import Line
 from beziers.path import BezierPath
 from beziers.point import Point
