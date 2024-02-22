@@ -158,7 +158,7 @@ def run_a_set_of_shaping_tests(
         filename = Path(ttFont.reader.file.name)
         vharfbuzz = Vharfbuzz(filename)
     except ImportError:
-        exit_with_install_instructions("shaping")
+        exit_with_install_instructions()
 
     shaping_file_found = False
     ran_a_test = False

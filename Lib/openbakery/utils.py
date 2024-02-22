@@ -24,12 +24,19 @@ from fontTools.ttLib import TTFont
 
 from openbakery.constants import NO_COLORS_THEME, DARK_THEME, LIGHT_THEME
 
+profile_name = None
 
-def exit_with_install_instructions(extras_name):
+
+def set_profile_name(name):
+    global profile_name  # pylint:disable=W0603 (global-statement)
+    profile_name = name
+
+
+def exit_with_install_instructions():
     sys.exit(
-        f"\nTo run the {extras_name} profile, one needs to install\n"
-        f"openbakery with the '{extras_name}' extra, like this:\n\n"
-        f"    python -m pip install -U 'openbakery[{extras_name}]'\n\n"
+        f"\nTo run the {profile_name} profile, one needs to install\n"
+        f"openbakery with the '{profile_name}' extra, like this:\n\n"
+        f"    python -m pip install -U 'openbakery[{profile_name}]'\n\n"
     )
 
 
