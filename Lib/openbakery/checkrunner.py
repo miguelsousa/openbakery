@@ -11,6 +11,7 @@ Domain specific knowledge should be encoded only in the Profile (Checks,
 Conditions) and MAYBE in *customized* reporters e.g. subclasses.
 
 """
+
 import os
 import types
 from collections import OrderedDict, Counter

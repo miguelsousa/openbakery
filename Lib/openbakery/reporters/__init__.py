@@ -7,6 +7,7 @@ domains as well.
 Domain specific knowledge should be encoded only in the Profile (Checks,
 Conditions) and MAYBE in *customized* reporters e.g. subclasses.
 """
+
 from collections import Counter
 
 from openbakery.status import END, ENDCHECK, START

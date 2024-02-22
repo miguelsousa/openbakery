@@ -1,6 +1,7 @@
 """
 Unit tests for Adobe Fonts profile.
 """
+
 import os
 from unittest.mock import patch
 

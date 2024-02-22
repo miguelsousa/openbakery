@@ -1174,9 +1174,11 @@ def check_log_override(check, new_id, overrides, reason=None):
         description=f"{check.description} (derived from {check.id})",
         # ONLY if there's a reason for derivation, otherwise will take
         # the documentation from the __doc__ string of check.
-        documentation=(f"{reason}\n" f"\n" f"{check.documentation}")
-        if reason and check.documentation
-        else (reason or check.documentation or None),
+        documentation=(
+            (f"{reason}\n" f"\n" f"{check.documentation}")
+            if reason and check.documentation
+            else (reason or check.documentation or None)
+        ),
     )
 
     # reconstruct a proper doc string from the changes we made.

@@ -4235,9 +4235,9 @@ def com_google_fonts_check_stat(ttFont, expected_font_names):
                 "Name": ax_name,
                 "Flags": ax.Flags,
                 "Value": value,
-                "LinkedValue": None
-                if not hasattr(ax, "LinkedValue")
-                else ax.LinkedValue,
+                "LinkedValue": (
+                    None if not hasattr(ax, "LinkedValue") else ax.LinkedValue
+                ),
             }
         return res
 
@@ -6343,7 +6343,7 @@ def com_google_fonts_check_metadata_designer_profiles(family_metadata, config):
         instance is at the expected weight, width etc.
     """,
     conditions=["is_variable_font"],
-    proposal="https://github.com/googlefonts/fontbakery/issues/3100"
+    proposal="https://github.com/googlefonts/fontbakery/issues/3100",
     # NOTE: This is a high-priority WARN.
 )
 def com_google_fonts_check_mandatory_avar_table(ttFont):
