@@ -509,13 +509,11 @@ class Profile:
                 yield check, []
         elif not section[0]:
             # no sectioning on this level
-            for item in self._execute_scopes(iterargs, items):
-                yield item
+            yield from self._execute_scopes(iterargs, items)
         elif section[1] == "*check":
             # enforce sectioning by check
             for section_item in items:
-                for item in self._execute_scopes(iterargs, [section_item]):
-                    yield item
+                yield from self._execute_scopes(iterargs, [section_item])
         else:
             # section by gen_arg, i.e. ammend with changing arg.
             _, gen_arg = section
@@ -560,8 +558,7 @@ class Profile:
         if items:
             generators.append(self._execute_section(iterargs, current_section, items))
 
-        for item in chain(*generators):
-            yield item
+        yield from chain(*generators)
 
     def _section_execution_order(
         self,
@@ -1053,8 +1050,7 @@ class Profile:
     @property
     def checks(self):
         for section in self.sections:
-            for check in section.checks:
-                yield check
+            yield from section.checks
 
     def get_checks_by_dependencies(self, *dependencies, subset=False):
         deps = set(dependencies)  # faster membership checking
