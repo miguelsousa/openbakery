@@ -554,15 +554,15 @@ def session_protocol_generator(check_protocol_generator, order):
     sections = OrderedDict()
     next_check_identity = yield START, order, (None, None, None)
     while next_check_identity:
-        for event in check_protocol_generator(next_check_identity):
+        for event in check_protocol_generator(  # pylint:disable=use-yield-from
+            next_check_identity
+        ):
             # send(check_identity) always after ENDCHECK
             next_check_identity = yield event
         # after _run_check the last status must be ENDCHECK
         status, message, (section, check, iterargs) = event
-        event = None
         assert status == ENDCHECK
 
-        # message is the summary_status of the check when status is ENDCHECK
         section_key = str(section)
         if section_key not in sections:
             sections[section_key] = ([], Counter(), section)
