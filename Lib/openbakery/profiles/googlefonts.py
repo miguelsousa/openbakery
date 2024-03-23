@@ -257,7 +257,7 @@ def com_google_fonts_check_canonical_filename(ttFont):
         current_filename = os.path.basename(ttFont.reader.file.name)
         expected_filename = build_filename(ttFont)
     except ImportError:
-        exit_with_install_instructions("googlefonts")
+        exit_with_install_instructions()
 
     if current_filename != expected_filename:
         yield FAIL, Message(
@@ -1057,50 +1057,38 @@ def font_codepoints(ttFont):
         Google Fonts expects that fonts in its collection support at least the minimal
         set of characters defined in the `GF-latin-core` glyph-set.
     """,
-    conditions=["font_codepoints"],
-    proposal="https://github.com/googlefonts/fontbakery/pull/2488",
+    conditions=["font_codepoints", "not is_icon_font"],
+    proposal="https://github.com/fonttools/fontbakery/pull/2488",
 )
-def com_google_fonts_check_glyph_coverage(ttFont, font_codepoints, config):
+def com_google_fonts_check_glyph_coverage(
+    ttFont, font_codepoints, family_metadata, config
+):
     """Check Google Fonts glyph coverage."""
-    from glyphsets import GFGlyphData as glyph_data
+
     import unicodedata2
+    from glyphsets import get_glyphsets_fulfilled
 
-    def missing_encoded_glyphs(glyphs):
-        encoded_glyphs = [g["unicode"] for g in glyphs if g["unicode"]]
-        return [
-            "0x%04X (%s)\n" % (c, unicodedata2.name(chr(c))) for c in encoded_glyphs
-        ]
+    glyphsets_fulfilled = get_glyphsets_fulfilled(ttFont)
 
-    missing_mandatory_glyphs = glyph_data.missing_glyphsets_in_font(
-        ttFont, threshold=0.0
-    )
-    missing_optional_glyphs = glyph_data.missing_glyphsets_in_font(
-        ttFont, threshold=0.8
-    )
+    # If we have a primary_script set, we only need care about Kernel
+    if family_metadata and family_metadata.primary_script:
+        required_glyphset = "GF_Latin_Kernel"
+    else:
+        required_glyphset = "GF_Latin_Core"
+
     passed = True
-    if "GF_Latin_Core" in missing_mandatory_glyphs:
-        missing = missing_encoded_glyphs(missing_mandatory_glyphs["GF_Latin_Core"])
-        if missing:
-            passed = False
-            yield FAIL, Message(
-                "missing-codepoints",
-                f"Missing required codepoints:\n\n" f"{bullet_list(config, missing)}",
-            )
-    elif (
-        len(missing_optional_glyphs) > 0
-        and "GF_Latin_Core" not in missing_optional_glyphs
-    ):
-        for glyphset_name, glyphs in missing_optional_glyphs.items():
-            if glyphset_name == "GF_Latin_Core":
-                continue
-            missing = missing_encoded_glyphs(glyphs)
-            if missing:
-                passed = False
-                yield WARN, Message(
-                    "missing-codepoints",
-                    f"{glyphset_name} is almost fulfilled. Missing codepoints:\n\n"
-                    f"{bullet_list(config, missing)}",
-                )
+
+    if glyphsets_fulfilled[required_glyphset]["missing"]:
+        missing = [
+            "0x%04X (%s)\n" % (c, unicodedata2.name(chr(c)))
+            for c in glyphsets_fulfilled[required_glyphset]["missing"]
+        ]
+        passed = False
+        yield FAIL, Message(
+            "missing-codepoints",
+            f"Missing required codepoints:\n\n" f"{bullet_list(config, missing)}",
+        )
+
     if passed:
         yield PASS, "OK"
 
@@ -1115,24 +1103,24 @@ def com_google_fonts_check_glyph_coverage(ttFont, font_codepoints, config):
         check to FAIL.
     """,
     conditions=["family_metadata"],
-    proposal="https://github.com/googlefonts/fontbakery/issues/3533",
+    proposal="https://github.com/fonttools/fontbakery/issues/3533",
     severity=10,  # max severity because this blocks font pushes to production.
 )
 def com_google_fonts_check_metadata_unsupported_subsets(
     family_metadata, ttFont, font_codepoints
 ):
     """Check for METADATA subsets with zero support."""
-    from glyphsets import codepoints
-    from glyphsets.subsets import SUBSETS
-
-    codepoints.set_encoding_path(codepoints.nam_dir)
+    try:
+        from gfsubsets import CodepointsInSubset, ListSubsets
+    except ImportError:
+        exit_with_install_instructions()
 
     passed = True
     for subset in family_metadata.subsets:
         if subset == "menu":
             continue
 
-        if subset not in SUBSETS:
+        if subset not in ListSubsets():
             yield FAIL, Message(
                 "unknown-subset",
                 f"Please remove the unrecognized subset '{subset}'"
@@ -1140,7 +1128,10 @@ def com_google_fonts_check_metadata_unsupported_subsets(
             )
             continue
 
-        subset_codepoints = codepoints.CodepointsInSubset(subset, unique_glyphs=True)
+        subset_codepoints = CodepointsInSubset(subset, unique_glyphs=True)
+        # All subsets now have these magic codepoints
+        subset_codepoints -= set([0, 13, 32, 160])
+
         if len(subset_codepoints.intersection(font_codepoints)) == 0:
             passed = False
             yield FAIL, Message(
@@ -1164,26 +1155,68 @@ def com_google_fonts_check_metadata_unsupported_subsets(
         will not be served in the subsetted fonts, and so will be unreachable to
         the end user.
     """,
-    conditions=["family_metadata"],
-    proposal="https://github.com/googlefonts/fontbakery/issues/4097",
+    proposal=[
+        "https://github.com/fonttools/fontbakery/issues/4097",
+        "https://github.com/fonttools/fontbakery/pull/4273",
+    ],
     severity=2,
 )
-def com_google_fonts_check_metadata_unreachable_subsetting(
-    family_metadata, ttFont, font_codepoints, config
-):
+def com_google_fonts_check_metadata_unreachable_subsetting(font, config):
     """Check for codepoints not covered by METADATA subsets."""
-    from glyphsets import codepoints
+    try:
+        import unicodedata2
+        from gfsubsets import CodepointsInSubset, ListSubsets, SubsetsInFont
+    except ImportError:
+        exit_with_install_instructions()
+
     from openbakery.utils import pretty_print_list
-    import unicodedata2
 
-    codepoints.set_encoding_path(codepoints.nam_dir)
+    # Use the METADATA.pb subsets if we have them
+    if font.metadata_file:
+        metadata = font.family_metadata
+        if metadata:
+            subsets = metadata.subsets
+        else:
+            yield FAIL, Message(
+                "unparsable-metadata", "Could not parse metadata.pb file"
+            )
+            return
+    else:
+        # Follow what the packager would do
+        subsets = [s[0] for s in SubsetsInFont(font.file, 50, 0.01)]
 
-    for subset in family_metadata.subsets:
-        font_codepoints = font_codepoints - set(codepoints.CodepointsInSubset(subset))
+    font_codepoints = font.font_codepoints
+    for subset in subsets:
+        font_codepoints = font_codepoints - set(CodepointsInSubset(subset))
 
     if not font_codepoints:
         yield PASS, "OK"
         return
+
+    unreachable = []
+    subsets_for_cps = defaultdict(set)
+    # This is faster than calling SubsetsForCodepoint for each codepoint
+    for subset in ListSubsets():
+        cps = CodepointsInSubset(subset, unique_glyphs=True)
+        for cp in cps or []:
+            subsets_for_cps[cp].add(subset)
+
+    for codepoint in sorted(font_codepoints):
+        subsets_for_cp = subsets_for_cps[codepoint]
+
+        if len(subsets_for_cp) == 0:
+            message = "not included in any glyphset definition"
+        elif len(subsets_for_cp) == 1:
+            message = "try adding " + ", ".join(subsets_for_cp)
+        else:
+            message = "try adding one of: " + ", ".join(subsets_for_cp)
+
+        try:
+            name = unicodedata2.name(chr(codepoint))
+        except Exception:
+            name = ""
+
+        unreachable.append(" * U+%04X %s: %s" % (codepoint, name, message))
 
     message = """The following codepoints supported by the font are not covered by
     any subsets defined in the font's metadata file, and will never
@@ -1191,32 +1224,7 @@ def com_google_fonts_check_metadata_unreachable_subsetting(
     subset declarations to METADATA.pb, or by editing the glyphset
     definitions.\n\n"""
 
-    unreachable = []
-    subsets_for_cps = defaultdict(set)
-    # This is faster than calling SubsetsForCodepoint for each codepoint
-    for subset in codepoints.ListSubsets():
-        cps = codepoints.CodepointsInSubset(subset, unique_glyphs=True)
-        for cp in cps or []:
-            subsets_for_cps[cp].add(subset)
-
-    for codepoint in sorted(font_codepoints):
-        subsets = subsets_for_cps[codepoint]
-        if not subsets:
-            continue
-
-        if len(subsets) > 1:
-            subsets = "one of: " + ", ".join(subsets)
-        else:
-            subsets = ", ".join(subsets)
-
-        try:
-            name = unicodedata2.name(chr(codepoint))
-        except Exception:
-            name = ""
-
-        unreachable.append(" * U+%04X %s: try adding %s" % (codepoint, name, subsets))
-
-    subsets = ", ".join(f"`{s}`" for s in family_metadata.subsets)
+    subsets = ", ".join(f"`{s}`" for s in subsets)
     message += pretty_print_list(config, unreachable, sep="\n", glue="\n")
     message += (
         f"\n\nOr you can add the above codepoints to one"

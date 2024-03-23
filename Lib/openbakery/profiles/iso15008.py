@@ -17,7 +17,7 @@ from openbakery.utils import exit_with_install_instructions
 try:
     import uharfbuzz as hb
 except ImportError:
-    exit_with_install_instructions("iso15008")
+    exit_with_install_instructions()
 
 profile_imports = ((".", ("shared_conditions",)),)
 profile = profile_factory(default_section=Section("Suitability for In-Car Display"))

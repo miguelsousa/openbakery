@@ -31,7 +31,7 @@ def ufo_font(ufo):
 
         return defcon.Font(ufo)
     except ImportError:
-        exit_with_install_instructions("ufo-sources")
+        exit_with_install_instructions()
     except UFOLibError:
         return None
 

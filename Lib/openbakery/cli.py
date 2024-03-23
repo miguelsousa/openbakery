@@ -24,6 +24,9 @@ SUBCOMMANDS = [
 
 
 def run_profile_check(profilename):
+    from openbakery.utils import set_profile_name
+
+    set_profile_name(profilename)
     module = import_module(f"openbakery.profiles.{profilename.replace('-', '_')}")
     sys.exit(check_profile_main(module.profile))
 
