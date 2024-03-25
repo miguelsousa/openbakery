@@ -1,3 +1,4 @@
+from fontTools.ttLib import TTFont
 from openbakery.codetesting import (
     assert_PASS,
     assert_results_contain,
@@ -6,7 +7,6 @@ from openbakery.codetesting import (
 )
 from openbakery.status import DEBUG, INFO, WARN, ERROR, SKIP, PASS, FAIL
 from openbakery.profiles import cff as cff_profile
-from fontTools.ttLib import TTFont
 
 check_statuses = (ERROR, FAIL, SKIP, PASS, WARN, INFO, DEBUG)
 
@@ -118,8 +118,8 @@ def test_check_cff_strings():
         FAIL,
         "cff-string-not-in-ascii-range",
         (
-            'The following CFF TopDict strings are not in the ASCII range:'
-            '- FullName: SÃ²urceSansPro-Regular'
+            "The following CFF TopDict strings are not in the ASCII range:"
+            "- FullName: SÃ²urceSansPro-Regular"
         ),
     )
 
@@ -130,8 +130,7 @@ def test_check_cff_strings():
         FAIL,
         "cff-unable-to-decode",
         (
-            'Unable to decode CFF table, possibly due to out '                                                                                       
-            'of ASCII range strings. Please check table strings.'
+            "Unable to decode CFF table, possibly due to out "
+            "of ASCII range strings. Please check table strings."
         ),
     )
-

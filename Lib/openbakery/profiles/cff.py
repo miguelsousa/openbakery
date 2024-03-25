@@ -68,10 +68,9 @@ def _analyze_cff(analysis, top_dict, private_dict, fd_index=0):
 
     if hasattr(top_dict, "rawDict"):
         raw_dict = top_dict.rawDict
-        for key in ["Notice", "Copyright", "FontName", "FullName",
-                    "FamilyName"]:
+        for key in ["Notice", "Copyright", "FontName", "FullName", "FamilyName"]:
             for char in raw_dict.get(key, ""):
-                if ord(char) > 0x7f:
+                if ord(char) > 0x7F:
                     analysis.string_not_ascii.append((key, raw_dict[key]))
                     break
 
@@ -120,7 +119,7 @@ def cff_analysis(ttFont):
         try:
             cff = ttFont["CFF "].cff
         except UnicodeDecodeError:
-            analysis.string_not_ascii = [('Unable-To-Decode', "")]
+            analysis.string_not_ascii = [("Unable-To-Decode", "")]
             return analysis
 
         for top_dict in cff.topDictIndex:
@@ -265,8 +264,8 @@ def com_adobe_fonts_check_cff_ascii_strings(cff_analysis):
             if key == "Unable-To-Decode":
                 yield FAIL, Message(
                     "cff-unable-to-decode",
-                    f'Unable to decode CFF table, possibly due to out '
-                    f'of ASCII range strings. Please check table strings.'
+                    "Unable to decode CFF table, possibly due to out "
+                    "of ASCII range strings. Please check table strings.",
                 )
                 return
             else:
@@ -274,8 +273,8 @@ def com_adobe_fonts_check_cff_ascii_strings(cff_analysis):
 
         yield FAIL, Message(
             "cff-string-not-in-ascii-range",
-            f'The following CFF TopDict strings '
-            f'are not in the ASCII range: {detailed_info}'
+            f"The following CFF TopDict strings "
+            f"are not in the ASCII range: {detailed_info}",
         )
 
     if not any_failures:
