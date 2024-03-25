@@ -14,6 +14,7 @@ class CFFAnalysis:
         self.glyphs_endchar_seac = []
         self.glyphs_exceed_max = []
         self.glyphs_recursion_errors = []
+        self.string_not_ascii = []
 
 
 def _get_subr_bias(count):
@@ -64,6 +65,15 @@ def _analyze_cff(analysis, top_dict, private_dict, fd_index=0):
     char_strings = top_dict.CharStrings
     global_subrs = top_dict.GlobalSubrs
     gsubr_bias = _get_subr_bias(len(global_subrs))
+
+    if hasattr(top_dict, "rawDict"):
+        raw_dict = top_dict.rawDict
+        for key in ["Notice", "Copyright", "FontName", "FullName",
+                    "FamilyName"]:
+            for char in raw_dict.get(key, ""):
+                if ord(char) > 0x7f:
+                    analysis.string_not_ascii.append((key, raw_dict[key]))
+                    break
 
     if private_dict is not None and hasattr(private_dict, "Subrs"):
         subrs = private_dict.Subrs
@@ -230,3 +240,39 @@ def com_adobe_fonts_check_cff_deprecated_operators(cff_analysis):
 
     if not any_failures:
         yield PASS, "No deprecated CFF operators used."
+
+
+@check(
+    id="com.adobe.fonts/check/cff_ascii_strings",
+    conditions=["ttFont", "is_cff", "cff_analysis"],
+    rationale="""
+        All CFF Table top dict string chars should fit into the ASCII range.
+    """,
+    proposal="https://github.com/miguelsousa/openbakery/issues/128",
+)
+def com_adobe_fonts_check_cff_ascii_strings(cff_analysis):
+    """Does the font's CFF table top dict strings fit into the ASCII range?"""
+    any_failures = False
+    if cff_analysis.string_not_ascii:
+        any_failures = True
+        detailed_info = ""
+        for string_info in cff_analysis.string_not_ascii:
+            key, string = string_info
+            if key == "Unable-To-Decode":
+                yield FAIL, Message(
+                    "cff-unable-to-decode",
+                    f'Unable to decode CFF table, possibly due to out '
+                    f'of ASCII range strings. Please check table strings.'
+                )
+                return
+            else:
+                detailed_info = detailed_info + f"\n\n\t - {key}: {string}"
+
+        yield FAIL, Message(
+            "cff-string-not-in-ascii-range",
+            f'The following CFF TopDict strings '
+            f'are not in the ASCII range: {detailed_info}'
+        )
+
+    if not any_failures:
+        yield PASS, "No out of range strings in CFF table."
