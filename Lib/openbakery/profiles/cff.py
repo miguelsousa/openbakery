@@ -117,7 +117,11 @@ def cff_analysis(ttFont):
     analysis = CFFAnalysis()
 
     if "CFF " in ttFont:
-        cff = ttFont["CFF "].cff
+        try:
+            cff = ttFont["CFF "].cff
+        except UnicodeDecodeError:
+            analysis.string_not_ascii = [('Unable-To-Decode', "")]
+            return analysis
 
         for top_dict in cff.topDictIndex:
             if hasattr(top_dict, "FDArray"):
