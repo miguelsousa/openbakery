@@ -55,6 +55,7 @@ OPENTYPE_PROFILE_CHECKS = [
     "com.adobe.fonts/check/cff2_call_depth",
     "com.adobe.fonts/check/cff_call_depth",
     "com.adobe.fonts/check/cff_deprecated_operators",
+    "com.adobe.fonts/check/cff_ascii_strings",
     "com.google.fonts/check/font_version",
     "com.google.fonts/check/post_table_version",
     "com.google.fonts/check/monospace",
