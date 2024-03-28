@@ -119,7 +119,7 @@ def cff_analysis(ttFont):
         try:
             cff = ttFont["CFF "].cff
         except UnicodeDecodeError:
-            analysis.string_not_ascii = [("Unable-To-Decode", "")]
+            analysis.string_not_ascii = None
             return analysis
 
         for top_dict in cff.topDictIndex:
@@ -255,21 +255,16 @@ def com_adobe_fonts_check_cff_deprecated_operators(cff_analysis):
 )
 def com_adobe_fonts_check_cff_ascii_strings(cff_analysis):
     """Does the font's CFF table top dict strings fit into the ASCII range?"""
-    any_failures = False
-    if cff_analysis.string_not_ascii:
-        any_failures = True
+    if cff_analysis.string_not_ascii is None:
+        yield FAIL, Message(
+            "cff-unable-to-decode",
+            "Unable to decode CFF table, possibly due to out "
+            "of ASCII range strings. Please check table strings.",
+        )
+    elif cff_analysis.string_not_ascii:
         detailed_info = ""
-        for string_info in cff_analysis.string_not_ascii:
-            key, string = string_info
-            if key == "Unable-To-Decode":
-                yield FAIL, Message(
-                    "cff-unable-to-decode",
-                    "Unable to decode CFF table, possibly due to out "
-                    "of ASCII range strings. Please check table strings.",
-                )
-                return
-            else:
-                detailed_info = detailed_info + f"\n\n\t - {key}: {string}"
+        for key, string in cff_analysis.string_not_ascii:
+            detailed_info += f"\n\n\t - {key}: {string}"
 
         yield FAIL, Message(
             "cff-string-not-in-ascii-range",
@@ -277,5 +272,5 @@ def com_adobe_fonts_check_cff_ascii_strings(cff_analysis):
             f"are not in the ASCII range: {detailed_info}",
         )
 
-    if not any_failures:
+    else:
         yield PASS, "No out of range strings in CFF table."
