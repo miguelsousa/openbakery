@@ -264,7 +264,9 @@ def com_adobe_fonts_check_cff_ascii_strings(cff_analysis):
     elif cff_analysis.string_not_ascii:
         detailed_info = ""
         for key, string in cff_analysis.string_not_ascii:
-            detailed_info += (f"\n\n\t - {key}: {string}")
+            detailed_info += (
+                f"\n\n\t - {key}: {string.encode('latin-1').decode('utf-8')}"
+            )
 
         yield FAIL, Message(
             "cff-string-not-in-ascii-range",

@@ -112,14 +112,14 @@ def test_check_cff_strings():
     assert_PASS(check(font))
 
     # put an out of range char into FullName field:
-    raw_dict["FullName"] = "SòurceSansPro-Regular"
+    raw_dict["FullName"] = "SÃ²urceSansPro-Regular"
     assert_results_contain(
         check(font),
         FAIL,
         "cff-string-not-in-ascii-range",
         (
             "The following CFF TopDict strings are not in the ASCII range:"
-            "- FullName: SÃ²urceSansPro-Regular"
+            "- FullName: SòurceSansPro-Regular"
         ),
     )
 
