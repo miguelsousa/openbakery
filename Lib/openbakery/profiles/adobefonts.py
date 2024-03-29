@@ -42,6 +42,7 @@ SET_EXPLICIT_CHECKS = {
     "com.adobe.fonts/check/cff2_call_depth",
     "com.adobe.fonts/check/cff_call_depth",
     "com.adobe.fonts/check/cff_deprecated_operators",
+    "com.adobe.fonts/check/cff_ascii_strings",
     #
     # =======================================
     # From cmap.py

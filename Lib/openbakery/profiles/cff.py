@@ -14,6 +14,7 @@ class CFFAnalysis:
         self.glyphs_endchar_seac = []
         self.glyphs_exceed_max = []
         self.glyphs_recursion_errors = []
+        self.string_not_ascii = []
 
 
 def _get_subr_bias(count):
@@ -65,6 +66,14 @@ def _analyze_cff(analysis, top_dict, private_dict, fd_index=0):
     global_subrs = top_dict.GlobalSubrs
     gsubr_bias = _get_subr_bias(len(global_subrs))
 
+    if hasattr(top_dict, "rawDict"):
+        raw_dict = top_dict.rawDict
+        for key in ["Notice", "Copyright", "FontName", "FullName", "FamilyName"]:
+            for char in raw_dict.get(key, ""):
+                if ord(char) > 0x7F:
+                    analysis.string_not_ascii.append((key, raw_dict[key]))
+                    break
+
     if private_dict is not None and hasattr(private_dict, "Subrs"):
         subrs = private_dict.Subrs
         subr_bias = _get_subr_bias(len(subrs))
@@ -107,7 +116,11 @@ def cff_analysis(ttFont):
     analysis = CFFAnalysis()
 
     if "CFF " in ttFont:
-        cff = ttFont["CFF "].cff
+        try:
+            cff = ttFont["CFF "].cff
+        except UnicodeDecodeError:
+            analysis.string_not_ascii = None
+            return analysis
 
         for top_dict in cff.topDictIndex:
             if hasattr(top_dict, "FDArray"):
@@ -230,3 +243,36 @@ def com_adobe_fonts_check_cff_deprecated_operators(cff_analysis):
 
     if not any_failures:
         yield PASS, "No deprecated CFF operators used."
+
+
+@check(
+    id="com.adobe.fonts/check/cff_ascii_strings",
+    conditions=["ttFont", "is_cff", "cff_analysis"],
+    rationale="""
+        All CFF Table top dict string chars should fit into the ASCII range.
+    """,
+    proposal="https://github.com/miguelsousa/openbakery/issues/128",
+)
+def com_adobe_fonts_check_cff_ascii_strings(cff_analysis):
+    """Does the font's CFF table top dict strings fit into the ASCII range?"""
+    if cff_analysis.string_not_ascii is None:
+        yield FAIL, Message(
+            "cff-unable-to-decode",
+            "Unable to decode CFF table, possibly due to out "
+            "of ASCII range strings. Please check table strings.",
+        )
+    elif cff_analysis.string_not_ascii:
+        detailed_info = ""
+        for key, string in cff_analysis.string_not_ascii:
+            detailed_info += (
+                f"\n\n\t - {key}: {string.encode('latin-1').decode('utf-8')}"
+            )
+
+        yield FAIL, Message(
+            "cff-string-not-in-ascii-range",
+            f"The following CFF TopDict strings "
+            f"are not in the ASCII range: {detailed_info}",
+        )
+
+    else:
+        yield PASS, "No out of range strings in CFF table."
