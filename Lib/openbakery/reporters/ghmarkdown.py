@@ -84,8 +84,6 @@ class GHMarkdownReporter(SerializeReporter):
             return "universal"
         if "Basic UFO checks" in section:
             return "ufo_sources"
-        if "Checks inherited from Microsoft Font Validator" in section:
-            return "fontval"
         if "openbakery.profiles." in section:
             return section.split("openbakery.profiles.")[1].split(">")[0]
         return section

@@ -62,7 +62,6 @@ OpenBakery's functionality is organized into profiles. Each profile invokes spec
 ```
 adobefonts
 fontbureau
-fontval
 fontwerk
 googlefonts
 iso15008

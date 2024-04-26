@@ -9,7 +9,6 @@ from openbakery.commands.check_profile import main as check_profile_main
 SUBCOMMANDS = [
     "adobefonts",
     "fontbureau",
-    "fontval",
     "fontwerk",
     "googlefonts",
     "iso15008",

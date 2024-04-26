@@ -13,3 +13,4 @@ docs/_build
 .tox
 .idea
 .DS_Store
+xtra

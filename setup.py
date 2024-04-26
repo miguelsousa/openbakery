@@ -65,16 +65,8 @@ iso15008_extras = [
     "uharfbuzz",
 ]
 
-fontval_extras = [
-    "lxml",
-]
-
 all_extras = set(
-    fontval_extras
-    + googlefonts_extras
-    + iso15008_extras
-    + shaping_extras
-    + ufo_sources_extras
+    googlefonts_extras + iso15008_extras + shaping_extras + ufo_sources_extras
 )
 
 setup(
@@ -157,7 +149,6 @@ setup(
     ],
     extras_require={
         "all": all_extras,
-        "fontval": fontval_extras,
         "fontwerk": googlefonts_extras,
         "googlefonts": googlefonts_extras,
         "notofonts": googlefonts_extras,
