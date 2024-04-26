@@ -36,6 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `com.google.fonts/check/cjk_not_enough_glyphs`: This check is now only run when a font has CJK codepages or ranges declared in the `OS/2` table. Other CJK-related checks are run on fonts with a minimum of 150 CJK glyphs (https://github.com/fonttools/fontbakery/issues/3846).
 - `com.google.fonts/check/family/panose_familytype` and `com.google.fonts/check/family/panose_proportion`: Failures have been downgraded to warnings (https://github.com/fonttools/fontbakery/issues/4192).
 - `com.adobe.fonts/check/postscript_name_characters`: Added underscore (`_` U+005F) to the set of characters allowed in PostScript name strings (https://github.com/miguelsousa/openbakery/pull/90).
+- Removed the `fontval` profile (https://github.com/miguelsousa/openbakery/pull/141).
 
 ### Fixed
 
