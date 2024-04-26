@@ -10,7 +10,6 @@ font-v==2.1.0
 freetype-py==2.3.0  # pinned for now. See: https://github.com/googlefonts/fontbakery/issues/4143
 gflanguages==0.5.17
 glyphsets==0.6.6
-lxml==5.2.1
 munkres==1.1.4
 opentype-sanitizer==9.1.0
 opentypespec==1.9.1
