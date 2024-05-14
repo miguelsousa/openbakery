@@ -556,6 +556,7 @@ def test_check_consistent_font_family_name():
     assert_PASS(check(test_fonts))
 
     # now set 5 of the fonts to have different family names
+    target_nameID = None
     for i in range(1, 6):
         if i in [1, 2, 3]:
             target_nameID = 1
