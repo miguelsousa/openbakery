@@ -416,6 +416,7 @@ class CheckRunner:
         # inspection results).
 
         skipped = None
+        args = None
         if self._profile.check_skip_filter:
             iterargsDict = {
                 key: self.get_iterarg(key, index) for key, index in iterargs

@@ -139,6 +139,7 @@ def test_example_checkrunner_based(cabin_regular_path):
     # prepare
     ttFont["OS/2"].achVendID = "APPL"
     # run
+    last_check_message = None
     for status, message, _ in runner.run():
         if status in check_statuses:
             last_check_message = message

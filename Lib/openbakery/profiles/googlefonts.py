@@ -3170,6 +3170,7 @@ def com_google_fonts_check_metadata_os2_weightclass(ttFont, font_metadata):
         if font_weight not in [250, 275]:
             should_be = "the same"
         else:
+            expected_value = None
             if font_weight == 250:
                 expected_value = 100  # "Thin"
             if font_weight == 275:
@@ -4574,8 +4575,8 @@ def com_google_fonts_check_kerning_for_non_ligated_sequences(
 ):
     """Is there kerning info for non-ligated sequences?"""
 
-    def look_for_nonligated_kern_info(table):
-        for pairpos in table.SubTable:
+    def look_for_nonligated_kern_info(lookup, ligature_pairs):
+        for pairpos in lookup.SubTable:
             for i, glyph in enumerate(pairpos.Coverage.glyphs):
                 if not hasattr(pairpos, "PairSet"):
                     continue
@@ -4610,7 +4611,7 @@ def com_google_fonts_check_kerning_for_non_ligated_sequences(
             if record.FeatureTag == "kern":
                 for index in record.Feature.LookupListIndex:
                     lookup = ttFont["GSUB"].table.LookupList.Lookup[index]
-                    look_for_nonligated_kern_info(lookup)
+                    look_for_nonligated_kern_info(lookup, ligature_pairs)
 
         if ligature_pairs:
             yield WARN, Message(
@@ -6042,6 +6043,7 @@ def com_google_fonts_check_STAT_gf_axisregistry_names(ttFont, GFAxisRegistry):
             # Here "name_entry" has the user-friendly name of the current AxisValue
             # We want to ensure that this string shows up as a "fallback" name
             # on the GF Axis Registry for this specific variation axis tag.
+            is_value = None
             name = normalize_name(name_entry.toUnicode())
             expected_names = [normalize_name(n) for n in fallbacks.keys()]
             if hasattr(axis_value, "Value"):  # Format 1 & 3
