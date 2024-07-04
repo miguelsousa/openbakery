@@ -1,4 +1,4 @@
-axisregistry==0.4.9
+axisregistry==0.4.10
 beautifulsoup4==4.12.3
 beziers==0.6.0
 cmarkgfm==2024.1.14
