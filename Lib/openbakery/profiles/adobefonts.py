@@ -427,6 +427,8 @@ def com_adobe_fonts_check_unsupported_tables(ttFont):
         "CFF ",
         "CFF2",
         "cmap",
+        "COLR",
+        "CPAL",
         "cvar",
         "cvt ",
         "DSIG",
