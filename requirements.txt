@@ -11,7 +11,7 @@ freetype-py==2.3.0  # pinned for now. See: https://github.com/googlefonts/fontba
 gflanguages==0.7.0
 glyphsets==0.6.6
 munkres==1.1.4
-opentype-sanitizer==9.1.0
+opentype-sanitizer==9.2.0
 opentypespec==1.9.1
 packaging==24.1
 pip-api==0.0.34
