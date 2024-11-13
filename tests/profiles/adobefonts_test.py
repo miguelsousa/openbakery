@@ -183,6 +183,10 @@ def test_check_unsupported_tables():
     msg = assert_PASS(check(ttFont))
     assert msg == "No unsupported tables were found."
 
+    ttFont = TTFont(TEST_FILE("color_fonts/noto-glyf_colr_1.ttf"))
+    msg = assert_PASS(check(ttFont))
+    assert msg == "No unsupported tables were found."
+
     ttFont = TTFont(TEST_FILE("hinting/Roboto-VF.ttf"))
     msg = assert_results_contain(check(ttFont), FAIL, "unsupported-tables")
     assert "TSI0" in msg
