@@ -183,9 +183,15 @@ def test_check_unsupported_tables():
     msg = assert_PASS(check(ttFont))
     assert msg == "No unsupported tables were found."
 
-    ttFont = TTFont(TEST_FILE("color_fonts/noto-glyf_colr_1.ttf"))
+    # AmiriQuranColored.ttf has a COLRv0 table, which is supported.
+    ttFont = TTFont(TEST_FILE("color_fonts/AmiriQuranColored.ttf"))
     msg = assert_PASS(check(ttFont))
     assert msg == "No unsupported tables were found."
+
+    # noto-glyf_color_1.ttf has a COLRv1 table, which is not supported.
+    ttFont = TTFont(TEST_FILE("color_fonts/noto-glyf_colr_1.ttf"))
+    msg = assert_results_contain(check(ttFont), FAIL, "unsupported-tables")
+    assert "COLRv1" in msg
 
     ttFont = TTFont(TEST_FILE("hinting/Roboto-VF.ttf"))
     msg = assert_results_contain(check(ttFont), FAIL, "unsupported-tables")
