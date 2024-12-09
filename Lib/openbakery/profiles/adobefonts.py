@@ -471,6 +471,12 @@ def com_adobe_fonts_check_unsupported_tables(ttFont):
     font_tables.discard("GlyphOrder")  # pseudo-table created by FontTools
     unsupported_tables = sorted(font_tables - SUPPORTED_TABLES)
 
+    # check if there is a COLR version 1 table specifically.
+    # COLR v0 is supported, COLR v1 is not supported.
+    if "COLR" in font_tables:
+        if ttFont["COLR"].version == 1:
+            unsupported_tables.append("COLRv1")
+
     if unsupported_tables:
         unsupported_list = "".join(f"* {tag}\n" for tag in unsupported_tables)
         yield FAIL, Message(
