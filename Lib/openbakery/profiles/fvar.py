@@ -447,7 +447,9 @@ def com_adobe_fonts_check_varfont_valid_postscript_nameid(ttFont, has_name_table
         )
         passed = False
 
-    valid_postscript_nameids = list(set(font_postscript_nameids) - set(invalid_postscript_nameids))
+    valid_postscript_nameids = list(
+        set(font_postscript_nameids) - set(invalid_postscript_nameids)
+    )
     for nameid in valid_postscript_nameids:
         inst_name = str(name_table.getDebugName(nameid))
         if not valid_postscript_name(inst_name):
@@ -456,12 +458,15 @@ def com_adobe_fonts_check_varfont_valid_postscript_nameid(ttFont, has_name_table
         if bad_psnames_count := len(bad_psnames) > 0:
             yield FAIL, Message(
                 "bad-instance-psname-characters",
-                f"The following instance PostScript name{'s' if bad_psnames_count != 1 else ''} "
-                f"contain{'s' if bad_psnames_count == 1 else ''} disallowed characters:\n {bad_psnames}",
+                f"The following instance PostScript "
+                f"name{'s' if bad_psnames_count != 1 else ''} "
+                f"contain{'s' if bad_psnames_count == 1 else ''} "
+                f"disallowed characters:\n {bad_psnames}",
             )
         else:
             yield PASS, Message(
-                "psname-characters-ok", "PostScript name contains only allowed characters."
+                "psname-characters-ok",
+                "PostScript name contains only allowed characters.",
             )
 
     if passed:

@@ -515,7 +515,8 @@ def test_check_varfont_valid_postscript_nameid():
     ttFont["name"].setName("name with space", inst_1.postscriptNameID, 1, 0, 0)
     msg = assert_results_contain(check(ttFont), FAIL, "bad-instance-psname-characters")
     assert msg == (
-        "The following instance PostScript name contains disallowed characters:\n ['name with space']"
+        "The following instance PostScript name contains "
+        "disallowed characters:\n ['name with space']"
     )
 
     # Change the instances' postScriptNameID to

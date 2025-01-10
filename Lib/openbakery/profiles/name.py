@@ -420,6 +420,7 @@ def com_google_fonts_check_name_match_familyname_fullfont(ttFont):
 
 def valid_postscript_name(postscript_name):
     import re
+
     # <Postscript name> may contain only the characters a-z A-Z 0-9 - and _
     bad_psname = re.compile("[^A-Za-z0-9-_]")
     if bad_psname.search(postscript_name):
@@ -435,6 +436,7 @@ def valid_postscript_name(postscript_name):
 def com_adobe_fonts_check_postscript_name_characters(ttFont):
     """PostScript name contains only allowed characters?"""
     from openbakery.utils import get_name_entry_strings
+
     bad_entry_count = 0
 
     for string in get_name_entry_strings(ttFont, NameID.POSTSCRIPT_NAME):
