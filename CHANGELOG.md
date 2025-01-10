@@ -38,6 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `com.adobe.fonts/check/postscript_name_characters`: Added underscore (`_` U+005F) to the set of characters allowed in PostScript name strings (https://github.com/miguelsousa/openbakery/pull/90).
 - Removed the `fontval` profile (https://github.com/miguelsousa/openbakery/pull/141).
 - `com.adobe.fonts/check/unsupported_tables`: Added COLR and CPAL tables to SUPPORTED_TABLES, added extra check to fail for COLRv1 (and pass for COLRv0). (https://github.com/miguelsousa/openbakery/pull/205)
+- `com.adobe.fonts/check/varfont/valid_postscript_nameid`: This check now also validates the value of a postscriptName (using shared code from `com.adobe.fonts/check/postscript_name_characters`)
 
 ### Fixed
 
