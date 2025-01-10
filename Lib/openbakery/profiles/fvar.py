@@ -417,9 +417,6 @@ def com_adobe_fonts_check_varfont_valid_subfamily_nameid(ttFont, has_name_table)
 def com_adobe_fonts_check_varfont_valid_postscript_nameid(ttFont, has_name_table):
     """Validates that the value of postScriptNameID used by each InstanceRecord
     is 6, 0xFFFF, or greater than 255 and less than 32768."""
-    from openbakery.profiles.name import valid_postscript_name
-
-    bad_psnames = []
 
     if not has_name_table:
         yield FAIL, Message("lacks-table", "Font lacks 'name' table.")
@@ -447,29 +444,58 @@ def com_adobe_fonts_check_varfont_valid_postscript_nameid(ttFont, has_name_table
         )
         passed = False
 
-    valid_postscript_nameids = list(
-        set(font_postscript_nameids) - set(invalid_postscript_nameids)
-    )
-    for nameid in valid_postscript_nameids:
-        inst_name = str(name_table.getDebugName(nameid))
-        if not valid_postscript_name(inst_name):
-            bad_psnames.append(inst_name)
-
-        if bad_psnames_count := len(bad_psnames) > 0:
-            yield FAIL, Message(
-                "bad-instance-psname-characters",
-                f"The following instance PostScript "
-                f"name{'s' if bad_psnames_count != 1 else ''} "
-                f"contain{'s' if bad_psnames_count == 1 else ''} "
-                f"disallowed characters:\n {bad_psnames}",
-            )
-        else:
-            yield PASS, Message(
-                "psname-characters-ok",
-                "PostScript name contains only allowed characters.",
-            )
-
     if passed:
+        yield PASS, "All postScriptNameID values are valid."
+
+
+@check(
+    id="com.adobe.fonts/check/varfont/valid_instance_postscript_name",
+    rationale="""
+        According to the 'name' documentation in the OpenType Spec
+        https://learn.microsoft.com/en-us/typography/opentype/spec/name
+
+        Postscript names may contain only the characters a-z A-Z 0-9 - and _
+        This check validates the postscript names of a VF's instances specifically.
+    """,
+    conditions=["is_variable_font"],
+    proposal="https://github.com/googlefonts/fontbakery/issues/3704",
+)
+def com_adobe_fonts_check_varfont_valid_instance_postscript_name(
+    ttFont, has_name_table
+):
+    """Validates that all instances in a VF have valid PostScript names."""
+    from openbakery.profiles.name import valid_postscript_name
+
+    if not has_name_table:
+        yield FAIL, Message("lacks-table", "Font lacks 'name' table.")
+        return
+
+    font_instance_postscript_records = [
+        {
+            "ps_name": str(ttFont["name"].getDebugName(inst.postscriptNameID)),
+            "coords": inst.coordinates,
+        }
+        for inst in ttFont["fvar"].instances
+    ]
+
+    bad_psname_msg_arr = []
+    for record in font_instance_postscript_records:
+        inst_name = record["ps_name"]
+        if not valid_postscript_name(inst_name):
+            bad_psname_msg_arr.append(
+                f"'{inst_name}' at coordinates {record['coords']}\n"
+            )
+
+    if bad_psnames_count := len(bad_psname_msg_arr):
+        yield FAIL, Message(
+            "bad-instance-psname-characters",
+            f"The following VF instance PostScript "
+            f"name{'s' if bad_psnames_count != 1 else ''} at the "
+            f"specified coordinates contain{'s' if bad_psnames_count == 1 else ''} "
+            f"disallowed characters:\n"
+            f"{''.join(bad_psname_msg_arr)}",
+        )
+    else:
         yield PASS, "All postScriptNameID values are valid."
 
 

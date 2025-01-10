@@ -67,6 +67,7 @@ SET_EXPLICIT_CHECKS = {
     "com.adobe.fonts/check/varfont/valid_axis_nameid",
     "com.adobe.fonts/check/varfont/valid_default_instance_nameids",  # IS_OVERRIDDEN
     "com.adobe.fonts/check/varfont/valid_postscript_nameid",
+    "com.adobe.fonts/check/varfont/valid_instance_postscript_name",
     "com.adobe.fonts/check/varfont/valid_subfamily_nameid",
     "com.google.fonts/check/varfont/bold_wght_coord",  # IS_OVERRIDDEN
     "com.google.fonts/check/varfont/regular_ital_coord",  # IS_OVERRIDDEN
