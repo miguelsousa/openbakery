@@ -62,7 +62,7 @@ def test_get_family_checks():
 def test_profile_check_set():
     """Confirm that the profile has the correct number of checks and the correct
     set of check IDs."""
-    assert len(SET_EXPLICIT_CHECKS) == 83
+    assert len(SET_EXPLICIT_CHECKS) == 84
     explicit_with_overrides = sorted(
         f"{check_id}{OVERRIDE_SUFFIX}" if check_id in OVERRIDDEN_CHECKS else check_id
         for check_id in SET_EXPLICIT_CHECKS
