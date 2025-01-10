@@ -419,9 +419,12 @@ def com_google_fonts_check_name_match_familyname_fullfont(ttFont):
 
 
 def valid_postscript_name(postscript_name):
+    """Validates the value of a given postscript name.
+    A postscript name may contain only the characters a-z A-Z 0-9 - and _
+
+    Returns True if valid, False otherwise"""
     import re
 
-    # <Postscript name> may contain only the characters a-z A-Z 0-9 - and _
     bad_psname = re.compile("[^A-Za-z0-9-_]")
     if bad_psname.search(postscript_name):
         return False
@@ -431,6 +434,12 @@ def valid_postscript_name(postscript_name):
 
 @check(
     id="com.adobe.fonts/check/postscript_name_characters",
+    rationale="""
+        According to the 'name' documentation in the OpenType Spec
+        https://learn.microsoft.com/en-us/typography/opentype/spec/name
+
+        Postscript names may contain only the characters a-z A-Z 0-9 - and _
+    """,
     proposal="https://github.com/miguelsousa/openbakery/issues/62",
 )
 def com_adobe_fonts_check_postscript_name_characters(ttFont):
