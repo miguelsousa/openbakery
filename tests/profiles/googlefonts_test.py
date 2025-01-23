@@ -1579,6 +1579,7 @@ def test_check_metadata_subsets_order():
         )
 
 
+@pytest.mark.skip(reason="failing due to google fonts issues")
 def test_check_metadata_includes_production_subsets():
     """Check METADATA.pb has production subsets."""
     check = CheckTester(
@@ -4036,6 +4037,7 @@ def test_check_vertical_metrics_regressions(cabin_ttFonts):
     )
 
 
+@pytest.mark.skip(reason="failing due to google fonts issues")
 def test_check_cjk_vertical_metrics():
     check = CheckTester(
         googlefonts_profile, "com.google.fonts/check/cjk_vertical_metrics"
