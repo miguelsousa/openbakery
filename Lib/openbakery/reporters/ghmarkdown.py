@@ -20,13 +20,13 @@ class GHMarkdownReporter(SerializeReporter):
     @staticmethod
     def emoticon(name):
         return {
-            "ERROR": "\U0001F494",  # 💔  :broken_heart:
-            "FAIL": "\U0001F525",  # 🔥  :fire:
-            "WARN": "\U000026A0",  # ⚠️  :warning:
+            "ERROR": "\U0001f494",  # 💔  :broken_heart:
+            "FAIL": "\U0001f525",  # 🔥  :fire:
+            "WARN": "\U000026a0",  # ⚠️  :warning:
             "INFO": "\U00002139",  # ℹ️  :information_source:
-            "SKIP": "\U0001F4A4",  # 💤  :zzz:
-            "PASS": "\U0001F35E",  # 🍞  :bread
-            "DEBUG": "\U0001F50E",  # 🔎 :mag_right:
+            "SKIP": "\U0001f4a4",  # 💤  :zzz:
+            "PASS": "\U0001f35e",  # 🍞  :bread
+            "DEBUG": "\U0001f50e",  # 🔎 :mag_right:
         }[name]
 
     def log_md(self, log):
