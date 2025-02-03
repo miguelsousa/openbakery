@@ -1,5 +1,5 @@
 axisregistry==0.4.12
-beautifulsoup4==4.13.0
+beautifulsoup4==4.13.1
 beziers==0.6.0
 cmarkgfm==2024.11.20
 collidoscope==0.6.5
