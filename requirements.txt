@@ -3,7 +3,7 @@ beautifulsoup4==4.13.3
 beziers==0.6.0
 cmarkgfm==2024.11.20
 collidoscope==0.6.5
-defcon==0.10.3
+defcon==0.12.0
 dehinter==4.0.0
 fontTools[ufo,lxml,unicode]==4.55.8
 font-v==2.1.0
