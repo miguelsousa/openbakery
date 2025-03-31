@@ -239,9 +239,15 @@ def glyph_metrics_stats(ttFont):
     # NOTE: `range(a, b)` includes `a` and does not include `b`.
     #       Here we don't include 0-31 as well as 127
     #       because these are control characters.
-    ascii_glyph_names = [
-        ttFont.getBestCmap()[c] for c in range(32, 127) if c in ttFont.getBestCmap()
-    ]
+    cmap = ttFont.getBestCmap()
+    if cmap is None:
+        # Fallback for symbol cmap
+        for table in ttFont['cmap'].tables:
+            if table.platformID == 3 and table.platEncID == 0:
+                cmap = table.cmap
+                break
+
+    ascii_glyph_names = [cmap[c] for c in range(32, 127) if cmap and c in cmap]
 
     if len(ascii_glyph_names) > 0.8 * (127 - 32):
         ascii_widths = [
@@ -260,7 +266,7 @@ def glyph_metrics_stats(ttFont):
         # Add character glyphs that are in one of these categories:
         # Letter, Mark, Number, Punctuation, Symbol, Space_Separator.
         # This excludes Line_Separator, Paragraph_Separator and Control.
-        for value, name in ttFont.getBestCmap().items():
+        for value, name in cmap.items():
             if unicodedata.category(chr(value)).startswith(
                 ("L", "M", "N", "P", "S", "Zs")
             ):
