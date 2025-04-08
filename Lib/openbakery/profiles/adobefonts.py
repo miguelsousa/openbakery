@@ -367,7 +367,7 @@ def _quick_and_dirty_glyph_is_empty(font, glyph_name):
 )
 def com_adobe_fonts_check_find_empty_letters(ttFont):
     """Letters in font have glyphs that are not empty?"""
-    cmap = ttFont.getBestCmap()
+    cmap = ttFont.getBestCmap() or ttFont["cmap"].getcmap(3, 0).cmap
     blank_ok_set = ALL_HANGUL_SYLLABLES_CODEPOINTS - MODERN_HANGUL_SYLLABLES_CODEPOINTS
     num_blank_hangul_glyphs = 0
     passed = True

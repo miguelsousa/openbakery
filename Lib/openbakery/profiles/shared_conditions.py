@@ -236,11 +236,12 @@ def glyph_metrics_stats(ttFont):
     two widths or be zero-width.
     """
     glyph_metrics = ttFont["hmtx"].metrics
+    best_cmap = ttFont.getBestCmap() or ttFont["cmap"].getcmap(3, 0).cmap
     # NOTE: `range(a, b)` includes `a` and does not include `b`.
     #       Here we don't include 0-31 as well as 127
     #       because these are control characters.
     ascii_glyph_names = [
-        ttFont.getBestCmap()[c] for c in range(32, 127) if c in ttFont.getBestCmap()
+        best_cmap[c] for c in range(32, 127) if c in best_cmap
     ]
 
     if len(ascii_glyph_names) > 0.8 * (127 - 32):
@@ -260,7 +261,7 @@ def glyph_metrics_stats(ttFont):
         # Add character glyphs that are in one of these categories:
         # Letter, Mark, Number, Punctuation, Symbol, Space_Separator.
         # This excludes Line_Separator, Paragraph_Separator and Control.
-        for value, name in ttFont.getBestCmap().items():
+        for value, name in best_cmap.items():
             if unicodedata.category(chr(value)).startswith(
                 ("L", "M", "N", "P", "S", "Zs")
             ):
@@ -568,9 +569,10 @@ def get_cjk_glyphs(ttFont):
 
     results = []
     cjk_unicodes = set()
+    best_cmap = ttFont.getBestCmap() or ttFont["cmap"].getcmap(3, 0).cmap
     for start, end in CJK_UNICODE_RANGES:
         cjk_unicodes |= set(u for u in range(start, end + 1))
-    for uni, glyph_name in ttFont.getBestCmap().items():
+    for uni, glyph_name in best_cmap.items():
         if uni in cjk_unicodes:
             results.append(glyph_name)
     return results
@@ -597,9 +599,9 @@ def is_indic_font(ttFont):
         0x0C08,  # Telugu
     ]
 
-    font_codepoints = ttFont["cmap"].getBestCmap().keys()
+    best_cmap = ttFont.getBestCmap() or ttFont["cmap"].getcmap(3, 0).cmap
     for codepoint in INDIC_FONT_DETECTION_CODEPOINTS:
-        if codepoint in font_codepoints:
+        if codepoint in best_cmap:
             return True
 
     # otherwise:

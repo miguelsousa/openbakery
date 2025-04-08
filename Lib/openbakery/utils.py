@@ -305,7 +305,7 @@ def name_entry_id(name):
 
 
 def get_glyph_name(font: TTFont, codepoint: int) -> Optional[str]:
-    next_best_cmap = font.getBestCmap()
+    next_best_cmap = font.getBestCmap() or font["cmap"].getcmap(3, 0).cmap
 
     if codepoint in next_best_cmap:
         return next_best_cmap[codepoint]
