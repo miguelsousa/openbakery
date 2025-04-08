@@ -281,7 +281,7 @@ def glyph_metrics_stats(ttFont):
                 if name in relevant_glyph_names and adv != 0
             }
         )
-        seems_monospaced = len(widths) <= 2
+        seems_monospaced = len(widths) <= 2 if relevant_glyph_names else False
 
     width_max = max(adv for k, (adv, lsb) in glyph_metrics.items())
     most_common_width = Counter(
