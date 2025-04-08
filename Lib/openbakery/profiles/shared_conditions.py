@@ -298,7 +298,7 @@ def glyph_metrics_stats(ttFont):
 def missing_whitespace_chars(ttFont):
     from openbakery.utils import get_glyph_name
 
-    space = get_glyph_name(ttFont, 0x0020)
+    space = get_glyph_name(ttFont, 0x0020) or get_glyph_name(ttFont, 0xF020)
     nbsp = get_glyph_name(ttFont, 0x00A0)
     # tab = get_glyph_name(ttFont, 0x0009)
 
