@@ -431,7 +431,8 @@ def com_adobe_fonts_check_nameid_1_win_english(ttFont, has_name_table):
     if not has_name_table:
         return FAIL, Message("name-table-not-found", "Font has no 'name' table.")
 
-    nameid_1 = ttFont["name"].getName(1, 3, 1, 0x409)
+    name_table = ttFont["name"]
+    nameid_1 = name_table.getName(1, 3, 1, 0x409) or name_table.getName(1, 3, 0, 0x409)
 
     if nameid_1 is None:
         return FAIL, Message(
