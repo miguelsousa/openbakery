@@ -92,7 +92,7 @@ def PANOSE_is_monospaced(panose):
         PANOSE_Family_Type.LATIN_HAND_WRITTEN,
         PANOSE_Family_Type.LATIN_SYMBOL,
     ]:
-        return panose.bSpacing == PANOSE_Spacing.MONOSPACED
+        return panose.bProportion == PANOSE_Spacing.MONOSPACED
 
     # otherwise
     return False
