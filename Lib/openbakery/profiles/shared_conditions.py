@@ -240,9 +240,7 @@ def glyph_metrics_stats(ttFont):
     # NOTE: `range(a, b)` includes `a` and does not include `b`.
     #       Here we don't include 0-31 as well as 127
     #       because these are control characters.
-    ascii_glyph_names = [
-        best_cmap[c] for c in range(32, 127) if c in best_cmap
-    ]
+    ascii_glyph_names = [best_cmap[c] for c in range(32, 127) if c in best_cmap]
 
     if len(ascii_glyph_names) > 0.8 * (127 - 32):
         ascii_widths = [

@@ -306,7 +306,7 @@ def com_google_fonts_check_iso15008_interword_spacing(font, ttFont):
         yield FAIL, Message(
             "bad-interword-spacing",
             f"The interword space ({space_width}) was"
-            f" outside the recommended range ({l_m*2.5}-{l_m*3.0})",
+            f" outside the recommended range ({l_m * 2.5}-{l_m * 3.0})",
         )
 
 

@@ -253,9 +253,9 @@ def filesize_formatting(s):
     if s < 1024:
         return f"{s} bytes"
     elif s < 1024 * 1024:
-        return f"{s/1024:.1f}kb"
+        return f"{s / 1024:.1f}kb"
     else:
-        return f"{s/(1024*1024):.1f}Mb"
+        return f"{s / (1024 * 1024):.1f}Mb"
 
 
 def get_bounding_box(font):
