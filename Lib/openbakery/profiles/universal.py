@@ -1656,7 +1656,9 @@ def com_adobe_fonts_check_freetype_rasterizer(font):
     try:
         face = freetype.Face(font)
         face.set_char_size(48 * 64)
-        face.load_char("✅")  # any character can be used here
+        # *Almost* any character can be used here, however symbol fonts make
+        # this check fail with many characters.
+        face.load_char("0")
 
     except FT_Exception as err:
         yield FAIL, Message(
