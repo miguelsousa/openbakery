@@ -6161,7 +6161,7 @@ def com_google_fonts_check_STAT_axis_order(fonts):
     yield INFO, Message(
         "summary",
         f"From a total of {len(fonts)} font files,"
-        f" {no_stat} of them ({100.0*no_stat/len(fonts):.2f}%)"
+        f" {no_stat} of them ({100.0 * no_stat / len(fonts):.2f}%)"
         f" lack a STAT table.\n"
         f"\n"
         f"\tAnd these are the most common STAT axis orderings:\n"
@@ -6449,7 +6449,7 @@ def com_google_fonts_check_stylisticset_description(ttFont):
         for record in range(ttFont["GSUB"].table.FeatureList.FeatureCount):
             feature = ttFont["GSUB"].table.FeatureList.FeatureRecord[record]
             tag = feature.FeatureTag
-            SSETS = [f"ss{n+1:02d}" for n in range(20)]
+            SSETS = [f"ss{n + 1:02d}" for n in range(20)]
             assert "ss00" not in SSETS
             assert "ss01" in SSETS
             assert "ss20" in SSETS

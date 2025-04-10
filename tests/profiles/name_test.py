@@ -200,6 +200,12 @@ def test_check_monospace():
     del ttFont["OS/2"]
     assert_results_contain(check(ttFont), FAIL, "lacks-table")
 
+    # Symbol font
+    ttFont = TTFont(TEST_FILE("symbol_font/source_symbol.ttf"))
+    assert_results_contain(
+        check(ttFont), PASS, "good", "with a good non-monospace font..."
+    )
+
 
 def test_check_name_match_familyname_fullfont():
     """Does full font name begin with the font family name?"""

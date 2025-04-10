@@ -131,6 +131,10 @@ def test_check_find_empty_letters():
     msg = assert_results_contain(check(ttFont), FAIL, "empty-letter")
     assert msg == "U+0042 should be visible, but its glyph ('B') is empty."
 
+    # Symbol font
+    ttFont = TTFont(TEST_FILE("symbol_font/source_symbol.ttf"))
+    assert assert_PASS(check(ttFont)) == PASS_MSG
+
 
 def _get_nameid_1_win_eng_record(name_table):
     """Helper method that returns the Windows nameID 1 US-English record"""
@@ -147,9 +151,14 @@ def test_check_nameid_1_win_english():
         adobefonts_profile, "com.adobe.fonts/check/nameid_1_win_english"
     )
 
+    PASS_MSG = "Font contains a good Windows nameID 1 US-English record."
+
+    # Symbol font
+    ttFont = TTFont(TEST_FILE("symbol_font/source_symbol.ttf"))
+    assert assert_PASS(check(ttFont)) == PASS_MSG
+
     ttFont = TTFont(TEST_FILE("source-sans-pro/OTF/SourceSansPro-Regular.otf"))
-    msg = assert_PASS(check(ttFont))
-    assert msg == "Font contains a good Windows nameID 1 US-English record."
+    assert assert_PASS(check(ttFont)) == PASS_MSG
 
     name_table = ttFont["name"]
     nameid_1_win_eng_rec = _get_nameid_1_win_eng_record(name_table)
@@ -210,6 +219,10 @@ def test_check_override_whitespace_glyphs():
     # remove U+00A0, status should be WARN (standard check would be FAIL)
     for subtable in ttFont["cmap"].tables:
         subtable.cmap.pop(0x00A0, None)
+    assert_results_contain(check(ttFont), WARN, "missing-whitespace-glyph-0x00A0")
+
+    # Symbol font
+    ttFont = TTFont(TEST_FILE("symbol_font/source_symbol.ttf"))
     assert_results_contain(check(ttFont), WARN, "missing-whitespace-glyph-0x00A0")
 
 
@@ -330,6 +343,10 @@ def test_check_override_os2_metrics_match_hhea():
     os2_table.sTypoLineGap = linegap + 100
     msg = assert_results_contain(check(ttFont), WARN, "lineGap")
     assert msg == "OS/2 sTypoLineGap (200) and hhea lineGap (100) must be equal."
+
+    # Symbol font
+    ttFont = TTFont(TEST_FILE("symbol_font/source_symbol.ttf"))
+    assert_results_contain(check(ttFont), WARN, "ascender")
 
 
 def test_check_override_varfont_valid_default_instance_nameids():

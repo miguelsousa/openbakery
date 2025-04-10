@@ -869,10 +869,11 @@ def test_check_family_win_ascent_and_descent(mada_ttFonts):
         " equal or greater than 406, but got 322 instead"
     )
 
+    PASS_MSG = "OS/2 usWinAscent & usWinDescent values look good!"
+
     # Fix usWinAscent
     ttFont["OS/2"].usWinAscent = 880
-    message = assert_PASS(check(ttFont))
-    assert message == "OS/2 usWinAscent & usWinDescent values look good!"
+    assert assert_PASS(check(ttFont)) == PASS_MSG
 
     # Make usWinAscent too large
     ttFont["OS/2"].usWinAscent = 880 * 2 + 1
@@ -894,6 +895,10 @@ def test_check_family_win_ascent_and_descent(mada_ttFonts):
     del ttFont["OS/2"]
     message = assert_results_contain(check(ttFont), FAIL, "lacks-OS/2")
     assert message == "Font file lacks OS/2 table"
+
+    # Symbol font
+    ttFont = TTFont(TEST_FILE("symbol_font/source_symbol.ttf"))
+    assert assert_PASS(check(ttFont)) == PASS_MSG
 
 
 def test_check_os2_metrics_match_hhea():
@@ -1013,6 +1018,10 @@ def test_check_rupee():
     ttFont = TTFont(TEST_FILE("mada/Mada-Regular.ttf"))
     msg = assert_results_contain(check(ttFont), SKIP, "unfulfilled-conditions")
     assert msg == "Unfulfilled Conditions: is_indic_font"
+
+    # Symbol font
+    ttFont = TTFont(TEST_FILE("symbol_font/source_symbol.ttf"))
+    assert_results_contain(check(ttFont), SKIP, "unfulfilled-conditions")
 
     # This one is good:
     ttFont = TTFont(
@@ -1187,9 +1196,10 @@ def test_check_freetype_rasterizer():
     """Ensure that the font can be rasterized by FreeType."""
     check = CheckTester(universal_profile, "com.adobe.fonts/check/freetype_rasterizer")
 
+    PASS_MSG = "Font can be rasterized by FreeType."
+
     font = TEST_FILE("cabin/Cabin-Regular.ttf")
-    msg = assert_PASS(check(font), "with a good font...")
-    assert msg == "Font can be rasterized by FreeType."
+    assert assert_PASS(check(font)) == PASS_MSG
 
     font = TEST_FILE("ancho/AnchoGX.ttf")
     msg = assert_results_contain(check(font), FAIL, "freetype-crash")
@@ -1201,8 +1211,11 @@ def test_check_freetype_rasterizer():
 
     # Example that segfaults with 'freetype-py' version 2.4.0
     font = TEST_FILE("source-sans-pro/VAR/SourceSansVariable-Italic.ttf")
-    msg = assert_PASS(check(font), "with a good font...")
-    assert msg == "Font can be rasterized by FreeType."
+    assert assert_PASS(check(font)) == PASS_MSG
+
+    # Symbol font
+    font = TEST_FILE("symbol_font/source_symbol.ttf")
+    assert assert_PASS(check(font)) == PASS_MSG
 
 
 def test_check_sfnt_version():
@@ -1254,6 +1267,10 @@ def test_check_whitespace_widths():
 
     ttFont["hmtx"].metrics["space"] = (0, 1)
     assert_results_contain(check(ttFont), FAIL, "different-widths")
+
+    # Symbol font
+    ttFont = TTFont(TEST_FILE("symbol_font/source_symbol.ttf"))
+    assert_results_contain(check(ttFont), SKIP, "unfulfilled-conditions")
 
 
 def test_check_interpolation_issues():

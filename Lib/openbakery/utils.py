@@ -253,9 +253,9 @@ def filesize_formatting(s):
     if s < 1024:
         return f"{s} bytes"
     elif s < 1024 * 1024:
-        return f"{s/1024:.1f}kb"
+        return f"{s / 1024:.1f}kb"
     else:
-        return f"{s/(1024*1024):.1f}Mb"
+        return f"{s / (1024 * 1024):.1f}Mb"
 
 
 def get_bounding_box(font):
@@ -305,7 +305,7 @@ def name_entry_id(name):
 
 
 def get_glyph_name(font: TTFont, codepoint: int) -> Optional[str]:
-    next_best_cmap = font.getBestCmap()
+    next_best_cmap = font.getBestCmap() or font["cmap"].getcmap(3, 0).cmap
 
     if codepoint in next_best_cmap:
         return next_best_cmap[codepoint]
