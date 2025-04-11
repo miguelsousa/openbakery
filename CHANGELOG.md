@@ -46,7 +46,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `com.google.fonts/check/mandatory_glyphs`: Improved the check's resilience to edge cases that could result in ERRORs (https://github.com/miguelsousa/openbakery/pull/38).
 - `-L`/`--list-checks` option that can be used with subcommands. Previously this option only worked if a path to an input file was also provided in the command line (https://github.com/miguelsousa/openbakery/pull/35).
 - Summary statistics on HTML reporter (https://github.com/fonttools/fontbakery/issues/3997).
-- `com.google.fonts/check/layout_valid_feature_tags`: Updated the check to allow valid private-use feature tags (https://github.com/miguelsousa/openbakery/pull/101)
+- `com.google.fonts/check/layout_valid_feature_tags`: Updated the check to allow valid private-use feature tags (https://github.com/miguelsousa/openbakery/pull/101).
+- Implemented several fixes to enable support for Symbol-encoded fonts (https://github.com/miguelsousa/openbakery/pull/249).
 
 ## [0.1.0] - 2023-06-11
 
