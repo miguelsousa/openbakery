@@ -102,6 +102,7 @@ class CheckTester:
         from fontTools.ttLib import TTFont
         from openbakery.profiles.googlefonts_conditions import family_metadata
         from glyphsLib import GSFont
+        from pathlib import Path
         import os
 
         if isinstance(values, str):
@@ -123,6 +124,8 @@ class CheckTester:
                 }
             else:
                 values = {"font": values, "fonts": [values], "ufo": values}
+        elif isinstance(values, Path):
+            values = {"font": values, "fonts": [values], "ufo": values}
         elif isinstance(values, TTFont):
             values = {
                 "font": values.reader.file.name,
