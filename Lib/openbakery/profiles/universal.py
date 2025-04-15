@@ -1652,6 +1652,10 @@ def com_adobe_fonts_check_freetype_rasterizer(font):
     """Ensure that the font can be rasterized by FreeType."""
     import freetype
     from freetype.ft_errors import FT_Exception
+    from pathlib import Path
+
+    if isinstance(font, Path):
+        font = str(font)
 
     try:
         face = freetype.Face(font)
