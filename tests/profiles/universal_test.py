@@ -1194,11 +1194,16 @@ def test_check_gpos7():
 
 def test_check_freetype_rasterizer():
     """Ensure that the font can be rasterized by FreeType."""
+    from pathlib import Path
+
     check = CheckTester(universal_profile, "com.adobe.fonts/check/freetype_rasterizer")
 
     PASS_MSG = "Font can be rasterized by FreeType."
 
     font = TEST_FILE("cabin/Cabin-Regular.ttf")
+    assert assert_PASS(check(font)) == PASS_MSG
+
+    font = Path(TEST_FILE("cabin/Cabin-Regular.ttf"))
     assert assert_PASS(check(font)) == PASS_MSG
 
     font = TEST_FILE("ancho/AnchoGX.ttf")

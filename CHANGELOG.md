@@ -48,6 +48,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Summary statistics on HTML reporter (https://github.com/fonttools/fontbakery/issues/3997).
 - `com.google.fonts/check/layout_valid_feature_tags`: Updated the check to allow valid private-use feature tags (https://github.com/miguelsousa/openbakery/pull/101).
 - Implemented several fixes to enable support for Symbol-encoded fonts (https://github.com/miguelsousa/openbakery/pull/249).
+- `com.adobe.fonts/check/freetype_rasterizer`: Fixed crash that happens when the font file path is a `pathlib.Path` object; `freetype-py` only supports `str` paths (https://github.com/miguelsousa/openbakery/pull/251).
 
 ## [0.1.0] - 2023-06-11
 
