@@ -562,7 +562,7 @@ def test_check_varfont_valid_instance_postscript_name():
 
     fvar_table = ttFont["fvar"]
 
-    # Change instance postScriptName value to invalid values
+    # Change VF instance postScriptName value to invalid values
     # (Change to a value containing spaces)
     inst_1 = fvar_table.instances[0]
     inst_1.postscriptNameID = 310
@@ -570,19 +570,19 @@ def test_check_varfont_valid_instance_postscript_name():
 
     msg = assert_results_contain(check(ttFont), FAIL, "bad-instance-psname-characters")
     assert msg == (
-        "The following instance PostScript name at the specified "
+        "The following VF instance PostScript name at the specified "
         "coordinates contains disallowed characters:\n"
         "'name with space' at coordinates {'wght': 400.0, 'wdth': 100.0}\n"
     )
 
-    # Change another instance's postScriptName value to be invalid
+    # Change another VFinstance's postScriptName value to be invalid
     # (Change to a value containing !)
     inst_2 = fvar_table.instances[1]
     inst_2.postscriptNameID = 311
     ttFont["name"].setName("another-invalid!name", inst_2.postscriptNameID, 1, 0, 0)
     msg = assert_results_contain(check(ttFont), FAIL, "bad-instance-psname-characters")
     assert msg == (
-        "The following instance PostScript names at the specified "
+        "The following VF instance PostScript names at the specified "
         "coordinates contain disallowed characters:\n"
         "'name with space' at coordinates {'wght': 400.0, 'wdth': 100.0}\n"
         "'another-invalid!name' at coordinates {'wght': 500.0, 'wdth': 100.0}\n"
