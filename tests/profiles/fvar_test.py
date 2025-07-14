@@ -588,6 +588,11 @@ def test_check_varfont_valid_instance_postscript_name():
         "'another-invalid!name' at coordinates {'wght': 500.0, 'wdth': 100.0}\n"
     )
 
+    # Remove name table and check that the check yields FAIL
+    del ttFont["name"]
+    msg = assert_results_contain(check(ttFont), FAIL, "lacks-table")
+    assert msg == "Font lacks 'name' table."
+
 
 def test_check_varfont_valid_default_instance_nameids():
     """If an instance record is included for the default instance, then the instance's

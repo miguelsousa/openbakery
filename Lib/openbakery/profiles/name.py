@@ -425,8 +425,8 @@ def valid_postscript_name(postscript_name):
     Returns True if valid, False otherwise"""
     import re
 
-    bad_psname = re.compile("[^A-Za-z0-9-_]")
-    if bad_psname.search(postscript_name):
+    disallowed_chars_re = re.compile("[^A-Za-z0-9-_]")
+    if disallowed_chars_re.search(postscript_name):
         return False
     else:
         return True
