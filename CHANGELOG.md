@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `notofonts` extra (https://github.com/miguelsousa/openbakery/pull/37).
 - `com.thetypefounders/check/features_default_languagesystem`: Checks if a default languagesystem statement is present in feature files and warns if the compiler will not insert one automatically (https://github.com/fonttools/fontbakery/issues/4011).
 - `com.adobe.fonts/check/cff_ascii_strings`: Checks if all strings in a font's CFF table top dict fit in the range of ASCII values (https://github.com/miguelsousa/openbakery/issues/128)
+- `com.adobe.fonts/check/varfont/valid_instance_postscript_name`: This check validates all instances' postscript names in a VF (using shared code from `com.adobe.fonts/check/postscript_name_characters`)
 
 ### Changed
 
