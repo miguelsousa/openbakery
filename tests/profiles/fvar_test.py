@@ -548,6 +548,52 @@ def test_check_varfont_valid_postscript_nameid():
     assert_results_contain(check(ttFont), FAIL, "lacks-table")
 
 
+def test_check_varfont_valid_instance_postscript_name():
+    """The value of postScriptName used by each InstanceRecord may
+    only use characters a-z A-Z 0-9 - and _"""
+    check = CheckTester(
+        opentype_profile, "com.adobe.fonts/check/varfont/valid_instance_postscript_name"
+    )
+
+    # The postScriptNameID values in the reference varfont are all valid
+    ttFont = TTFont("data/test/cabinvf/Cabin[wdth,wght].ttf")
+    msg = assert_PASS(check(ttFont), "with a good varfont...")
+    assert msg == "All postScriptNameID values are valid."
+
+    fvar_table = ttFont["fvar"]
+
+    # Change VF instance postScriptName value to invalid values
+    # (Change to a value containing spaces)
+    inst_1 = fvar_table.instances[0]
+    inst_1.postscriptNameID = 310
+    ttFont["name"].setName("name with space", inst_1.postscriptNameID, 1, 0, 0)
+
+    msg = assert_results_contain(check(ttFont), FAIL, "bad-instance-psname-characters")
+    assert msg == (
+        "The following VF instance PostScript name at the specified "
+        "coordinates contains disallowed characters:\n"
+        "'name with space' at coordinates {'wght': 400.0, 'wdth': 100.0}\n"
+    )
+
+    # Change another VFinstance's postScriptName value to be invalid
+    # (Change to a value containing !)
+    inst_2 = fvar_table.instances[1]
+    inst_2.postscriptNameID = 311
+    ttFont["name"].setName("another-invalid!name", inst_2.postscriptNameID, 1, 0, 0)
+    msg = assert_results_contain(check(ttFont), FAIL, "bad-instance-psname-characters")
+    assert msg == (
+        "The following VF instance PostScript names at the specified "
+        "coordinates contain disallowed characters:\n"
+        "'name with space' at coordinates {'wght': 400.0, 'wdth': 100.0}\n"
+        "'another-invalid!name' at coordinates {'wght': 500.0, 'wdth': 100.0}\n"
+    )
+
+    # Remove name table and check that the check yields FAIL
+    del ttFont["name"]
+    msg = assert_results_contain(check(ttFont), FAIL, "lacks-table")
+    assert msg == "Font lacks 'name' table."
+
+
 def test_check_varfont_valid_default_instance_nameids():
     """If an instance record is included for the default instance, then the instance's
     subfamilyName string should match the string of nameID 2 or nameID 17, and the
