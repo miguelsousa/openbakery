@@ -191,8 +191,10 @@ def test_check_unique_glyphnames():
     message = assert_PASS(check(ttFont))
     assert message == pass_msg
 
-    # Fonttools renames duplicate glyphs with #1, #2, ... on load.
-    # Code snippet from https://github.com/fonttools/fonttools/issues/149
+    # Fonttools no longer renames duplicate glyphs with #1, #2, ... on load
+    # It renames them with a period instead. i.e. "a.1" instead of "a#1",
+    # and therefore is not considered a duplicate glyph name.
+    # https://github.com/fonttools/fonttools/pull/3809
     glyph_names = ttFont.getGlyphOrder()
     glyph_names[2] = glyph_names[3]
 
@@ -205,8 +207,18 @@ def test_check_unique_glyphnames():
     _file.name = ttFont.reader.file.name
     ttFont.save(_file)
     ttFont = TTFont(_file)
-    message = assert_results_contain(check(ttFont), FAIL, "duplicated-glyph-names")
-    assert "space" in message
+    message = assert_PASS(check(ttFont))
+    assert message == pass_msg
+
+    # Manually add a duplicate glyph name
+    ttFont = TTFont(TEST_FILE("nunito/Nunito-Regular.ttf"))
+    glyph_names = ttFont.getGlyphOrder()
+    duplicate_name = glyph_names[3]
+    glyph_names[2] = duplicate_name  # Now we have two glyphs with identical names
+    ttFont.setGlyphOrder(glyph_names)
+    msg = assert_results_contain(check(ttFont), FAIL, "duplicated-glyph-names")
+    assert "These glyph names occur more than once:" in msg
+    assert duplicate_name in msg
 
     # Upgrade to post format 3 and roundtrip data to update TTF object.
     ttf_skip_msg = "TrueType fonts with a format 3 post table"
