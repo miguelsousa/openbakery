@@ -15,7 +15,7 @@ opentype-sanitizer==9.2.0
 opentypespec==1.9.2
 packaging==25.0
 pip-api==0.0.34
-protobuf==3.20.3
+protobuf==4.25.8
 PyYAML==6.0.2
 requests==2.32.4
 rich==14.1.0
