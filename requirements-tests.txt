@@ -1,5 +1,5 @@
 black==25.1.0
 flake8==7.3.0
 pylint==3.3.8
-pytest-cov==6.2.1
+pytest-cov==6.3.0
 pytest-xdist
