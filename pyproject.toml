@@ -92,8 +92,8 @@ disable = [
 # Measure 'branch' coverage in addition to 'statement' coverage
 # See: http://coverage.readthedocs.org/en/latest/branch.html#branch
 branch = true
-
 parallel = true
+patch = ["subprocess"]
 
 # List of directories or packages to measure
 source = ["openbakery"]
