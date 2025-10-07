@@ -121,7 +121,7 @@ setup(
         f"fontTools{FONTTOOLS_VERSION}",
         "freetype-py!=2.4.0",  # Avoiding 2.4.0 due to seg-fault described at
         # https://github.com/googlefonts/fontbakery/issues/4143
-        "opentypespec",
+        "opentypespec>=1.9.2",
         "opentype-sanitizer>=7.1.9",  # 7.1.9 fixes caret value format = 3 bug
         # (see https://github.com/khaledhosny/ots/pull/182)
         # ---
