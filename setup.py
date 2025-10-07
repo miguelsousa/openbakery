@@ -25,7 +25,6 @@ except IOError:
 FONTTOOLS_VERSION = ">=4.39.0"  # Python 3.8+ required
 UFO2FT_VERSION = ">=2.25.2"  # 2.25.2 updated the script lists for Unicode 14.0
 VHARFBUZZ_VERSION = ">=0.2.0"  # 0.2.0 had an API update
-OPENTYPESPEC_VERSION = "==1.9.2"  # Pinned for consistent tag validation
 
 # Profile-specific dependencies:
 shaping_extras = [
