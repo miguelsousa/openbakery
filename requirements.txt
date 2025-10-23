@@ -1,7 +1,7 @@
 axisregistry==0.4.16
 beautifulsoup4==4.14.2
 beziers==0.6.0
-cmarkgfm==2024.11.20
+cmarkgfm==2025.10.22
 collidoscope==0.6.5
 defcon==0.12.2
 dehinter==4.0.0
