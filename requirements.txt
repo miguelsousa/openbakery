@@ -7,7 +7,7 @@ defcon==0.12.2
 dehinter==4.0.0
 fontTools[ufo,lxml,unicode]==4.61.0
 font-v==2.1.0
-freetype-py==2.3.0  # pinned for now. See: https://github.com/googlefonts/fontbakery/issues/4143
+freetype-py==2.5.1  # pinned for now. See: https://github.com/googlefonts/fontbakery/issues/4143
 gflanguages==0.7.7
 glyphsets==0.6.6
 munkres==1.1.4
