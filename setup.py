@@ -105,10 +105,10 @@ setup(
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3 :: Only",
-        "Programming Language :: Python :: 3.8",
-        "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
     ],
     python_requires=">=3.8",
     setup_requires=[
@@ -119,8 +119,8 @@ setup(
         # ---
         # core dependencies
         f"fontTools{FONTTOOLS_VERSION}",
-        "freetype-py!=2.4.0",  # Avoiding 2.4.0 due to seg-fault described at
-        # https://github.com/googlefonts/fontbakery/issues/4143
+        "freetype-py<=2.3.0",  # Avoiding 2.4.0 (and newer) due to seg-fault described
+        # at https://github.com/googlefonts/fontbakery/issues/4143
         "opentypespec>=1.9.2",
         "opentype-sanitizer>=7.1.9",  # 7.1.9 fixes caret value format = 3 bug
         # (see https://github.com/khaledhosny/ots/pull/182)
