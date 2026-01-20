@@ -641,7 +641,7 @@ class TerminalReporter(TerminalProgress):
 
     def _render_event_async(self, print_func, event):
         status, message, identity = event
-        (section, check, iterargs) = identity
+        section, check, iterargs = identity
         key = self._get_key(identity)
         logs = self._event_buffers.get(key, None)
         if logs is None:

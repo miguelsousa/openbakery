@@ -447,7 +447,7 @@ def ttf_glyph_has_ink(font: TTFont, name: str) -> bool:
     if not glyph.isComposite():
         if glyph.numberOfContours == 0:
             return False
-        (coords, _, _) = glyph.getCoordinates(font["glyf"])
+        coords, _, _ = glyph.getCoordinates(font["glyf"])
         # you need at least 3 points to draw
         return len(coords) > 2
 

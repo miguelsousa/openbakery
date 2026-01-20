@@ -167,7 +167,7 @@ def com_google_fonts_check_italic_angle(ttFont, style):
         # Get bounds
         boundspen = BoundsPen(ttFont.getGlyphSet())
         ttFont.getGlyphSet()[glyph_name].draw(boundspen)
-        (xMin, yMin, xMax, yMax) = boundspen.bounds
+        xMin, yMin, xMax, yMax = boundspen.bounds
 
         # Measure at 20% distance from bottom and top
         y_bottom = yMin + (yMax - yMin) * 0.2

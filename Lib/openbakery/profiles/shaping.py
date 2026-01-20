@@ -27,7 +27,6 @@ from openbakery.message import Message
 from openbakery.section import Section
 from openbakery.utils import exit_with_install_instructions
 
-
 shaping_basedir = Path("qa", "shaping_tests")
 
 profile_imports = ((".", ("shared_conditions",)),)

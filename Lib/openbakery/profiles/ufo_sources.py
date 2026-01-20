@@ -7,7 +7,6 @@ from openbakery.message import Message
 from openbakery.fonts_profile import profile_factory
 from openbakery.utils import exit_with_install_instructions
 
-
 profile = profile_factory(default_section=Section("UFO Sources"))
 
 UFO_PROFILE_CHECKS = [

@@ -64,7 +64,7 @@ def stem_width(ttFont):
     intersections = xheight_intersections(ttFont, "l")
     if len(intersections) != 2:
         return None
-    (i1, i2) = intersections[0:2]
+    i1, i2 = intersections[0:2]
     return abs(i1.point.x - i2.point.x)
 
 
@@ -98,8 +98,7 @@ def pair_kerning(font, left, right):
         To ensure legibility of this font on in-car information systems,
         it is recommended that the ratio of H width to H height
         is between 0.65 and 0.80.
-    """
-    + DISCLAIMER,
+    """ + DISCLAIMER,
     proposal=[
         "https://github.com/googlefonts/fontbakery/issues/1832",
         "https://github.com/googlefonts/fontbakery/issues/3250",
@@ -117,7 +116,7 @@ def com_google_fonts_check_iso15008_proportions(ttFont):
 
     pen = BoundsPen(glyphset)
     glyphset["H"].draw(pen)
-    (xMin, yMin, xMax, yMax) = pen.bounds
+    xMin, yMin, xMax, yMax = pen.bounds
     proportion = (xMax - xMin) / (yMax - yMin)
     if 0.65 <= proportion <= 0.80:
         yield PASS, "the letter H is not too narrow or too wide"
@@ -138,8 +137,7 @@ def com_google_fonts_check_iso15008_proportions(ttFont):
         To ensure legibility of this font on in-car information systems,
         it is recommended that the ratio of stem width to ascender height
         is between 0.10 and 0.20.
-    """
-    + DISCLAIMER,
+    """ + DISCLAIMER,
     proposal=[
         "https://github.com/googlefonts/fontbakery/issues/1832",
         "https://github.com/googlefonts/fontbakery/issues/3251",
@@ -179,8 +177,7 @@ def com_google_fonts_check_iso15008_stem_width(ttFont):
           at least 85% of the stem width.
 
         * diagonal characters should not touch (e.g. "vv").
-    """
-    + DISCLAIMER,
+    """ + DISCLAIMER,
     proposal=[
         "https://github.com/googlefonts/fontbakery/issues/1832",
         "https://github.com/googlefonts/fontbakery/issues/3252",
@@ -222,7 +219,7 @@ def com_google_fonts_check_iso15008_intercharacter_spacing(font, ttFont):
     glyphset = ttFont.getGlyphSet()
     pen = BoundsPen(glyphset)
     glyphset["v"].draw(pen)
-    (xMin, yMin, xMax, yMax) = pen.bounds
+    xMin, yMin, xMax, yMax = pen.bounds
     v_advance = ttFont["hmtx"]["v"][0]
 
     v_lsb = xMin
@@ -265,8 +262,7 @@ def com_google_fonts_check_iso15008_intercharacter_spacing(font, ttFont):
         To ensure legibility of this font on in-car information systems,
         it is recommended that the space character should have advance width
         between 250% and 300% of the space between the letters l and m.
-    """
-    + DISCLAIMER,
+    """ + DISCLAIMER,
     proposal=[
         "https://github.com/googlefonts/fontbakery/issues/1832",
         "https://github.com/googlefonts/fontbakery/issues/3253",
@@ -288,7 +284,7 @@ def com_google_fonts_check_iso15008_interword_spacing(font, ttFont):
     glyphset = ttFont.getGlyphSet()
     pen = BoundsPen(glyphset)
     glyphset["m"].draw(pen)
-    (xMin, yMin, xMax, yMax) = pen.bounds
+    xMin, yMin, xMax, yMax = pen.bounds
     m_advance = ttFont["hmtx"]["m"][0]
     m_lsb = xMin
     m_rsb = m_advance - (m_lsb + xMax - xMin)
@@ -320,8 +316,7 @@ def com_google_fonts_check_iso15008_interword_spacing(font, ttFont):
         it is recommended that the vertical metrics be set to a minimum
         at least one stem width between the bottom of the descender
         and the top of the ascender.
-    """
-    + DISCLAIMER,
+    """ + DISCLAIMER,
     proposal=[
         "https://github.com/googlefonts/fontbakery/issues/1832",
         "https://github.com/googlefonts/fontbakery/issues/3254",
@@ -340,11 +335,11 @@ def com_google_fonts_check_iso15008_interline_spacing(ttFont):
 
     pen = BoundsPen(glyphset)
     glyphset["h"].draw(pen)
-    (_, _, _, h_yMax) = pen.bounds
+    _, _, _, h_yMax = pen.bounds
 
     pen = BoundsPen(glyphset)
     glyphset["g"].draw(pen)
-    (_, g_yMin, _, _) = pen.bounds
+    _, g_yMin, _, _ = pen.bounds
 
     linegap = (
         (g_yMin - ttFont["OS/2"].sTypoDescender)
