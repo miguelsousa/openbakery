@@ -34,7 +34,6 @@ from openbakery.reporters.ghmarkdown import GHMarkdownReporter
 from openbakery.reporters.html import HTMLReporter
 from openbakery.utils import get_theme
 
-
 log_levels = OrderedDict(
     (s.name, s) for s in sorted((DEBUG, INFO, WARN, ERROR, SKIP, PASS, FAIL))
 )

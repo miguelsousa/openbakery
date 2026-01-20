@@ -10,7 +10,6 @@ from openbakery.codetesting import (
 )
 from openbakery.profiles import opentype as opentype_profile
 
-
 mada_fonts = [
     TEST_FILE("mada/Mada-Black.ttf"),
     TEST_FILE("mada/Mada-ExtraLight.ttf"),

@@ -36,7 +36,6 @@ from openbakery.status import (
 )
 from openbakery.message import Message
 
-
 ################
 # WORKER/CHILD #
 ################

@@ -133,12 +133,10 @@ def test_command_config_file():
 def test_command_config_file_injection():
     """Test if we can inject a config variable into a check."""
     config = tempfile.NamedTemporaryFile(delete=False)
-    config.write(
-        b"""
+    config.write(b"""
 [a_test_profile]
 OK = 123
-"""
-    )
+""")
     config.close()
     test_font = os.path.join("data", "test", "nunito", "Nunito-Regular.ttf")
     test_profile = os.path.join("tests", "profiles", "a_test_profile.py")
@@ -162,15 +160,13 @@ OK = 123
 def test_config_override():
     """Test we can override check statuses in the configuration file"""
     config = tempfile.NamedTemporaryFile(delete=False)
-    config.write(
-        b"""
+    config.write(b"""
 overrides:
   com.google.fonts/check/file_size:
     large-font: FAIL
 explicit_checks:
   - com.google.fonts/check/file_size
-"""
-    )
+""")
     config.close()
     test_font = os.path.join("data", "test", "varfont", "inter", "Inter[slnt,wght].ttf")
     result = subprocess.run(
