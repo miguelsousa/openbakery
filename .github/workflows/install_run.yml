@@ -1,6 +1,9 @@
 # Workflow for testing installing, running, and uninstalling OpenBakery
 name: ⚙️ Install & Run
 
+permissions:
+  contents: read
+
 on:
   push:
     branches:
