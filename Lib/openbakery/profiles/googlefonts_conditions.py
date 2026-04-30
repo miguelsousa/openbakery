@@ -164,13 +164,13 @@ def readme_contents(readme_md):
 def registered_vendor_ids():
     """Get a list of vendor IDs from Microsoft's website."""
     from bs4 import BeautifulSoup
-    from pkg_resources import resource_filename
+    from importlib.resources import files
 
     registered_vendor_ids = {}
-    CACHED = resource_filename(
-        "openbakery", "data/openbakery-microsoft-vendorlist.cache"
+    CACHED = files("openbakery").joinpath(
+        "data/openbakery-microsoft-vendorlist.cache"
     )
-    content = open(CACHED, encoding="utf-8").read()
+    content = CACHED.read_text(encoding="utf-8")
     # Strip all <A> HTML tags from the raw HTML. The current page contains a
     # closing </A> for which no opening <A> is present, which causes
     # beautifulsoup to silently stop processing that section from the error
@@ -395,11 +395,11 @@ def rfn_exception(familyname):
     been published previously with an RFN, or fonts which benefit from
     an agreement with Google Fonts.
     """
-    from pkg_resources import resource_filename
+    from importlib.resources import files
 
     rfn_exceptions_txt = "data/googlefonts/reserved_font_name_exceptions.txt"
-    filename = resource_filename("openbakery", rfn_exceptions_txt)
-    for exception in open(filename, "r", encoding="utf-8").readlines():
+    text = files("openbakery").joinpath(rfn_exceptions_txt).read_text(encoding="utf-8")
+    for exception in text.splitlines():
         exception = exception.split("#")[0].strip()
         exception = exception.replace(" ", "")
         if exception == "":

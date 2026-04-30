@@ -3132,7 +3132,7 @@ def com_google_fonts_check_name_rfn(ttFont, familyname):
 def com_google_fonts_check_name_family_name_compliance(ttFont):
     """Check family name for GF Guide compliance."""
     import re
-    from pkg_resources import resource_filename
+    from importlib.resources import files
     from openbakery.utils import get_name_entries
 
     camelcase_exceptions_txt = "data/googlefonts/camelcased_familyname_exceptions.txt"
@@ -3153,8 +3153,10 @@ def com_google_fonts_check_name_family_name_compliance(ttFont):
         known_exception = False
 
         # Process exceptions
-        filename = resource_filename("openbakery", camelcase_exceptions_txt)
-        for exception in open(filename, "r", encoding="utf-8").readlines():
+        text = files("openbakery").joinpath(camelcase_exceptions_txt).read_text(
+            encoding="utf-8"
+        )
+        for exception in text.splitlines():
             exception = exception.split("#")[0].strip()
             if exception == "":
                 continue
@@ -3180,8 +3182,10 @@ def com_google_fonts_check_name_family_name_compliance(ttFont):
         known_exception = False
 
         # Process exceptions
-        filename = resource_filename("openbakery", abbreviations_exceptions_txt)
-        for exception in open(filename, "r", encoding="utf-8").readlines():
+        text = files("openbakery").joinpath(abbreviations_exceptions_txt).read_text(
+            encoding="utf-8"
+        )
+        for exception in text.splitlines():
             exception = exception.split("#")[0].strip()
             if exception == "":
                 continue
