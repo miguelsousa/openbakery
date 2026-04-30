@@ -363,30 +363,6 @@ def get_font_glyph_data(font):
     return font_data
 
 
-def get_Protobuf_Message(klass, path):
-    from google.protobuf import text_format
-
-    message = klass()
-    text_data = open(path, "rb").read()
-    text_format.Merge(text_data, message)
-    return message
-
-
-def get_FamilyProto_Message(path):
-    from openbakery.fonts_public_pb2 import FamilyProto
-
-    return get_Protobuf_Message(FamilyProto, path)
-
-
-def get_DesignerInfoProto_Message(text_data):
-    from openbakery.designers_pb2 import DesignerInfoProto
-    from google.protobuf import text_format
-
-    message = DesignerInfoProto()
-    text_format.Merge(text_data, message)
-    return message
-
-
 def check_bit_entry(ttFont, table, attr, expected, bitmask, bitname):
     from openbakery.message import Message
     from openbakery.status import PASS, FAIL

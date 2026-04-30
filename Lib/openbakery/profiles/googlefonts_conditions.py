@@ -9,7 +9,6 @@ from openbakery.constants import (
     UnicodeEncodingID,
     WindowsLanguageID,
 )
-from openbakery.utils import exit_with_install_instructions
 
 # used to inform get_module_profile whether and how to create a profile
 from openbakery.fonts_profile import profile_factory  # noqa:F401 pylint:disable=W0611
@@ -159,38 +158,6 @@ def readme_contents(readme_md):
     if isinstance(readme_md, list):
         readme_md = readme_md[0]  # quirk
     return open(readme_md, "r", encoding="utf-8").read()
-
-
-@condition
-def metadata_file(family_directory, metadata_pb=None):
-    if metadata_pb:
-        if isinstance(metadata_pb, list):
-            metadata_pb = metadata_pb[0]  # quirk
-
-        return metadata_pb
-
-    elif family_directory:
-        pb_file = os.path.join(family_directory, "METADATA.pb")
-        if os.path.exists(pb_file):
-            return pb_file
-
-
-@condition
-def family_metadata(metadata_file):
-    if not metadata_file:
-        return
-
-    try:
-        from google.protobuf import text_format
-    except ImportError:
-        exit_with_install_instructions("googlefonts")
-
-    from openbakery.utils import get_FamilyProto_Message
-
-    try:
-        return get_FamilyProto_Message(metadata_file)
-    except text_format.ParseError:
-        return None
 
 
 @condition
@@ -395,25 +362,6 @@ def listed_on_gfonts_api(familyname, config):
             return True
 
     return False
-
-
-@condition
-def has_regular_style(family_metadata):
-    fonts = family_metadata.fonts if family_metadata else []
-    for f in fonts:
-        if f.weight == 400 and f.style == "normal":
-            return True
-    return False
-
-
-@condition
-def font_metadata(family_metadata, font):
-    if not family_metadata:
-        return
-
-    for f in family_metadata.fonts:
-        if font.endswith(f.filename):
-            return f
 
 
 @condition
