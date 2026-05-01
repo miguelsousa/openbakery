@@ -64,20 +64,27 @@ def com_google_fonts_check_gdef_spacing_marks(ttFont, config):
                 if glyphname not in cmap.values()
             ]
             formatted_list = "\t " + pretty_print_list(config, sorted(glyphs), sep=", ")
-            yield WARN, Message(
-                "spacing-mark-glyphs",
-                f"The following spacing glyphs may be in"
-                f" the GDEF mark glyph class by mistake:\n"
-                f"{formatted_list}",
+            yield (
+                WARN,
+                Message(
+                    "spacing-mark-glyphs",
+                    f"The following spacing glyphs may be in"
+                    f" the GDEF mark glyph class by mistake:\n"
+                    f"{formatted_list}",
+                ),
             )
         else:
-            yield PASS, (
-                "Font does not has spacing glyphs in the GDEF mark glyph class."
+            yield (
+                PASS,
+                ("Font does not has spacing glyphs in the GDEF mark glyph class."),
             )
     else:
-        yield SKIP, (
-            'Font does not declare an optional "GDEF" table'
-            " or has any GDEF glyph class definition."
+        yield (
+            SKIP,
+            (
+                'Font does not declare an optional "GDEF" table'
+                " or has any GDEF glyph class definition."
+            ),
         )
 
 
@@ -108,21 +115,30 @@ def com_google_fonts_check_gdef_mark_chars(ttFont, config):
                 sorted(f"{cmap[c]} (U+{c:04X})" for c in mark_chars_not_in_mark_class),
                 sep=", ",
             )
-            yield WARN, Message(
-                "mark-chars",
-                f"The following mark characters could be"
-                f" in the GDEF mark glyph class:\n"
-                f"{formatted_marks}",
+            yield (
+                WARN,
+                Message(
+                    "mark-chars",
+                    f"The following mark characters could be"
+                    f" in the GDEF mark glyph class:\n"
+                    f"{formatted_marks}",
+                ),
             )
         else:
-            yield PASS, (
-                "Font does not have mark characters"
-                " not in the GDEF mark glyph class."
+            yield (
+                PASS,
+                (
+                    "Font does not have mark characters"
+                    " not in the GDEF mark glyph class."
+                ),
             )
     else:
-        yield SKIP, (
-            'Font does not declare an optional "GDEF" table'
-            " or has any GDEF glyph class definition."
+        yield (
+            SKIP,
+            (
+                'Font does not declare an optional "GDEF" table'
+                " or has any GDEF glyph class definition."
+            ),
         )
 
 
@@ -171,19 +187,28 @@ def com_google_fonts_check_gdef_non_mark_chars(ttFont, config):
                 sorted("U+%04X" % c for c in nonmark_chars_in_mark_class),
                 sep=", ",
             )
-            yield WARN, Message(
-                "non-mark-chars",
-                f"The following non-mark characters should"
-                f" not be in the GDEF mark glyph class:\n"
-                f"{formatted_nonmarks}",
+            yield (
+                WARN,
+                Message(
+                    "non-mark-chars",
+                    f"The following non-mark characters should"
+                    f" not be in the GDEF mark glyph class:\n"
+                    f"{formatted_nonmarks}",
+                ),
             )
         else:
-            yield PASS, (
-                "Font does not have non-mark characters"
-                " in the GDEF mark glyph class."
+            yield (
+                PASS,
+                (
+                    "Font does not have non-mark characters"
+                    " in the GDEF mark glyph class."
+                ),
             )
     else:
-        yield SKIP, (
-            'Font does not declare an optional "GDEF" table'
-            " or has any GDEF glyph class definition."
+        yield (
+            SKIP,
+            (
+                'Font does not declare an optional "GDEF" table'
+                " or has any GDEF glyph class definition."
+            ),
         )

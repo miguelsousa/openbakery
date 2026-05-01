@@ -382,10 +382,7 @@ MORE_MSG = "\n\nUse -F or --full-lists to disable shortening of long lists."
         (
             _make_values(12),
             6,
-            (
-                "item 1, item 2, item 3, item 4, item 5, item 6"
-                f" and 6 more.{MORE_MSG}"
-            ),
+            (f"item 1, item 2, item 3, item 4, item 5, item 6 and 6 more.{MORE_MSG}"),
         ),
         (
             _make_values(13),
@@ -407,10 +404,7 @@ MORE_MSG = "\n\nUse -F or --full-lists to disable shortening of long lists."
         (
             _make_values(13),
             6,
-            (
-                "item 1, item 2, item 3, item 4, item 5, item 6"
-                f" and 7 more.{MORE_MSG}"
-            ),
+            (f"item 1, item 2, item 3, item 4, item 5, item 6 and 7 more.{MORE_MSG}"),
         ),
     ],
 )

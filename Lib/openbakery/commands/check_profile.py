@@ -280,7 +280,7 @@ def ArgumentParser(profile, profile_arg=True):
         int_value = int(value)
         if int_value < 0:
             raise argparse.ArgumentTypeError(
-                f'Invalid value "{value}" must be' f" zero or a positive integer value."
+                f'Invalid value "{value}" must be zero or a positive integer value.'
             )
         return int_value
 

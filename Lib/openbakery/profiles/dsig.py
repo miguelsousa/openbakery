@@ -34,12 +34,15 @@ def com_google_fonts_check_dsig(ttFont):
     if "DSIG" not in ttFont:
         yield PASS, "ok"
     else:
-        yield WARN, Message(
-            "found-DSIG",
-            "This font has a digital signature (DSIG table) which"
-            " is only required - even if only a placeholder"
-            " - on old programs like MS Office 2013 in order to"
-            " work properly.\n"
-            "The current recommendation is to completely"
-            " remove the DSIG table.",
+        yield (
+            WARN,
+            Message(
+                "found-DSIG",
+                "This font has a digital signature (DSIG table) which"
+                " is only required - even if only a placeholder"
+                " - on old programs like MS Office 2013 in order to"
+                " work properly.\n"
+                "The current recommendation is to completely"
+                " remove the DSIG table.",
+            ),
         )

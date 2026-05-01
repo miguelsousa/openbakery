@@ -1354,8 +1354,7 @@ def DISABLE_test_check_glyphs_file_font_copyright():
 
     # Use an email instead of a git URL:
     bad_string = (
-        "Copyright 2017 The Archivo Black Project Authors"
-        " (contact-us@fake-address.com)"
+        "Copyright 2017 The Archivo Black Project Authors (contact-us@fake-address.com)"
     )
     glyphsFile.copyright = bad_string
     assert_results_contain(
@@ -1868,8 +1867,7 @@ def test_check_fontv():
         check(ttFont),
         INFO,
         "bad-format",
-        "with a font that does not follow"
-        " the suggested font-v versioning scheme ...",
+        "with a font that does not follow the suggested font-v versioning scheme ...",
     )
 
     from fontv.libfv import FontVersion
@@ -2174,8 +2172,7 @@ def test_check_ligature_carets():
     ttFont = TTFont(TEST_FILE("source-sans-pro/OTF/SourceSansPro-Bold.otf"))
     msg = assert_results_contain(check(ttFont), WARN, "lacks-caret-pos")
     assert msg == (
-        "This font lacks caret position values"
-        " for ligature glyphs on its GDEF table."
+        "This font lacks caret position values for ligature glyphs on its GDEF table."
     )
 
     # Remove the GDEF table to exercise the 'GDEF-missing' code path.

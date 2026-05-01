@@ -225,12 +225,12 @@ def summary_table(
     return f"""<h2>Summary</h2>
             <table>
             <tr>
-                <th>{EMOTICON['ERROR']} ERROR</th>
-                <th>{EMOTICON['FAIL']} FAIL</th>
-                <th>{EMOTICON['WARN']} WARN</th>
-                <th>{EMOTICON['SKIP']} SKIP</th>
-                <th>{EMOTICON['INFO']} INFO</th>
-                <th>{EMOTICON['PASS']} PASS</th>
+                <th>{EMOTICON["ERROR"]} ERROR</th>
+                <th>{EMOTICON["FAIL"]} FAIL</th>
+                <th>{EMOTICON["WARN"]} WARN</th>
+                <th>{EMOTICON["SKIP"]} SKIP</th>
+                <th>{EMOTICON["INFO"]} INFO</th>
+                <th>{EMOTICON["PASS"]} PASS</th>
             </tr>
             <tr>
                 <td>{errors}</td>

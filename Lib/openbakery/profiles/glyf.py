@@ -21,12 +21,15 @@ def com_google_fonts_check_glyf_unused_data(ttFont):
         diff = actual_glyphs - expected_glyphs
 
         if diff < 0:
-            yield FAIL, Message(
-                "unreachable-data",
-                f"Glyf table has unreachable data at the end of the table."
-                f" Expected glyf table length {expected_glyphs} (from loca"
-                f" table), got length {actual_glyphs}"
-                f" (difference: {diff})",
+            yield (
+                FAIL,
+                Message(
+                    "unreachable-data",
+                    f"Glyf table has unreachable data at the end of the table."
+                    f" Expected glyf table length {expected_glyphs} (from loca"
+                    f" table), got length {actual_glyphs}"
+                    f" (difference: {diff})",
+                ),
             )
         elif not diff:  # negative diff -> exception below
             yield PASS, "There is no unused data at the end of the glyf table."
@@ -34,12 +37,15 @@ def com_google_fonts_check_glyf_unused_data(ttFont):
             raise Exception("Bug: fontTools did not raise an expected exception.")
     except TTLibError as error:
         if "not enough 'glyf' table data" in format(error):
-            yield FAIL, Message(
-                "missing-data",
-                f"Loca table references data beyond"
-                f" the end of the glyf table."
-                f" Expected glyf table length {expected_glyphs}"
-                f" (from loca table).",
+            yield (
+                FAIL,
+                Message(
+                    "missing-data",
+                    f"Loca table references data beyond"
+                    f" the end of the glyf table."
+                    f" Expected glyf table length {expected_glyphs}"
+                    f" (from loca table).",
+                ),
             )
         else:
             raise Exception("Bug: Unexpected fontTools exception.")
@@ -73,18 +79,21 @@ def com_google_fonts_check_points_out_of_bounds(ttFont, config):
 
     if not passed:
         formatted_list = "\t* " + pretty_print_list(config, out_of_bounds, sep="\n\t* ")
-        yield WARN, Message(
-            "points-out-of-bounds",
-            f"The following glyphs have coordinates"
-            f" which are out of bounds:\n"
-            f"{formatted_list}\n"
-            f"\n"
-            f"This happens a lot when points are not extremes,"
-            f" which is usually bad. However, fixing this alert"
-            f" by adding points on extremes may do more harm"
-            f" than good, especially with italics,"
-            f" calligraphic-script, handwriting, rounded and"
-            f" other fonts. So it is common to ignore this message.",
+        yield (
+            WARN,
+            Message(
+                "points-out-of-bounds",
+                f"The following glyphs have coordinates"
+                f" which are out of bounds:\n"
+                f"{formatted_list}\n"
+                f"\n"
+                f"This happens a lot when points are not extremes,"
+                f" which is usually bad. However, fixing this alert"
+                f" by adding points on extremes may do more harm"
+                f" than good, especially with italics,"
+                f" calligraphic-script, handwriting, rounded and"
+                f" other fonts. So it is common to ignore this message.",
+            ),
         )
     else:
         yield PASS, "All glyph paths have coordinates within bounds!"
@@ -129,14 +138,20 @@ def com_google_fonts_check_glyf_non_transformed_duplicate_components(ttFont, con
                 seen.append(comp_info)
     if failed:
         formatted_list = "\t* " + pretty_print_list(config, failed, sep="\n\t* ")
-        yield FAIL, Message(
-            "found-duplicates",
-            f"The following glyphs have duplicate components which"
-            f" have the same x,y coordinates:\n"
-            f"{formatted_list}",
+        yield (
+            FAIL,
+            Message(
+                "found-duplicates",
+                f"The following glyphs have duplicate components which"
+                f" have the same x,y coordinates:\n"
+                f"{formatted_list}",
+            ),
         )
     else:
-        yield PASS, (
-            "Glyphs do not contain duplicate components which have"
-            " the same x,y coordinates."
+        yield (
+            PASS,
+            (
+                "Glyphs do not contain duplicate components which have"
+                " the same x,y coordinates."
+            ),
         )

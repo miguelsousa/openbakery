@@ -104,12 +104,12 @@ class OpenBakeryReporter:
         status, message, identity = event
         if self._started is None and status != START:
             raise ProtocolViolationError(
-                f"Received Event before status START:" f" {status} {message}."
+                f"Received Event before status START: {status} {message}."
             )
         if self._ended:
             status, message, identity = event
             raise ProtocolViolationError(
-                f"Received Event after status END:" f" {status} {message}."
+                f"Received Event after status END: {status} {message}."
             )
 
         if status is ENDCHECK and (

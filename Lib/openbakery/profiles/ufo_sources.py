@@ -81,10 +81,13 @@ def com_daltonmaag_check_ufolint(ufo):
     try:
         subprocess.check_output(ufolint_cmd, stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as e:
-        yield FAIL, Message(
-            "ufolint-fail",
-            ("ufolint failed the UFO source. Output follows :" "\n\n{}\n").format(
-                e.output.decode()
+        yield (
+            FAIL,
+            Message(
+                "ufolint-fail",
+                ("ufolint failed the UFO source. Output follows :\n\n{}\n").format(
+                    e.output.decode()
+                ),
             ),
         )
     except OSError:
@@ -118,8 +121,12 @@ def com_daltonmaag_check_required_fields(ufo_font):
             required_fields.append(field)
 
     if required_fields:
-        yield FAIL, Message(
-            "missing-required-fields", f"Required field(s) missing: {required_fields}"
+        yield (
+            FAIL,
+            Message(
+                "missing-required-fields",
+                f"Required field(s) missing: {required_fields}",
+            ),
         )
     else:
         yield PASS, "Required fields present."
@@ -150,9 +157,12 @@ def com_daltonmaag_check_recommended_fields(ufo_font):
             recommended_fields.append(field)
 
     if recommended_fields:
-        yield WARN, Message(
-            "missing-recommended-fields",
-            f"Recommended field(s) missing: {recommended_fields}",
+        yield (
+            WARN,
+            Message(
+                "missing-recommended-fields",
+                f"Recommended field(s) missing: {recommended_fields}",
+            ),
         )
     else:
         yield PASS, "Recommended fields present."
@@ -186,8 +196,12 @@ def com_daltonmaag_check_unnecessary_fields(ufo_font):
             unnecessary_fields.append(field)
 
     if unnecessary_fields:
-        yield WARN, Message(
-            "unnecessary-fields", f"Unnecessary field(s) present: {unnecessary_fields}"
+        yield (
+            WARN,
+            Message(
+                "unnecessary-fields",
+                f"Unnecessary field(s) present: {unnecessary_fields}",
+            ),
         )
     else:
         yield PASS, "Unnecessary fields omitted."
@@ -259,9 +273,12 @@ def com_google_fonts_check_designspace_has_consistent_glyphset(designSpace, conf
                 f" in the default master: {outliers}"
             )
     if failures:
-        yield FAIL, Message(
-            "inconsistent-glyphset",
-            f"Glyphsets were not consistent:\n\n" f"{bullet_list(config, failures)}",
+        yield (
+            FAIL,
+            Message(
+                "inconsistent-glyphset",
+                f"Glyphsets were not consistent:\n\n{bullet_list(config, failures)}",
+            ),
         )
     else:
         yield PASS, "Glyphsets were consistent."
@@ -297,10 +314,13 @@ def com_google_fonts_check_designspace_has_consistent_codepoints(designSpace, co
                     f" {g.name}={default_unicodes[g.name]}"
                 )
     if failures:
-        yield FAIL, Message(
-            "inconsistent-codepoints",
-            f"Unicode assignments were not consistent:\n\n"
-            f"{bullet_list(config, failures)}",
+        yield (
+            FAIL,
+            Message(
+                "inconsistent-codepoints",
+                f"Unicode assignments were not consistent:\n\n"
+                f"{bullet_list(config, failures)}",
+            ),
         )
     else:
         yield PASS, "Unicode assignments were consistent."
@@ -335,15 +355,18 @@ def com_thetypefounders_check_features_default_languagesystem(ufo_font):
     else:
         tags = re.findall(
             # pylint: disable-next=line-too-long
-            r"languagesystem\s+([A-Za-z0-9\._!$%&*+:?^'|~]{1,4})\s+([A-Za-z0-9\._!$%&*+:?^'|~]{1,4})",  # noqa E501
+            r"languagesystem\s+([A-Za-z0-9\._!$%&*+:?^'|~]{1,4})\s+([A-Za-z0-9\._!$%&*+:?^'|~]{1,4})",  # noqa: E501
             ufo_font.features.text,
         )
 
         if len(tags) > 0 and ("DFLT", "dflt") != tags[0]:
             tags_str = ", ".join([" ".join(t) for t in tags])
-            yield WARN, Message(
-                "default-languagesystem",
-                f"Default languagesystem not found in: {tags_str}.",
+            yield (
+                WARN,
+                Message(
+                    "default-languagesystem",
+                    f"Default languagesystem not found in: {tags_str}.",
+                ),
             )
         else:
             yield PASS, "Default languagesystem present or automatically inserted."

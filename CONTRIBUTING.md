@@ -50,7 +50,7 @@ When you create your first pull request, add your name to our
 
 ## Coding conventions
 
-We use [Black] to format the codebase. The maximum line length is 88 characters.
+We use [Ruff] to format and lint the codebase. The maximum line length is 88 characters.
 That's probably all you need to know to stay out of trouble. If there's
 something ambiguous that you need clarification on, just ask. 😉
 
@@ -66,7 +66,7 @@ Make sure you don't include `@mentions` in your commit messages.
 This is open source software. Consider the people who will read your code, and
 make it look nice for them. 😍
 
-[Black]: https://github.com/psf/black
+[Ruff]: https://github.com/astral-sh/ruff
 
 
 ## Which branch to use

@@ -99,8 +99,12 @@ def com_fontwerk_check_vendor_id(ttFont):
 
     vendor_id = ttFont["OS/2"].achVendID
     if vendor_id != "WERK":
-        yield FAIL, Message(
-            "bad-vendor-id", f"OS/2 VendorID is '{vendor_id}', but should be 'WERK'."
+        yield (
+            FAIL,
+            Message(
+                "bad-vendor-id",
+                f"OS/2 VendorID is '{vendor_id}', but should be 'WERK'.",
+            ),
         )
     else:
         yield PASS, f"OS/2 VendorID '{vendor_id}' is correct."
@@ -125,10 +129,13 @@ def com_fontwerk_check_weight_class_fvar(ttFont):
     os2_value = ttFont["OS/2"].usWeightClass
 
     if os2_value != int(fvar_value):
-        yield FAIL, Message(
-            "bad-weight-class",
-            f"OS/2 usWeightClass is '{os2_value}', "
-            f"but should match fvar default value '{fvar_value}'.",
+        yield (
+            FAIL,
+            Message(
+                "bad-weight-class",
+                f"OS/2 usWeightClass is '{os2_value}', "
+                f"but should match fvar default value '{fvar_value}'.",
+            ),
         )
 
     else:
@@ -192,20 +199,26 @@ def com_fontwerk_check_inconsistencies_between_fvar_stat(ttFont):
     for ins in fvar.instances:
         instance_name = name.getDebugName(ins.subfamilyNameID)
         if instance_name is None:
-            yield FAIL, Message(
-                "missing-name-id",
-                f"The name ID {ins.subfamilyNameID} used in an"
-                f" fvar instance is missing in the name table.",
+            yield (
+                FAIL,
+                Message(
+                    "missing-name-id",
+                    f"The name ID {ins.subfamilyNameID} used in an"
+                    f" fvar instance is missing in the name table.",
+                ),
             )
             passed = False
             continue
 
         for axis_tag, value in ins.coordinates.items():
             if not is_covered_in_stat(ttFont, axis_tag, value):
-                yield FAIL, Message(
-                    "missing-fvar-instance-axis-value",
-                    f"{instance_name}: '{axis_tag}' axis value '{value}'"
-                    f" missing in STAT table.",
+                yield (
+                    FAIL,
+                    Message(
+                        "missing-fvar-instance-axis-value",
+                        f"{instance_name}: '{axis_tag}' axis value '{value}'"
+                        f" missing in STAT table.",
+                    ),
                 )
                 passed = False
 

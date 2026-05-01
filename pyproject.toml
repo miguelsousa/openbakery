@@ -1,7 +1,13 @@
 # ============================================================================
-[tool.black]
+[tool.ruff]
 line-length = 88
-target-version = ["py310"]
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W"]
+# E501 (line too long) is handled by the formatter; disable to avoid noise on
+# strings the formatter can't shorten further (e.g. long f-strings).
+ignore = ["E501"]
 
 # ============================================================================
 [tool.pytest.ini_options]

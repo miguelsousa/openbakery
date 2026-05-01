@@ -446,7 +446,7 @@ class TerminalReporter(TerminalProgress):
                     with_string = os.path.basename(f"{formatted_iterargs[0][1]}")
 
                 print_func(
-                    (" >> Check:   {}\n" "    Desc:    {}\n" "    Files:   {}").format(
+                    (" >> Check:   {}\n    Desc:    {}\n    Files:   {}").format(
                         self.theme["check-id"](check.id),
                         self.theme["description"](check.description),
                         with_string,
@@ -460,7 +460,7 @@ class TerminalReporter(TerminalProgress):
                     with_string = f"with {formatted_iterargs[0][1]}"
 
                 print_func(
-                    (" >> {}\n" "    {}\n" "    {}\n").format(
+                    (" >> {}\n    {}\n    {}\n").format(
                         self.theme["check-id"](check.id),
                         self.theme["description"](check.description),
                         with_string,
@@ -535,7 +535,7 @@ class TerminalReporter(TerminalProgress):
             status_name = getattr(status, "name", status)
 
             try:
-                message = f"{msg.message}\n" f"[code: {msg.code}]"
+                message = f"{msg.message}\n[code: {msg.code}]"
             except AttributeError:
                 message = str(msg)
 

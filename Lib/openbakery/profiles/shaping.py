@@ -176,8 +176,9 @@ def run_a_set_of_shaping_tests(
         try:
             shaping_input_doc = json.loads(shaping_file.read_text(encoding="utf-8"))
         except Exception as e:
-            yield FAIL, Message(
-                "shaping-invalid-json", f"{shaping_file}: Invalid JSON: {e}."
+            yield (
+                FAIL,
+                Message("shaping-invalid-json", f"{shaping_file}: Invalid JSON: {e}."),
             )
             return
 
@@ -185,9 +186,12 @@ def run_a_set_of_shaping_tests(
         try:
             shaping_tests = shaping_input_doc["tests"]
         except KeyError:
-            yield FAIL, Message(
-                "shaping-missing-tests",
-                f"{shaping_file}: JSON file must have a 'tests' key.",
+            yield (
+                FAIL,
+                Message(
+                    "shaping-missing-tests",
+                    f"{shaping_file}: JSON file must have a 'tests' key.",
+                ),
             )
             return
 
@@ -200,9 +204,12 @@ def run_a_set_of_shaping_tests(
                 continue
 
             if "input" not in test:
-                yield FAIL, Message(
-                    "shaping-missing-input",
-                    f"{shaping_file}: test is missing an input key.",
+                yield (
+                    FAIL,
+                    Message(
+                        "shaping-missing-input",
+                        f"{shaping_file}: test is missing an input key.",
+                    ),
                 )
                 return
 
@@ -399,8 +406,9 @@ def com_google_fonts_check_shaping_collides(config, ttFont):
         config,
         ttFont,
         run_collides_glyph_test,
-        lambda test, configuration: "collidoscope" in test
-        or "collidoscope" in configuration,
+        lambda test, configuration: (
+            "collidoscope" in test or "collidoscope" in configuration
+        ),
         collides_glyph_test_results,
         setup_glyph_collides,
     )
@@ -471,7 +479,7 @@ def collides_glyph_test_results(vharfbuzz, shaping_file, failed_shaping_tests):
         seen_bumps[tuple(bumps)] = True
         report_item = create_report_item(
             vharfbuzz,
-            f"{',' .join(bumps)} collision found in"
+            f"{','.join(bumps)} collision found in"
             f" e.g. <span class='tf'>{shaping_text}</span> <div>{draw}</div>",
             buf1=buf,
         )
@@ -540,13 +548,17 @@ def com_google_fonts_check_dotted_circle(ttFont, config):
     if 0x25CC not in ttFont.getBestCmap():
         # How bad is this?
         if is_complex_shaper_font(ttFont):
-            yield FAIL, Message(
-                "missing-dotted-circle-complex",
-                "No dotted circle glyph present and font uses a complex shaper",
+            yield (
+                FAIL,
+                Message(
+                    "missing-dotted-circle-complex",
+                    "No dotted circle glyph present and font uses a complex shaper",
+                ),
             )
         else:
-            yield WARN, Message(
-                "missing-dotted-circle", "No dotted circle glyph present"
+            yield (
+                WARN,
+                Message("missing-dotted-circle", "No dotted circle glyph present"),
             )
         return
 
@@ -573,10 +585,13 @@ def com_google_fonts_check_dotted_circle(ttFont, config):
             unattached.append(g)
 
     if unattached:
-        yield FAIL, Message(
-            "unattached-dotted-circle-marks",
-            "The following glyphs could not be attached to the dotted circle glyph:\n\n"
-            f"{bullet_list(config, sorted(unattached))}",
+        yield (
+            FAIL,
+            Message(
+                "unattached-dotted-circle-marks",
+                "The following glyphs could not be attached to the dotted circle glyph:\n\n"
+                f"{bullet_list(config, sorted(unattached))}",
+            ),
         )
     else:
         yield PASS, "All marks were anchored to dotted circle"
@@ -658,8 +673,9 @@ def com_google_fonts_check_soft_dotted(ttFont):
         if len(outlines_dict[ord("i")]) == len(outlines_dict[ord("ı")]):
             unclear = True
     if unclear:
-        yield SKIP, (
-            "It is not clear if the soft dotted characters have glyphs with dots."
+        yield (
+            SKIP,
+            ("It is not clear if the soft dotted characters have glyphs with dots."),
         )
         return
 
@@ -714,9 +730,12 @@ def com_google_fonts_check_soft_dotted(ttFont):
     elif warn_unchanged_strings:
         yield WARN, Message("soft-dotted", message)
     else:
-        yield PASS, (
-            "All soft dotted characters seem to lose their dot when combined with"
-            " a mark above."
+        yield (
+            PASS,
+            (
+                "All soft dotted characters seem to lose their dot when combined with"
+                " a mark above."
+            ),
         )
 
 

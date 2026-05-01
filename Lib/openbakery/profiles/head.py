@@ -28,12 +28,15 @@ def com_google_fonts_check_family_equal_font_versions(ttFonts):
             versions_list += "* {}: {}\n".format(
                 v.reader.file.name, fontfile_versions[v]
             )
-        yield WARN, Message(
-            "mismatch",
-            f"Version info differs among font"
-            f" files of the same font project.\n"
-            f"These were the version values found:\n"
-            f"{versions_list}",
+        yield (
+            WARN,
+            Message(
+                "mismatch",
+                f"Version info differs among font"
+                f" files of the same font project.\n"
+                f"These were the version values found:\n"
+                f"{versions_list}",
+            ),
         )
     else:
         yield PASS, "All font files have the same version."
@@ -62,26 +65,33 @@ def com_google_fonts_check_unitsperem(ttFont):
     target_upem.append(1000)
     target_upem.append(2000)
     if upem < 16 or upem > 16384:
-        yield FAIL, Message(
-            "out-of-range",
-            f"The value of unitsPerEm at the head table"
-            f" must be a value between 16 and 16384."
-            f" Got {upem} instead.",
+        yield (
+            FAIL,
+            Message(
+                "out-of-range",
+                f"The value of unitsPerEm at the head table"
+                f" must be a value between 16 and 16384."
+                f" Got {upem} instead.",
+            ),
         )
     elif upem not in target_upem:
-        yield WARN, Message(
-            "suboptimal",
-            f"In order to optimize performance on some"
-            f" legacy renderers, the value of unitsPerEm"
-            f" at the head table should idealy be"
-            f" a power of between 16 to 16384."
-            f" And values of 1000 and 2000 are also"
-            f" common and may be just fine as well."
-            f" But we got {upem} instead.",
+        yield (
+            WARN,
+            Message(
+                "suboptimal",
+                f"In order to optimize performance on some"
+                f" legacy renderers, the value of unitsPerEm"
+                f" at the head table should idealy be"
+                f" a power of between 16 to 16384."
+                f" And values of 1000 and 2000 are also"
+                f" common and may be just fine as well."
+                f" But we got {upem} instead.",
+            ),
         )
     else:
-        yield PASS, (
-            f"The unitsPerEm value ({upem}) on" f" the 'head' table is reasonable."
+        yield (
+            PASS,
+            (f"The unitsPerEm value ({upem}) on the 'head' table is reasonable."),
         )
 
 
@@ -141,39 +151,49 @@ def com_google_fonts_check_font_version(ttFont):
                 name_version = parse_version_string(record.toUnicode())
                 if abs(name_version - head_version) > fail_tolerance:
                     failed = True
-                    yield FAIL, Message(
-                        "mismatch",
-                        f'head version is "{float(head_version):.5f}"'
-                        f" while name version string (for"
-                        f" platform {record.platformID},"
-                        f" encoding {record.platEncID}) is"
-                        f' "{record.toUnicode()}".',
+                    yield (
+                        FAIL,
+                        Message(
+                            "mismatch",
+                            f'head version is "{float(head_version):.5f}"'
+                            f" while name version string (for"
+                            f" platform {record.platformID},"
+                            f" encoding {record.platEncID}) is"
+                            f' "{record.toUnicode()}".',
+                        ),
                     )
                 elif abs(name_version - head_version) > warn_tolerance:
-                    yield WARN, Message(
-                        "near-mismatch",
-                        f'head version is "{float(head_version):.5f}"'
-                        f" while name version string (for"
-                        f" platform {record.platformID},"
-                        f" encoding {record.platEncID}) is"
-                        f' "{record.toUnicode()}".'
-                        f" This matches to 3 decimal places, but"
-                        f" is not as accurate as possible.",
+                    yield (
+                        WARN,
+                        Message(
+                            "near-mismatch",
+                            f'head version is "{float(head_version):.5f}"'
+                            f" while name version string (for"
+                            f" platform {record.platformID},"
+                            f" encoding {record.platEncID}) is"
+                            f' "{record.toUnicode()}".'
+                            f" This matches to 3 decimal places, but"
+                            f" is not as accurate as possible.",
+                        ),
                     )
             except ValueError:
                 failed = True
-                yield FAIL, Message(
-                    "parse",
-                    f"name version string for"
-                    f" platform {record.platformID},"
-                    f" encoding {record.platEncID}"
-                    f' ("{record.toUnicode()}"),'
-                    f" could not be parsed.",
+                yield (
+                    FAIL,
+                    Message(
+                        "parse",
+                        f"name version string for"
+                        f" platform {record.platformID},"
+                        f" encoding {record.platEncID}"
+                        f' ("{record.toUnicode()}"),'
+                        f" could not be parsed.",
+                    ),
                 )
     else:
         failed = True
-        yield FAIL, Message(
-            "missing", "There is no name ID 5 (version string) in the font."
+        yield (
+            FAIL,
+            Message("missing", "There is no name ID 5 (version string) in the font."),
         )
 
     if not failed:

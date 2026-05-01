@@ -30,17 +30,21 @@ def com_google_fonts_check_family_panose_proportion(ttFonts):
             passed = False
 
     if missing:
-        yield FAIL, Message(
-            "lacks-OS/2", "One or more fonts lack the required OS/2 table."
+        yield (
+            FAIL,
+            Message("lacks-OS/2", "One or more fonts lack the required OS/2 table."),
         )
 
     if not passed:
-        yield WARN, Message(
-            "inconsistency",
-            "PANOSE proportion is not the same across this family."
-            " In order to fix this, please make sure that"
-            " the panose.bProportion value is the same"
-            " in the OS/2 table of all of this family font files.",
+        yield (
+            WARN,
+            Message(
+                "inconsistency",
+                "PANOSE proportion is not the same across this family."
+                " In order to fix this, please make sure that"
+                " the panose.bProportion value is the same"
+                " in the OS/2 table of all of this family font files.",
+            ),
         )
     else:
         yield PASS, "Fonts have consistent PANOSE proportion."
@@ -66,17 +70,21 @@ def com_google_fonts_check_family_panose_familytype(ttFonts):
             passed = False
 
     if missing:
-        yield FAIL, Message(
-            "lacks-OS/2", "One or more fonts lack the required OS/2 table."
+        yield (
+            FAIL,
+            Message("lacks-OS/2", "One or more fonts lack the required OS/2 table."),
         )
 
     if not passed:
-        yield WARN, Message(
-            "inconsistency",
-            "PANOSE family type is not the same across this family."
-            " In order to fix this, please make sure that"
-            " the panose.bFamilyType value is the same"
-            " in the OS/2 table of all of this family font files.",
+        yield (
+            WARN,
+            Message(
+                "inconsistency",
+                "PANOSE family type is not the same across this family."
+                " In order to fix this, please make sure that"
+                " the panose.bFamilyType value is the same"
+                " in the OS/2 table of all of this family font files.",
+            ),
         )
     else:
         yield PASS, "Fonts have consistent PANOSE family type."
@@ -101,9 +109,12 @@ def com_google_fonts_check_xavgcharwidth(ttFont):
     if ttFont["OS/2"].version >= 3:
         calculation_rule = "the average of the widths of all glyphs in the font"
         if not ttFont["hmtx"].metrics:  # May contain just '.notdef', which is valid.
-            yield FAIL, Message(
-                "missing-glyphs",
-                "CRITICAL: Found no glyph width data in the hmtx table!",
+            yield (
+                FAIL,
+                Message(
+                    "missing-glyphs",
+                    "CRITICAL: Found no glyph width data in the hmtx table!",
+                ),
             )
             return
 
@@ -154,9 +165,12 @@ def com_google_fonts_check_xavgcharwidth(ttFont):
         }
         glyph_order = ttFont.getGlyphOrder()
         if not all(character in glyph_order for character in weightFactors):
-            yield FAIL, Message(
-                "missing-glyphs",
-                "Font is missing the required latin lowercase letters and/or space.",
+            yield (
+                FAIL,
+                Message(
+                    "missing-glyphs",
+                    "Font is missing the required latin lowercase letters and/or space.",
+                ),
             )
             return
 
@@ -173,22 +187,28 @@ def com_google_fonts_check_xavgcharwidth(ttFont):
     if current_value == expected_value or difference == 1:
         yield PASS, "OS/2 xAvgCharWidth value is correct."
     elif difference < ACCEPTABLE_ERROR:
-        yield INFO, Message(
-            "xAvgCharWidth-close",
-            f"OS/2 xAvgCharWidth is {current_value} but it should be"
-            f" {expected_value} which corresponds to {calculation_rule}."
-            f" These are similar values, which"
-            f" may be a symptom of the slightly different"
-            f" calculation of the xAvgCharWidth value in"
-            f" font editors. There's further discussion on"
-            f" this at https://github.com/googlefonts/fontbakery"
-            f"/issues/1622",
+        yield (
+            INFO,
+            Message(
+                "xAvgCharWidth-close",
+                f"OS/2 xAvgCharWidth is {current_value} but it should be"
+                f" {expected_value} which corresponds to {calculation_rule}."
+                f" These are similar values, which"
+                f" may be a symptom of the slightly different"
+                f" calculation of the xAvgCharWidth value in"
+                f" font editors. There's further discussion on"
+                f" this at https://github.com/googlefonts/fontbakery"
+                f"/issues/1622",
+            ),
         )
     else:
-        yield WARN, Message(
-            "xAvgCharWidth-wrong",
-            f"OS/2 xAvgCharWidth is {current_value} but it should be"
-            f" {expected_value} which corresponds to {calculation_rule}.",
+        yield (
+            WARN,
+            Message(
+                "xAvgCharWidth-wrong",
+                f"OS/2 xAvgCharWidth is {current_value} but it should be"
+                f" {expected_value} which corresponds to {calculation_rule}.",
+            ),
         )
 
 
@@ -221,21 +241,28 @@ def com_adobe_fonts_check_fsselection_matches_macstyle(ttFont):
     os2_bold = (ttFont["OS/2"].fsSelection & FsSelection.BOLD) != 0
     if head_bold != os2_bold:
         failed = True
-        yield FAIL, Message(
-            "fsselection-macstyle-bold",
-            "The OS/2.fsSelection and head.macStyle bold settings do not match.",
+        yield (
+            FAIL,
+            Message(
+                "fsselection-macstyle-bold",
+                "The OS/2.fsSelection and head.macStyle bold settings do not match.",
+            ),
         )
     head_italic = (ttFont["head"].macStyle & MacStyle.ITALIC) != 0
     os2_italic = (ttFont["OS/2"].fsSelection & FsSelection.ITALIC) != 0
     if head_italic != os2_italic:
         failed = True
-        yield FAIL, Message(
-            "fsselection-macstyle-italic",
-            "The OS/2.fsSelection and head.macStyle italic settings do not match.",
+        yield (
+            FAIL,
+            Message(
+                "fsselection-macstyle-italic",
+                "The OS/2.fsSelection and head.macStyle italic settings do not match.",
+            ),
         )
     if not failed:
-        yield PASS, (
-            "The OS/2.fsSelection and head.macStyle bold and italic settings match."
+        yield (
+            PASS,
+            ("The OS/2.fsSelection and head.macStyle bold and italic settings match."),
         )
 
 
@@ -287,17 +314,23 @@ def com_adobe_fonts_check_family_bold_italic_unique_for_nameid1(RIBBI_ttFonts):
     for (family_name, bold_italic), count in counter.items():
         if count > 1:
             failed = True
-            yield FAIL, Message(
-                "unique-fsselection",
-                f"Family '{family_name}' has {count} fonts"
-                f" (should be no more than 1) with the"
-                f" same OS/2.fsSelection bold & italic settings:"
-                f" {bold_italic}",
+            yield (
+                FAIL,
+                Message(
+                    "unique-fsselection",
+                    f"Family '{family_name}' has {count} fonts"
+                    f" (should be no more than 1) with the"
+                    f" same OS/2.fsSelection bold & italic settings:"
+                    f" {bold_italic}",
+                ),
             )
     if not failed:
-        yield PASS, (
-            "The OS/2.fsSelection bold & italic settings were unique "
-            "within each compatible family group."
+        yield (
+            PASS,
+            (
+                "The OS/2.fsSelection bold & italic settings were unique "
+                "within each compatible family group."
+            ),
         )
 
 
@@ -338,10 +371,13 @@ def com_google_fonts_check_code_pages(ttFont):
             and ttFont["OS/2"].ulCodePageRange2 == 0
         )
     ):
-        yield FAIL, Message(
-            "no-code-pages",
-            "No code pages defined in the OS/2 table"
-            " ulCodePageRange1 and CodePageRange2 fields.",
+        yield (
+            FAIL,
+            Message(
+                "no-code-pages",
+                "No code pages defined in the OS/2 table"
+                " ulCodePageRange1 and CodePageRange2 fields.",
+            ),
         )
     else:
         yield PASS, "At least one code page is defined."
@@ -360,11 +396,14 @@ def com_thetypefounders_check_vendor_id(config, ttFont):
     """Checking OS/2 achVendID against configuration."""
 
     if "vendor_id" not in config:
-        yield SKIP, (
-            "Add the `vendor_id` key to a `openbakery.yaml` file"
-            " on your font project directory to enable this check.\n"
-            "You'll also need to use the `--configuration` flag when"
-            " invoking openbakery."
+        yield (
+            SKIP,
+            (
+                "Add the `vendor_id` key to a `openbakery.yaml` file"
+                " on your font project directory to enable this check.\n"
+                "You'll also need to use the `--configuration` flag when"
+                " invoking openbakery."
+            ),
         )
         return
 
@@ -376,10 +415,13 @@ def com_thetypefounders_check_vendor_id(config, ttFont):
     font_vendor_id = ttFont["OS/2"].achVendID
 
     if config_vendor_id != font_vendor_id:
-        yield FAIL, Message(
-            "bad-vendor-id",
-            f"OS/2 VendorID is '{font_vendor_id}',"
-            f" but should be '{config_vendor_id}'.",
+        yield (
+            FAIL,
+            Message(
+                "bad-vendor-id",
+                f"OS/2 VendorID is '{font_vendor_id}',"
+                f" but should be '{config_vendor_id}'.",
+            ),
         )
     else:
         yield PASS, f"OS/2 VendorID '{font_vendor_id}' is correct."

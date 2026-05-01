@@ -44,9 +44,9 @@ def test_profile_imports():
         if expected_conditions:
             registered_conditions = profile.conditions.keys()
             for name in expected_conditions:
-                assert (
-                    name in registered_conditions
-                ), f'"{name}" is expected to be registered as a condition.'
+                assert name in registered_conditions, (
+                    f'"{name}" is expected to be registered as a condition.'
+                )
 
     # this is in docs/writing profiles
     profile_imports = [["openbakery.profiles", ["cmap", "head"]]]

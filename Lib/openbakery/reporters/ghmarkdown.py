@@ -123,7 +123,7 @@ class GHMarkdownReporter(SerializeReporter):
                             checks[key] = []
                         checks[key].append(check)
 
-        md = f"## OpenBakery report\n" f"\n" f"openbakery version: {version}\n" f"\n"
+        md = f"## OpenBakery report\n\nopenbakery version: {version}\n\n"
 
         if family_checks:
             family_checks.sort(key=lambda c: c["result"])

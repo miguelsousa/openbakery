@@ -98,7 +98,8 @@ def pair_kerning(font, left, right):
         To ensure legibility of this font on in-car information systems,
         it is recommended that the ratio of H width to H height
         is between 0.65 and 0.80.
-    """ + DISCLAIMER,
+    """
+    + DISCLAIMER,
     proposal=[
         "https://github.com/googlefonts/fontbakery/issues/1832",
         "https://github.com/googlefonts/fontbakery/issues/3250",
@@ -108,10 +109,13 @@ def com_google_fonts_check_iso15008_proportions(ttFont):
     """Check if 0.65 => (H width / H height) => 0.80"""
     glyphset = ttFont.getGlyphSet()
     if "H" not in glyphset:
-        yield FAIL, Message(
-            "glyph-not-present",
-            "There was no 'H' glyph in the font,"
-            " so the proportions could not be tested",
+        yield (
+            FAIL,
+            Message(
+                "glyph-not-present",
+                "There was no 'H' glyph in the font,"
+                " so the proportions could not be tested",
+            ),
         )
 
     pen = BoundsPen(glyphset)
@@ -121,10 +125,13 @@ def com_google_fonts_check_iso15008_proportions(ttFont):
     if 0.65 <= proportion <= 0.80:
         yield PASS, "the letter H is not too narrow or too wide"
     else:
-        yield FAIL, Message(
-            "invalid-proportion",
-            f"The proportion of H width to H height ({proportion})"
-            f"does not conform to the expected range of 0.65-0.80",
+        yield (
+            FAIL,
+            Message(
+                "invalid-proportion",
+                f"The proportion of H width to H height ({proportion})"
+                f"does not conform to the expected range of 0.65-0.80",
+            ),
         )
 
 
@@ -137,7 +144,8 @@ def com_google_fonts_check_iso15008_proportions(ttFont):
         To ensure legibility of this font on in-car information systems,
         it is recommended that the ratio of stem width to ascender height
         is between 0.10 and 0.20.
-    """ + DISCLAIMER,
+    """
+    + DISCLAIMER,
     proposal=[
         "https://github.com/googlefonts/fontbakery/issues/1832",
         "https://github.com/googlefonts/fontbakery/issues/3251",
@@ -154,10 +162,13 @@ def com_google_fonts_check_iso15008_stem_width(ttFont):
     if 0.10 <= proportion <= 0.20:
         yield PASS, "the stem width is not too light or too bold"
     else:
-        yield FAIL, Message(
-            "invalid-proportion",
-            f"The proportion of stem width to ascender ({proportion})"
-            f"does not conform to the expected range of 0.10-0.20",
+        yield (
+            FAIL,
+            Message(
+                "invalid-proportion",
+                f"The proportion of stem width to ascender ({proportion})"
+                f"does not conform to the expected range of 0.10-0.20",
+            ),
         )
 
 
@@ -177,7 +188,8 @@ def com_google_fonts_check_iso15008_stem_width(ttFont):
           at least 85% of the stem width.
 
         * diagonal characters should not touch (e.g. "vv").
-    """ + DISCLAIMER,
+    """
+    + DISCLAIMER,
     proposal=[
         "https://github.com/googlefonts/fontbakery/issues/1832",
         "https://github.com/googlefonts/fontbakery/issues/3252",
@@ -200,19 +212,25 @@ def com_google_fonts_check_iso15008_intercharacter_spacing(font, ttFont):
 
     l_l = l_rsb + pair_kerning(font, "l", "l") + l_lsb
     if l_l is None:
-        yield FAIL, Message(
-            "glyph-not-present",
-            "There was no 'l' glyph in the font, so the spacing could not be tested",
+        yield (
+            FAIL,
+            Message(
+                "glyph-not-present",
+                "There was no 'l' glyph in the font, so the spacing could not be tested",
+            ),
         )
         return
     if 1.5 <= (l_l / width) <= 2.4:
         yield PASS, "Distance between vertical strokes was adequate"
     else:
-        yield FAIL, Message(
-            "bad-vertical-vertical-spacing",
-            f"The space between vertical strokes ({l_l})"
-            f" does not conform to the expected"
-            f" range of {width * 1.5}-{width * 2.4}",
+        yield (
+            FAIL,
+            Message(
+                "bad-vertical-vertical-spacing",
+                f"The space between vertical strokes ({l_l})"
+                f" does not conform to the expected"
+                f" range of {width * 1.5}-{width * 2.4}",
+            ),
         )
 
     # For v, however, a simple LSB/RSB is adequate.
@@ -228,28 +246,37 @@ def com_google_fonts_check_iso15008_intercharacter_spacing(font, ttFont):
     l_v = l_rsb + pair_kerning(font, "l", "v") + v_lsb
 
     if l_v is None:
-        yield FAIL, Message(
-            "glyph-not-present",
-            "There was no 'v' glyph in the font, so the spacing could not be tested",
+        yield (
+            FAIL,
+            Message(
+                "glyph-not-present",
+                "There was no 'v' glyph in the font, so the spacing could not be tested",
+            ),
         )
         return
 
     if (l_v / width) > 0.85:
         yield PASS, "Distance between vertical and diagonal strokes was adequate"
     else:
-        yield FAIL, Message(
-            "bad-vertical-diagonal-spacing",
-            f"The space between vertical and diagonal strokes ({l_v})"
-            f" was less than the expected"
-            f" value of {width * 0.85}",
+        yield (
+            FAIL,
+            Message(
+                "bad-vertical-diagonal-spacing",
+                f"The space between vertical and diagonal strokes ({l_v})"
+                f" was less than the expected"
+                f" value of {width * 0.85}",
+            ),
         )
 
     v_v = v_rsb + pair_kerning(font, "v", "v") + v_lsb
     if v_v > 0:
         yield PASS, "Distance between diagonal strokes was adequate"
     else:
-        yield FAIL, Message(
-            "bad-diagonal-diagonal-spacing", "Diagonal strokes (vv) were touching"
+        yield (
+            FAIL,
+            Message(
+                "bad-diagonal-diagonal-spacing", "Diagonal strokes (vv) were touching"
+            ),
         )
 
 
@@ -262,7 +289,8 @@ def com_google_fonts_check_iso15008_intercharacter_spacing(font, ttFont):
         To ensure legibility of this font on in-car information systems,
         it is recommended that the space character should have advance width
         between 250% and 300% of the space between the letters l and m.
-    """ + DISCLAIMER,
+    """
+    + DISCLAIMER,
     proposal=[
         "https://github.com/googlefonts/fontbakery/issues/1832",
         "https://github.com/googlefonts/fontbakery/issues/3253",
@@ -272,9 +300,12 @@ def com_google_fonts_check_iso15008_interword_spacing(font, ttFont):
     """Check if spacing between words is adequate for display use"""
     l_intersections = xheight_intersections(ttFont, "l")
     if len(l_intersections) < 2:
-        yield FAIL, Message(
-            "glyph-not-present",
-            "There was no 'l' glyph in the font, so the spacing could not be tested",
+        yield (
+            FAIL,
+            Message(
+                "glyph-not-present",
+                "There was no 'l' glyph in the font, so the spacing could not be tested",
+            ),
         )
         return
 
@@ -299,10 +330,13 @@ def com_google_fonts_check_iso15008_interword_spacing(font, ttFont):
     if 2.50 <= space_width / l_m <= 3.0:
         yield PASS, "Advance width of interword space was adequate"
     else:
-        yield FAIL, Message(
-            "bad-interword-spacing",
-            f"The interword space ({space_width}) was"
-            f" outside the recommended range ({l_m * 2.5}-{l_m * 3.0})",
+        yield (
+            FAIL,
+            Message(
+                "bad-interword-spacing",
+                f"The interword space ({space_width}) was"
+                f" outside the recommended range ({l_m * 2.5}-{l_m * 3.0})",
+            ),
         )
 
 
@@ -316,7 +350,8 @@ def com_google_fonts_check_iso15008_interword_spacing(font, ttFont):
         it is recommended that the vertical metrics be set to a minimum
         at least one stem width between the bottom of the descender
         and the top of the ascender.
-    """ + DISCLAIMER,
+    """
+    + DISCLAIMER,
     proposal=[
         "https://github.com/googlefonts/fontbakery/issues/1832",
         "https://github.com/googlefonts/fontbakery/issues/3254",
@@ -326,10 +361,13 @@ def com_google_fonts_check_iso15008_interline_spacing(ttFont):
     """Check if spacing between lines is adequate for display use"""
     glyphset = ttFont.getGlyphSet()
     if "h" not in glyphset or "g" not in glyphset:
-        yield FAIL, Message(
-            "glyph-not-present",
-            "There was no 'g'/'h' glyph in the font,"
-            " so the spacing could not be tested",
+        yield (
+            FAIL,
+            Message(
+                "glyph-not-present",
+                "There was no 'g'/'h' glyph in the font,"
+                " so the spacing could not be tested",
+            ),
         )
         return
 
@@ -351,10 +389,13 @@ def com_google_fonts_check_iso15008_interline_spacing(ttFont):
         yield FAIL, Message("no-stem-width", "Could not determine stem width")
         return
     if linegap < width:
-        yield FAIL, Message(
-            "bad-interline-spacing",
-            f"The interline space {linegap} should"
-            f" be more than the stem width {width}",
+        yield (
+            FAIL,
+            Message(
+                "bad-interline-spacing",
+                f"The interline space {linegap} should"
+                f" be more than the stem width {width}",
+            ),
         )
         return
     yield PASS, "Amount of interline space was adequate"

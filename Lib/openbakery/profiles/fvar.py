@@ -31,11 +31,14 @@ def com_google_fonts_check_varfont_regular_wght_coord(ttFont, regular_wght_coord
     elif regular_wght_coord == 400:
         yield PASS, "Regular:wght is 400."
     else:
-        yield FAIL, Message(
-            "wght-not-400",
-            f'The "wght" axis coordinate of'
-            f' the "Regular" instance must be 400.'
-            f" Got {regular_wght_coord} instead.",
+        yield (
+            FAIL,
+            Message(
+                "wght-not-400",
+                f'The "wght" axis coordinate of'
+                f' the "Regular" instance must be 400.'
+                f" Got {regular_wght_coord} instead.",
+            ),
         )
 
 
@@ -63,11 +66,14 @@ def com_google_fonts_check_varfont_regular_wdth_coord(ttFont, regular_wdth_coord
     elif regular_wdth_coord == 100:
         yield PASS, "Regular:wdth is 100."
     else:
-        yield FAIL, Message(
-            "wdth-not-100",
-            f'The "wdth" axis coordinate of'
-            f' the "Regular" instance must be 100.'
-            f" Got {regular_wdth_coord} as a default value instead.",
+        yield (
+            FAIL,
+            Message(
+                "wdth-not-100",
+                f'The "wdth" axis coordinate of'
+                f' the "Regular" instance must be 100.'
+                f" Got {regular_wdth_coord} as a default value instead.",
+            ),
         )
 
 
@@ -95,11 +101,14 @@ def com_google_fonts_check_varfont_regular_slnt_coord(ttFont, regular_slnt_coord
     elif regular_slnt_coord == 0:
         yield PASS, "Regular:slnt is zero."
     else:
-        yield FAIL, Message(
-            "slnt-not-0",
-            f'The "slnt" axis coordinate of'
-            f' the "Regular" instance must be zero.'
-            f" Got {regular_slnt_coord} as a default value instead.",
+        yield (
+            FAIL,
+            Message(
+                "slnt-not-0",
+                f'The "slnt" axis coordinate of'
+                f' the "Regular" instance must be zero.'
+                f" Got {regular_slnt_coord} as a default value instead.",
+            ),
         )
 
 
@@ -127,11 +136,14 @@ def com_google_fonts_check_varfont_regular_ital_coord(ttFont, regular_ital_coord
     elif regular_ital_coord == 0:
         yield PASS, "Regular:ital is zero."
     else:
-        yield FAIL, Message(
-            "ital-not-0",
-            f'The "ital" axis coordinate of'
-            f' the "Regular" instance must be zero.'
-            f" Got {regular_ital_coord} as a default value instead.",
+        yield (
+            FAIL,
+            Message(
+                "ital-not-0",
+                f'The "ital" axis coordinate of'
+                f' the "Regular" instance must be zero.'
+                f" Got {regular_ital_coord} as a default value instead.",
+            ),
         )
 
 
@@ -160,12 +172,15 @@ def com_google_fonts_check_varfont_regular_opsz_coord(ttFont, regular_opsz_coord
     elif regular_opsz_coord >= 10 and regular_opsz_coord <= 16:
         yield PASS, f"Regular:opsz coordinate ({regular_opsz_coord}) looks good."
     else:
-        yield WARN, Message(
-            "opsz-out-of-range",
-            f'The "opsz" (Optical Size) coordinate'
-            f' on the "Regular" instance is recommended'
-            f" to be a value in the range 10 to 16."
-            f" Got {regular_opsz_coord} instead.",
+        yield (
+            WARN,
+            Message(
+                "opsz-out-of-range",
+                f'The "opsz" (Optical Size) coordinate'
+                f' on the "Regular" instance is recommended'
+                f" to be a value in the range 10 to 16."
+                f" Got {regular_opsz_coord} instead.",
+            ),
         )
 
 
@@ -196,11 +211,14 @@ def com_google_fonts_check_varfont_bold_wght_coord(ttFont, bold_wght_coord):
     elif bold_wght_coord == 700:
         yield PASS, "Bold:wght is 700."
     else:
-        yield FAIL, Message(
-            "wght-not-700",
-            f'The "wght" axis coordinate of'
-            f' the "Bold" instance must be 700.'
-            f" Got {bold_wght_coord} instead.",
+        yield (
+            FAIL,
+            Message(
+                "wght-not-700",
+                f'The "wght" axis coordinate of'
+                f' the "Bold" instance must be 700.'
+                f" Got {bold_wght_coord} instead.",
+            ),
         )
 
 
@@ -226,10 +244,13 @@ def com_google_fonts_check_varfont_wght_valid_range(ttFont):
             value = instance.coordinates["wght"]
             if value < 1 or value > 1000:
                 passed = False
-                yield FAIL, Message(
-                    "wght-out-of-range",
-                    f'Found a bad "wght" coordinate with value {value}'
-                    f" outside of the valid range from 1 to 1000.",
+                yield (
+                    FAIL,
+                    Message(
+                        "wght-out-of-range",
+                        f'Found a bad "wght" coordinate with value {value}'
+                        f" outside of the valid range from 1 to 1000.",
+                    ),
                 )
                 break
 
@@ -260,17 +281,23 @@ def com_google_fonts_check_varfont_wdth_valid_range(ttFont):
             value = instance.coordinates["wdth"]
             if value < 1:
                 passed = False
-                yield FAIL, Message(
-                    "wdth-out-of-range",
-                    f'Found a bad "wdth" coordinate with value {value}'
-                    f" outside of the valid range (> 0).",
+                yield (
+                    FAIL,
+                    Message(
+                        "wdth-out-of-range",
+                        f'Found a bad "wdth" coordinate with value {value}'
+                        f" outside of the valid range (> 0).",
+                    ),
                 )
                 break
             if value > 1000:
-                yield WARN, Message(
-                    "wdth-greater-than-1000",
-                    f'Found a "wdth" coordinate with value {value}'
-                    f" which is valid but unusual.",
+                yield (
+                    WARN,
+                    Message(
+                        "wdth-greater-than-1000",
+                        f'Found a "wdth" coordinate with value {value}'
+                        f" which is valid but unusual.",
+                    ),
                 )
                 break
 
@@ -299,15 +326,18 @@ def com_google_fonts_check_varfont_slnt_range(ttFont, slnt_axis):
     if slnt_axis.minValue < 0 and slnt_axis.maxValue >= 0:
         yield PASS, "Looks good!"
     else:
-        yield WARN, Message(
-            "unusual-slnt-range",
-            f'The range of values for the "slnt" axis in'
-            f" this font only allows positive coordinates"
-            f" (from {slnt_axis.minValue} to {slnt_axis.maxValue}),"
-            f" indicating that this may be a back slanted design,"
-            f" which is rare. If that's not the case, then"
-            f' the "slant" axis should be a range of'
-            f" negative values instead.",
+        yield (
+            WARN,
+            Message(
+                "unusual-slnt-range",
+                f'The range of values for the "slnt" axis in'
+                f" this font only allows positive coordinates"
+                f" (from {slnt_axis.minValue} to {slnt_axis.maxValue}),"
+                f" indicating that this may be a back slanted design,"
+                f" which is rare. If that's not the case, then"
+                f' the "slant" axis should be a range of'
+                f" negative values instead.",
+            ),
         )
 
 
@@ -341,10 +371,13 @@ def com_adobe_fonts_check_varfont_valid_axis_nameid(ttFont, has_name_table):
     for nameid in invalid_axis_nameids:
         inst_name = name_table.getDebugName(nameid) or "Unnamed"
 
-        yield FAIL, Message(
-            f"invalid-axis-nameid:{nameid}",
-            f"{inst_name!r} instance has an axisNameID value that"
-            " is not greater than 255 and less than 32768.",
+        yield (
+            FAIL,
+            Message(
+                f"invalid-axis-nameid:{nameid}",
+                f"{inst_name!r} instance has an axisNameID value that"
+                " is not greater than 255 and less than 32768.",
+            ),
         )
         passed = False
 
@@ -388,10 +421,13 @@ def com_adobe_fonts_check_varfont_valid_subfamily_nameid(ttFont, has_name_table)
     for nameid in invalid_subfam_nameids:
         inst_name = name_table.getDebugName(nameid) or "Unnamed"
 
-        yield FAIL, Message(
-            f"invalid-subfamily-nameid:{nameid}",
-            f"{inst_name!r} instance has a subfamilyNameID value that"
-            " is neither 2, 17, or greater than 255 and less than 32768.",
+        yield (
+            FAIL,
+            Message(
+                f"invalid-subfamily-nameid:{nameid}",
+                f"{inst_name!r} instance has a subfamilyNameID value that"
+                " is neither 2, 17, or greater than 255 and less than 32768.",
+            ),
         )
         passed = False
 
@@ -437,10 +473,13 @@ def com_adobe_fonts_check_varfont_valid_postscript_nameid(ttFont, has_name_table
     for nameid in invalid_postscript_nameids:
         inst_name = name_table.getDebugName(nameid) or "Unnamed"
 
-        yield FAIL, Message(
-            f"invalid-postscript-nameid:{nameid}",
-            f"{inst_name!r} instance has a postScriptNameID value that"
-            " is neither 6, 0xFFFF, or greater than 255 and less than 32768.",
+        yield (
+            FAIL,
+            Message(
+                f"invalid-postscript-nameid:{nameid}",
+                f"{inst_name!r} instance has a postScriptNameID value that"
+                " is neither 6, 0xFFFF, or greater than 255 and less than 32768.",
+            ),
         )
         passed = False
 
@@ -487,13 +526,16 @@ def com_adobe_fonts_check_varfont_valid_instance_postscript_name(
             )
 
     if bad_psnames_count := len(bad_psname_msg_arr):
-        yield FAIL, Message(
-            "bad-instance-psname-characters",
-            f"The following VF instance PostScript "
-            f"name{'s' if bad_psnames_count != 1 else ''} at the "
-            f"specified coordinates contain{'s' if bad_psnames_count == 1 else ''} "
-            f"disallowed characters:\n"
-            f"{''.join(bad_psname_msg_arr)}",
+        yield (
+            FAIL,
+            Message(
+                "bad-instance-psname-characters",
+                f"The following VF instance PostScript "
+                f"name{'s' if bad_psnames_count != 1 else ''} at the "
+                f"specified coordinates contain{'s' if bad_psnames_count == 1 else ''} "
+                f"disallowed characters:\n"
+                f"{''.join(bad_psname_msg_arr)}",
+            ),
         )
     else:
         yield PASS, "All postScriptNameID values are valid."
@@ -560,21 +602,27 @@ def com_adobe_fonts_check_varfont_valid_default_instance_nameids(
                 postscript_nameid = "0xFFFF"
 
             if subfam_name != font_subfam_name:
-                yield FAIL, Message(
-                    "invalid-default-instance-subfamily-name",
-                    f"{subfam_name!r} instance has the same coordinates as the default"
-                    f" instance; its subfamily name should be {font_subfam_name!r}",
+                yield (
+                    FAIL,
+                    Message(
+                        "invalid-default-instance-subfamily-name",
+                        f"{subfam_name!r} instance has the same coordinates as the default"
+                        f" instance; its subfamily name should be {font_subfam_name!r}",
+                    ),
                 )
                 passed = False
 
             # Validate the postScriptNameID string only if
             # at least one instance record includes it
             if font_includes_ps_nameid and postscript_name != name6:
-                yield FAIL, Message(
-                    "invalid-default-instance-postscript-name",
-                    f"{subfam_name!r} instance has the same coordinates as the default"
-                    f" instance; its postscript name should be {name6!r}, instead of"
-                    f" {postscript_name!r}.",
+                yield (
+                    FAIL,
+                    Message(
+                        "invalid-default-instance-postscript-name",
+                        f"{subfam_name!r} instance has the same coordinates as the default"
+                        f" instance; its postscript name should be {name6!r}, instead of"
+                        f" {postscript_name!r}.",
+                    ),
                 )
                 passed = False
 
@@ -657,9 +705,12 @@ def com_adobe_fonts_check_varfont_distinct_instance_records(ttFont, has_name_tab
             if inst_name is None:
                 inst_name = f"Instance #{i}"
 
-            yield WARN, Message(
-                f"repeated-instance-record:{inst_name}",
-                f"{inst_name!r} is a repeated instance record.",
+            yield (
+                WARN,
+                Message(
+                    f"repeated-instance-record:{inst_name}",
+                    f"{inst_name!r} is a repeated instance record.",
+                ),
             )
             passed = False
 
@@ -688,21 +739,27 @@ def com_adobe_fonts_check_varfont_foundry_defined_tag_name(ttFont):
         if axisTag in REGISTERED_AXIS_TAGS:
             continue
         if axisTag.lower() in REGISTERED_AXIS_TAGS:
-            yield WARN, Message(
-                "foundry-defined-similar-registered-name",
-                f'Foundry-defined tag "{axisTag}" is very similar to'
-                f' registered tag "{axisTag.lower()}", consider renaming.\n'
-                f"If this tag was meant to be a registered tag, please"
-                f" use all lowercase letters in the tag name.",
+            yield (
+                WARN,
+                Message(
+                    "foundry-defined-similar-registered-name",
+                    f'Foundry-defined tag "{axisTag}" is very similar to'
+                    f' registered tag "{axisTag.lower()}", consider renaming.\n'
+                    f"If this tag was meant to be a registered tag, please"
+                    f" use all lowercase letters in the tag name.",
+                ),
             )
 
         firstChar = ord(axisTag[0])
         if not (firstChar >= ord("A") and firstChar <= ord("Z")):
             passed = False
-            yield FAIL, Message(
-                "invalid-foundry-defined-tag-first-letter",
-                f'Please fix axis tag "{axisTag}".\n'
-                f"Foundry-defined tags must begin with an uppercase letter.",
+            yield (
+                FAIL,
+                Message(
+                    "invalid-foundry-defined-tag-first-letter",
+                    f'Please fix axis tag "{axisTag}".\n'
+                    f"Foundry-defined tags must begin with an uppercase letter.",
+                ),
             )
 
         for i in range(3):
@@ -712,11 +769,14 @@ def com_adobe_fonts_check_varfont_foundry_defined_tag_name(ttFont):
                 or (char >= ord("A") and char <= ord("Z"))
             ):
                 passed = False
-                yield FAIL, Message(
-                    "invalid-foundry-defined-tag-chars",
-                    f'Please fix axis tag "{axisTag}".\n'
-                    f"Foundry-defined tags must only use"
-                    f" uppercase or digits.",
+                yield (
+                    FAIL,
+                    Message(
+                        "invalid-foundry-defined-tag-chars",
+                        f'Please fix axis tag "{axisTag}".\n'
+                        f"Foundry-defined tags must only use"
+                        f" uppercase or digits.",
+                    ),
                 )
 
     if passed:

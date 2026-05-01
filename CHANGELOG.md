@@ -40,6 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed the `fontval` profile (https://github.com/miguelsousa/openbakery/pull/141).
 - `com.adobe.fonts/check/unsupported_tables`: Added COLR and CPAL tables to SUPPORTED_TABLES, added extra check to fail for COLRv1 (and pass for COLRv0). (https://github.com/miguelsousa/openbakery/pull/205)
 - Removed the `protobuf` dependency, along with all checks that depended on parsing `METADATA.pb` files. This includes the entire `com.google.fonts/check/metadata/*` family of checks (and their related conditions, test fixtures, and `*.proto` schemas) (https://github.com/miguelsousa/openbakery/pull/345).
+- Replaced `black` and `flake8` with `ruff` for code formatting and linting.
 
 ### Fixed
 

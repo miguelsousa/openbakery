@@ -168,13 +168,20 @@ def com_adobe_fonts_check_cff_call_depth(cff_analysis):
     if cff_analysis.glyphs_exceed_max or cff_analysis.glyphs_recursion_errors:
         any_failures = True
         for gn in cff_analysis.glyphs_exceed_max:
-            yield FAIL, Message(
-                "max-depth",
-                f"Subroutine call depth exceeded" f' maximum of 10 for glyph "{gn}".',
+            yield (
+                FAIL,
+                Message(
+                    "max-depth",
+                    f'Subroutine call depth exceeded maximum of 10 for glyph "{gn}".',
+                ),
             )
         for gn in cff_analysis.glyphs_recursion_errors:
-            yield FAIL, Message(
-                "recursion-error", f'Recursion error while decompiling glyph "{gn}".'
+            yield (
+                FAIL,
+                Message(
+                    "recursion-error",
+                    f'Recursion error while decompiling glyph "{gn}".',
+                ),
             )
 
     if not any_failures:
@@ -197,13 +204,20 @@ def com_adobe_fonts_check_cff2_call_depth(cff_analysis):
     if cff_analysis.glyphs_exceed_max or cff_analysis.glyphs_recursion_errors:
         any_failures = True
         for gn in cff_analysis.glyphs_exceed_max:
-            yield FAIL, Message(
-                "max-depth",
-                f"Subroutine call depth exceeded" f' maximum of 10 for glyph "{gn}".',
+            yield (
+                FAIL,
+                Message(
+                    "max-depth",
+                    f'Subroutine call depth exceeded maximum of 10 for glyph "{gn}".',
+                ),
             )
         for gn in cff_analysis.glyphs_recursion_errors:
-            yield FAIL, Message(
-                "recursion-error", f'Recursion error while decompiling glyph "{gn}".'
+            yield (
+                FAIL,
+                Message(
+                    "recursion-error",
+                    f'Recursion error while decompiling glyph "{gn}".',
+                ),
             )
 
     if not any_failures:
@@ -230,15 +244,21 @@ def com_adobe_fonts_check_cff_deprecated_operators(cff_analysis):
     if cff_analysis.glyphs_dotsection or cff_analysis.glyphs_endchar_seac:
         any_failures = True
         for gn in cff_analysis.glyphs_dotsection:
-            yield WARN, Message(
-                "deprecated-operator-dotsection",
-                f'Glyph "{gn}" uses deprecated "dotsection" operator.',
+            yield (
+                WARN,
+                Message(
+                    "deprecated-operator-dotsection",
+                    f'Glyph "{gn}" uses deprecated "dotsection" operator.',
+                ),
             )
         for gn in cff_analysis.glyphs_endchar_seac:
-            yield FAIL, Message(
-                "deprecated-operation-endchar-seac",
-                f'Glyph "{gn}" has deprecated use of "endchar"'
-                f" operator to build accented characters (seac).",
+            yield (
+                FAIL,
+                Message(
+                    "deprecated-operation-endchar-seac",
+                    f'Glyph "{gn}" has deprecated use of "endchar"'
+                    f" operator to build accented characters (seac).",
+                ),
             )
 
     if not any_failures:
@@ -256,10 +276,13 @@ def com_adobe_fonts_check_cff_deprecated_operators(cff_analysis):
 def com_adobe_fonts_check_cff_ascii_strings(cff_analysis):
     """Does the font's CFF table top dict strings fit into the ASCII range?"""
     if cff_analysis.string_not_ascii is None:
-        yield FAIL, Message(
-            "cff-unable-to-decode",
-            "Unable to decode CFF table, possibly due to out "
-            "of ASCII range strings. Please check table strings.",
+        yield (
+            FAIL,
+            Message(
+                "cff-unable-to-decode",
+                "Unable to decode CFF table, possibly due to out "
+                "of ASCII range strings. Please check table strings.",
+            ),
         )
     elif cff_analysis.string_not_ascii:
         detailed_info = ""
@@ -268,10 +291,13 @@ def com_adobe_fonts_check_cff_ascii_strings(cff_analysis):
                 f"\n\n\t - {key}: {string.encode('latin-1').decode('utf-8')}"
             )
 
-        yield FAIL, Message(
-            "cff-string-not-in-ascii-range",
-            f"The following CFF TopDict strings "
-            f"are not in the ASCII range: {detailed_info}",
+        yield (
+            FAIL,
+            Message(
+                "cff-string-not-in-ascii-range",
+                f"The following CFF TopDict strings "
+                f"are not in the ASCII range: {detailed_info}",
+            ),
         )
 
     else:

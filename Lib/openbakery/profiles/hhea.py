@@ -28,15 +28,19 @@ def com_google_fonts_check_maxadvancewidth(ttFont):
             hmtx_advance_width_max = max(g[0], hmtx_advance_width_max)
 
     if hmtx_advance_width_max != hhea_advance_width_max:
-        yield FAIL, Message(
-            "mismatch",
-            f"AdvanceWidthMax mismatch:"
-            f" expected {hmtx_advance_width_max} (from hmtx);"
-            f" got {hhea_advance_width_max} (from hhea)",
+        yield (
+            FAIL,
+            Message(
+                "mismatch",
+                f"AdvanceWidthMax mismatch:"
+                f" expected {hmtx_advance_width_max} (from hmtx);"
+                f" got {hhea_advance_width_max} (from hhea)",
+            ),
         )
     else:
-        yield PASS, (
-            "MaxAdvanceWidth is consistent with values in the Hmtx and Hhea tables."
+        yield (
+            PASS,
+            ("MaxAdvanceWidth is consistent with values in the Hmtx and Hhea tables."),
         )
 
 
@@ -69,9 +73,12 @@ def com_google_fonts_check_caret_slope(ttFont):
     run = ttFont["hhea"].caretSlopeRun
     rise = ttFont["hhea"].caretSlopeRise
     if rise == 0:
-        yield FAIL, Message(
-            "zero-rise",
-            "caretSlopeRise must not be zero. Set it to 1 for upright fonts.",
+        yield (
+            FAIL,
+            Message(
+                "zero-rise",
+                "caretSlopeRise must not be zero. Set it to 1 for upright fonts.",
+            ),
         )
         return
     hheaItalicAngle = math.degrees(math.atan(-run / rise))
@@ -83,16 +90,20 @@ def com_google_fonts_check_caret_slope(ttFont):
 
     print(postItalicAngle, hheaItalicAngle)
     if abs(postItalicAngle - hheaItalicAngle) > 0.1:
-        yield FAIL, Message(
-            "caretslope-mismatch",
-            "hhea.caretSlopeRise and hhea.caretSlopeRun"
-            " do not match with post.italicAngle.\n"
-            f"Got: caretSlopeRise {ttFont['hhea'].caretSlopeRise}"
-            f" and caretSlopeRun {ttFont['hhea'].caretSlopeRun}\n"
-            f"Expected: caretSlopeRise {expectedCaretSlopeRise}"
-            f" and caretSlopeRun {expectedCaretSlopeRun}",
+        yield (
+            FAIL,
+            Message(
+                "caretslope-mismatch",
+                "hhea.caretSlopeRise and hhea.caretSlopeRun"
+                " do not match with post.italicAngle.\n"
+                f"Got: caretSlopeRise {ttFont['hhea'].caretSlopeRise}"
+                f" and caretSlopeRun {ttFont['hhea'].caretSlopeRun}\n"
+                f"Expected: caretSlopeRise {expectedCaretSlopeRise}"
+                f" and caretSlopeRun {expectedCaretSlopeRun}",
+            ),
         )
     else:
-        yield PASS, (
-            "hhea.caretSlopeRise and hhea.caretSlopeRun match with post.italicAngle."
+        yield (
+            PASS,
+            ("hhea.caretSlopeRise and hhea.caretSlopeRun match with post.italicAngle."),
         )
