@@ -1,4 +1,4 @@
 pylint==4.0.5
-pytest-cov==7.0.0
+pytest-cov==7.1.0
 pytest-xdist
 ruff==0.15.12
