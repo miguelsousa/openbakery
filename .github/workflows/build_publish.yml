@@ -70,7 +70,7 @@ jobs:
       uses: pypa/gh-action-pypi-publish@v1.14.0
 
     - name: Create GitHub Release
-      uses: softprops/action-gh-release@v2.5.0
+      uses: softprops/action-gh-release@v2.6.2
       with:
         body: '[Release Notes](https://github.com/miguelsousa/openbakery/blob/main/CHANGELOG.md#${{ steps.date_tag.outputs.VERSION }}---${{ steps.date_tag.outputs.TODAY }})'
         prerelease: true
