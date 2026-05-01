@@ -100,10 +100,8 @@ class CheckTester:
 
     def __call__(self, values, condition_overrides=None):
         from fontTools.ttLib import TTFont
-        from openbakery.profiles.googlefonts_conditions import family_metadata
         from glyphsLib import GSFont
         from pathlib import Path
-        import os
 
         if isinstance(values, str):
             if values.endswith("README.md"):
@@ -112,16 +110,6 @@ class CheckTester:
                 values = {"ufo": values}
             elif values.endswith(".designspace"):
                 values = {"designspace": values}
-            elif values.endswith("METADATA.pb"):
-                fonts = [
-                    os.path.join(os.path.dirname(values), f.filename)
-                    for f in family_metadata(values).fonts
-                ]
-                values = {
-                    "metadata_pb": values,
-                    "font": fonts[0],  # FIXME!
-                    "fonts": fonts,
-                }
             else:
                 values = {"font": values, "fonts": [values], "ufo": values}
         elif isinstance(values, Path):

@@ -9,7 +9,6 @@ from openbakery.constants import (
     UnicodeEncodingID,
     WindowsLanguageID,
 )
-from openbakery.utils import exit_with_install_instructions
 
 # used to inform get_module_profile whether and how to create a profile
 from openbakery.fonts_profile import profile_factory  # noqa:F401 pylint:disable=W0611
@@ -162,48 +161,14 @@ def readme_contents(readme_md):
 
 
 @condition
-def metadata_file(family_directory, metadata_pb=None):
-    if metadata_pb:
-        if isinstance(metadata_pb, list):
-            metadata_pb = metadata_pb[0]  # quirk
-
-        return metadata_pb
-
-    elif family_directory:
-        pb_file = os.path.join(family_directory, "METADATA.pb")
-        if os.path.exists(pb_file):
-            return pb_file
-
-
-@condition
-def family_metadata(metadata_file):
-    if not metadata_file:
-        return
-
-    try:
-        from google.protobuf import text_format
-    except ImportError:
-        exit_with_install_instructions("googlefonts")
-
-    from openbakery.utils import get_FamilyProto_Message
-
-    try:
-        return get_FamilyProto_Message(metadata_file)
-    except text_format.ParseError:
-        return None
-
-
-@condition
 def registered_vendor_ids():
     """Get a list of vendor IDs from Microsoft's website."""
     from bs4 import BeautifulSoup
-    from pkg_resources import resource_filename
+    from importlib.resources import files
 
     registered_vendor_ids = {}
-    CACHED = resource_filename(
-        "openbakery", "data/openbakery-microsoft-vendorlist.cache"
-    )
-    content = open(CACHED, encoding="utf-8").read()
+    CACHED = files("openbakery").joinpath("data/openbakery-microsoft-vendorlist.cache")
+    content = CACHED.read_text(encoding="utf-8")
     # Strip all <A> HTML tags from the raw HTML. The current page contains a
     # closing </A> for which no opening <A> is present, which causes
     # beautifulsoup to silently stop processing that section from the error
@@ -398,25 +363,6 @@ def listed_on_gfonts_api(familyname, config):
 
 
 @condition
-def has_regular_style(family_metadata):
-    fonts = family_metadata.fonts if family_metadata else []
-    for f in fonts:
-        if f.weight == 400 and f.style == "normal":
-            return True
-    return False
-
-
-@condition
-def font_metadata(family_metadata, font):
-    if not family_metadata:
-        return
-
-    for f in family_metadata.fonts:
-        if font.endswith(f.filename):
-            return f
-
-
-@condition
 def font_familynames(ttFont):
     from openbakery.utils import get_name_entry_strings
 
@@ -447,11 +393,11 @@ def rfn_exception(familyname):
     been published previously with an RFN, or fonts which benefit from
     an agreement with Google Fonts.
     """
-    from pkg_resources import resource_filename
+    from importlib.resources import files
 
     rfn_exceptions_txt = "data/googlefonts/reserved_font_name_exceptions.txt"
-    filename = resource_filename("openbakery", rfn_exceptions_txt)
-    for exception in open(filename, "r", encoding="utf-8").readlines():
+    text = files("openbakery").joinpath(rfn_exceptions_txt).read_text(encoding="utf-8")
+    for exception in text.splitlines():
         exception = exception.split("#")[0].strip()
         exception = exception.replace(" ", "")
         if exception == "":

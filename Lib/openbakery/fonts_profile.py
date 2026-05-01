@@ -50,12 +50,6 @@ class FontsProfile(Profile):
             extensions=["README.md"],
             description="Project's README markdown file",
         ),
-        FileDescription(
-            name="metadata_pb",
-            singular="metadata_pb",
-            extensions=["METADATA.pb"],
-            description="Project's METADATA protobuf file",
-        ),
     ]
 
     def setup_argparse(self, argument_parser):

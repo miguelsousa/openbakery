@@ -39,6 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `com.adobe.fonts/check/postscript_name_characters`: Added underscore (`_` U+005F) to the set of characters allowed in PostScript name strings (https://github.com/miguelsousa/openbakery/pull/90).
 - Removed the `fontval` profile (https://github.com/miguelsousa/openbakery/pull/141).
 - `com.adobe.fonts/check/unsupported_tables`: Added COLR and CPAL tables to SUPPORTED_TABLES, added extra check to fail for COLRv1 (and pass for COLRv0). (https://github.com/miguelsousa/openbakery/pull/205)
+- Removed the `protobuf` dependency, along with all checks that depended on parsing `METADATA.pb` files. This includes the entire `com.google.fonts/check/metadata/*` family of checks (and their related conditions, test fixtures, and `*.proto` schemas) (https://github.com/miguelsousa/openbakery/pull/345).
 
 ### Fixed
 
@@ -50,6 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `com.google.fonts/check/layout_valid_feature_tags`: Updated the check to allow valid private-use feature tags (https://github.com/miguelsousa/openbakery/pull/101).
 - Implemented several fixes to enable support for Symbol-encoded fonts (https://github.com/miguelsousa/openbakery/pull/249).
 - `com.adobe.fonts/check/freetype_rasterizer`: Fixed crash that happens when the font file path is a `pathlib.Path` object; `freetype-py` only supports `str` paths (https://github.com/miguelsousa/openbakery/pull/251).
+- Replaced deprecated `pkg_resources` with `importlib.resources`. The `vendor_id`, `reserved_font_name`, and `name/family_name_compliance` checks would fail on Python 3.12 with `ModuleNotFoundError: No module named 'pkg_resources'` when `setuptools` was not installed in the environment (https://github.com/miguelsousa/openbakery/pull/345).
 
 ## [0.1.0] - 2023-06-11
 

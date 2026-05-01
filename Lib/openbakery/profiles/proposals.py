@@ -6,7 +6,7 @@ to one of the other profiles (either universal, or a vendor-specific one).
 
 from openbakery.callable import check
 from openbakery.section import Section
-from openbakery.status import INFO, PASS, FAIL  # WARN
+from openbakery.status import INFO
 from openbakery.fonts_profile import profile_factory
 from openbakery.message import Message
 
@@ -59,30 +59,6 @@ def com_google_fonts_check_mandatory_name_entries(ttFont):
     """Mandatory name table entries (other than font names)"""
 
     yield INFO, Message("stub", "This proposed check was not yet implemented!\n")
-
-
-@check(
-    suggested_profile="googlefonts",
-    proponent="Rosalie Wagner (@RosaWagner)",
-    id="com.google.fonts/check/metadata/empty_designer",
-    rationale="""
-        Any font published on Google Fonts must credit one or several authors,
-        foundry and/or individuals.
-
-        Ideally, all authors listed in the upstream repository's AUTHORS.txt should
-        be mentioned in the designer field.
-    """,
-    proposal="https://github.com/googlefonts/fontbakery/issues/3961",
-)
-def com_google_fonts_check_metadata_empty_designer(family_metadata):
-    """At least one designer is declared in METADATA.pb"""
-
-    if family_metadata.designer.strip() == "":
-        yield FAIL, Message("empty-designer", "Font designer field is empty.")
-    # TODO: Parse AUTHORS.txt and WARN if names do not match
-    # (and then maybe rename the check-id)
-    else:
-        yield PASS, "Font designer field is not empty."
 
 
 profile.auto_register(globals())
