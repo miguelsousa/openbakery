@@ -87,7 +87,7 @@ class CheckRunner:
         valid, message = self._profile.validate_values(values)
         if not valid:
             raise ValueValidationError(
-                f"Validation of expected values failed:\n" f"{message}"
+                f"Validation of expected values failed:\n{message}"
             )
         self._values = values
 
@@ -196,7 +196,7 @@ class CheckRunner:
             path = []
         if name in path:
             dependencies = " -> ".join(path)
-            msg = f'Condition "{name}" is' f" a circular dependency in {dependencies}"
+            msg = f'Condition "{name}" is a circular dependency in {dependencies}'
             raise CircularDependencyError(msg)
 
         path.append(name)
@@ -461,10 +461,13 @@ class CheckRunner:
         elif summary_status < PASS:
             summary_status = ERROR
             # got to yield it,so we can see it in the report
-            yield ERROR, (
-                f"The most significant status of {check}"
-                f" was only {summary_status} but"
-                f" the minimum is {PASS}"
+            yield (
+                ERROR,
+                (
+                    f"The most significant status of {check}"
+                    f" was only {summary_status} but"
+                    f" the minimum is {PASS}"
+                ),
             )
 
         yield ENDCHECK, summary_status

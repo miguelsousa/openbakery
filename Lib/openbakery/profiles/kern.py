@@ -53,24 +53,33 @@ def com_google_fonts_check_kern_table(ttFont):
                     if rightGlyph not in characterGlyphs:
                         nonCharacterGlyphs.add(rightGlyph)
         if all(kernTable.format != 0 for kernTable in kern.kernTables):
-            yield WARN, Message(
-                "kern-unknown-format",
-                'The "kern" table does not have any format-0 subtable '
-                "and will not work in a few programs that may require "
-                "the table.",
+            yield (
+                WARN,
+                Message(
+                    "kern-unknown-format",
+                    'The "kern" table does not have any format-0 subtable '
+                    "and will not work in a few programs that may require "
+                    "the table.",
+                ),
             )
         elif nonCharacterGlyphs:
-            yield FAIL, Message(
-                "kern-non-character-glyphs",
-                'The following glyphs should not be used in the "kern" '
-                'table because they are not in the "cmap" table: %s'
-                % ", ".join(sorted(nonCharacterGlyphs)),
+            yield (
+                FAIL,
+                Message(
+                    "kern-non-character-glyphs",
+                    'The following glyphs should not be used in the "kern" '
+                    'table because they are not in the "cmap" table: %s'
+                    % ", ".join(sorted(nonCharacterGlyphs)),
+                ),
             )
         else:
-            yield INFO, Message(
-                "kern-found",
-                "Only a few programs may require the kerning"
-                ' info that this font provides on its "kern" table.',
+            yield (
+                INFO,
+                Message(
+                    "kern-found",
+                    "Only a few programs may require the kerning"
+                    ' info that this font provides on its "kern" table.',
+                ),
             )
     else:
         yield PASS, 'Font does not declare an optional "kern" table.'

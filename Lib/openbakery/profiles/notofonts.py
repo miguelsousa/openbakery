@@ -201,11 +201,14 @@ def com_google_fonts_check_cmap_unexpected_subtables(
             subtable.platEncID,
         ) not in EXPECTED_SUBTABLES:
             passed = False
-            yield WARN, Message(
-                "unexpected-subtable",
-                f"'cmap' has a subtable of"
-                f" (format={subtable.format}, platform={subtable.platformID},"
-                f" encoding={subtable.platEncID}), which it shouldn't have.",
+            yield (
+                WARN,
+                Message(
+                    "unexpected-subtable",
+                    f"'cmap' has a subtable of"
+                    f" (format={subtable.format}, platform={subtable.platformID},"
+                    f" encoding={subtable.platEncID}), which it shouldn't have.",
+                ),
             )
     if passed:
         yield PASS, "All cmap subtables look good!"
@@ -248,11 +251,14 @@ def com_google_fonts_check_unicode_range_bits(ttFont, unicoderange, preferred_cm
                 if num_chars == 0:
                     set_unset = "0"
                     num_chars = "none"
-                yield WARN, Message(
-                    "bad-range-bit",
-                    f'UnicodeRange bit {bit} "{range_name}" should be'
-                    f" {set_unset} because cmap has {num_chars} of"
-                    f" the {range_size} codepoints in this range.",
+                yield (
+                    WARN,
+                    Message(
+                        "bad-range-bit",
+                        f'UnicodeRange bit {bit} "{range_name}" should be'
+                        f" {set_unset} because cmap has {num_chars} of"
+                        f" the {range_size} codepoints in this range.",
+                    ),
                 )
 
 
@@ -273,8 +279,9 @@ def com_google_fonts_check_noto_manufacturer(ttFont):
     good_manufacturer = None
     if not manufacturers:
         bad = True
-        yield FAIL, Message(
-            "no-manufacturer", "The font contained no manufacturer name"
+        yield (
+            FAIL,
+            Message("no-manufacturer", "The font contained no manufacturer name"),
         )
 
     manufacturer_re = "|".join(MANUFACTURERS_URLS.keys())
@@ -284,10 +291,13 @@ def com_google_fonts_check_noto_manufacturer(ttFont):
             good_manufacturer = m[0]
         else:
             bad = True
-            yield WARN, Message(
-                "unknown-manufacturer",
-                f"The font's manufacturer name '{manufacturer}' was"
-                f" not a known Noto font manufacturer",
+            yield (
+                WARN,
+                Message(
+                    "unknown-manufacturer",
+                    f"The font's manufacturer name '{manufacturer}' was"
+                    f" not a known Noto font manufacturer",
+                ),
             )
 
     designer_urls = get_name_entry_strings(ttFont, NameID.DESIGNER_URL)
@@ -298,10 +308,13 @@ def com_google_fonts_check_noto_manufacturer(ttFont):
         expected_url = MANUFACTURERS_URLS[good_manufacturer]
         for designer_url in designer_urls:
             if designer_url != expected_url:
-                yield WARN, Message(
-                    "bad-designer-url",
-                    f"The font's designer URL was '{designer_url}'"
-                    f" but should have been '{expected_url}'",
+                yield (
+                    WARN,
+                    Message(
+                        "bad-designer-url",
+                        f"The font's designer URL was '{designer_url}'"
+                        f" but should have been '{expected_url}'",
+                    ),
                 )
     if not bad:
         yield PASS, "The manufacturer name and designer URL entries were valid"
@@ -327,10 +340,13 @@ def com_google_fonts_check_noto_designer(ttFont):
     for designer in designers:
         if designer not in NOTO_DESIGNERS:
             bad = True
-            yield WARN, Message(
-                "unknown-designer",
-                f"The font's designer name '{designer}' was "
-                "not a known Noto font designer",
+            yield (
+                WARN,
+                Message(
+                    "unknown-designer",
+                    f"The font's designer name '{designer}' was "
+                    "not a known Noto font designer",
+                ),
             )
     if not bad:
         yield PASS, "The designer name entry was valid"
@@ -355,10 +371,13 @@ def com_google_fonts_check_noto_trademark(ttFont):
     for trademark in trademarks:
         if not re.match(TRADEMARK, trademark):
             bad = True
-            yield FAIL, Message(
-                "bad-trademark",
-                f"The trademark entry should be '{TRADEMARK}' "
-                f"but was actually '{trademark}'",
+            yield (
+                FAIL,
+                Message(
+                    "bad-trademark",
+                    f"The trademark entry should be '{TRADEMARK}' "
+                    f"but was actually '{trademark}'",
+                ),
             )
 
     if not bad:
@@ -386,8 +405,9 @@ def com_google_fonts_check_cmap_format_12(ttFont, config):
             break
 
     if not cmap4:
-        yield FAIL, Message(
-            "no-cmap-4", "The font did not contain a format 4 cmap table"
+        yield (
+            FAIL,
+            Message("no-cmap-4", "The font did not contain a format 4 cmap table"),
         )
         return
 
@@ -398,20 +418,26 @@ def com_google_fonts_check_cmap_format_12(ttFont, config):
         codepoints = subtable.cmap.keys()
         if not any(cp > 0x0FFF for cp in codepoints):
             bad = True
-            yield FAIL, Message(
-                "pointless-format-12",
-                "A format 12 subtable did not contain"
-                " any codepoints beyond the Basic Multilingual Plane (BMP)",
+            yield (
+                FAIL,
+                Message(
+                    "pointless-format-12",
+                    "A format 12 subtable did not contain"
+                    " any codepoints beyond the Basic Multilingual Plane (BMP)",
+                ),
             )
         unmapped_from_4 = set(cmap4.cmap.keys()) - set(codepoints)
         if unmapped_from_4:
             from openbakery.utils import pretty_print_list
 
-            yield WARN, Message(
-                "unmapped-from-4",
-                f"A format 12 subtable did not the following codepoints"
-                f" mapped in the format 4 subtable:"
-                f" {pretty_print_list(config, unmapped_from_4)}",
+            yield (
+                WARN,
+                Message(
+                    "unmapped-from-4",
+                    f"A format 12 subtable did not the following codepoints"
+                    f" mapped in the format 4 subtable:"
+                    f" {pretty_print_list(config, unmapped_from_4)}",
+                ),
             )
 
     if skipped:
@@ -432,8 +458,12 @@ def com_google_fonts_check_os2_noto_vendor(ttFont):
 
     vendor_id = ttFont["OS/2"].achVendID
     if vendor_id != "GOOG":
-        yield FAIL, Message(
-            "bad-vendor-id", f"OS/2 VendorID is '{vendor_id}', but should be 'GOOG'."
+        yield (
+            FAIL,
+            Message(
+                "bad-vendor-id",
+                f"OS/2 VendorID is '{vendor_id}', but should be 'GOOG'.",
+            ),
         )
     else:
         yield PASS, f"OS/2 VendorID '{vendor_id}' is correct."
@@ -461,10 +491,13 @@ def com_google_fonts_check_htmx_encoded_latin_digits(ttFont):
             yield FAIL, Message("missing-digit", f"Missing Latin digit {d}")
         elif actual_width != zero_width:
             bad = True
-            yield FAIL, Message(
-                "bad-digit-width",
-                f"Width of {d} was expected to be "
-                f"{zero_width} but was {actual_width}",
+            yield (
+                FAIL,
+                Message(
+                    "bad-digit-width",
+                    f"Width of {d} was expected to be "
+                    f"{zero_width} but was {actual_width}",
+                ),
             )
     if not bad:
         yield PASS, "All Latin digits had same advance width"
@@ -484,9 +517,12 @@ def com_google_fonts_check_htmx_comma_period(ttFont):
     if comma is None or period is None:
         yield SKIP, "No comma and/or period"
     elif comma != period:
-        yield FAIL, Message(
-            "comma-period",
-            f"Advance width of comma ({comma}) != advance width" f" of period {period}",
+        yield (
+            FAIL,
+            Message(
+                "comma-period",
+                f"Advance width of comma ({comma}) != advance width of period {period}",
+            ),
         )
     else:
         yield PASS, "Comma and period had the same advance width"
@@ -545,16 +581,19 @@ def com_google_fonts_check_htmx_whitespace_advances(
         else:
             if got_width != round(expected_width):
                 problems.append(
-                    f"0x{cp:02x} (got={got_width}," f" expected={expected_width}"
+                    f"0x{cp:02x} (got={got_width}, expected={expected_width}"
                 )
 
     if problems:
         from openbakery.utils import pretty_print_list
 
         formatted_list = "\t* " + pretty_print_list(config, problems, sep="\n\t* ")
-        yield FAIL, Message(
-            "bad-whitespace-advances",
-            f"The following glyphs had wrong advance widths:\n" f"{formatted_list}",
+        yield (
+            FAIL,
+            Message(
+                "bad-whitespace-advances",
+                f"The following glyphs had wrong advance widths:\n{formatted_list}",
+            ),
         )
     else:
         yield PASS, "Whitespace glyphs had correct advance widths"
@@ -587,23 +626,29 @@ def com_google_fonts_check_cmap_alien_codepoints(ttFont, config):
     from openbakery.utils import pretty_print_list
 
     if pua:
-        yield FAIL, Message(
-            "pua-encoded",
-            "The following private use area codepoints were"
-            " encoded in the font: " + pretty_print_list(config, pua),
+        yield (
+            FAIL,
+            Message(
+                "pua-encoded",
+                "The following private use area codepoints were"
+                " encoded in the font: " + pretty_print_list(config, pua),
+            ),
         )
     if surrogate:
-        yield FAIL, Message(
-            "surrogate-encoded",
-            "The following surrogate pair codepoints were"
-            " encoded in the font: " + pretty_print_list(config, surrogate),
+        yield (
+            FAIL,
+            Message(
+                "surrogate-encoded",
+                "The following surrogate pair codepoints were"
+                " encoded in the font: " + pretty_print_list(config, surrogate),
+            ),
         )
 
 
 profile.auto_register(
     globals(),
-    filter_func=lambda type, id, _: not (
-        type == "check" and id not in NOTOFONTS_PROFILE_CHECKS
+    filter_func=lambda type, id, _: (
+        not (type == "check" and id not in NOTOFONTS_PROFILE_CHECKS)
     ),
 )
 profile.test_expected_checks(NOTOFONTS_PROFILE_CHECKS, exclusive=True)

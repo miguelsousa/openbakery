@@ -307,9 +307,12 @@ def com_adobe_fonts_check_family_consistent_upm(ttFonts):
     for ttFont in ttFonts:
         upm_set.add(ttFont["head"].unitsPerEm)
     if len(upm_set) > 1:
-        yield FAIL, Message(
-            "inconsistent-upem",
-            f"Fonts have different units per em: {sorted(upm_set)}.",
+        yield (
+            FAIL,
+            Message(
+                "inconsistent-upem",
+                f"Fonts have different units per em: {sorted(upm_set)}.",
+            ),
         )
     else:
         yield PASS, "Fonts have consistent units per em."
@@ -401,10 +404,13 @@ def com_adobe_fonts_check_find_empty_letters(ttFont):
             and (category in letter_categories)
             and (unicode_val not in invisible_letters)
         ):
-            yield FAIL, Message(
-                "empty-letter",
-                f"U+{unicode_val:04X} should be visible, "
-                f"but its glyph ({glyph_name!r}) is empty.",
+            yield (
+                FAIL,
+                Message(
+                    "empty-letter",
+                    f"U+{unicode_val:04X} should be visible, "
+                    f"but its glyph ({glyph_name!r}) is empty.",
+                ),
             )
             passed = False
 
@@ -412,9 +418,12 @@ def com_adobe_fonts_check_find_empty_letters(ttFont):
         yield PASS, "No empty glyphs for letters found."
 
     elif num_blank_hangul_glyphs:
-        yield WARN, Message(
-            "empty-hangul-letter",
-            f"Found {num_blank_hangul_glyphs} empty hangul glyph(s).",
+        yield (
+            WARN,
+            Message(
+                "empty-hangul-letter",
+                f"Found {num_blank_hangul_glyphs} empty hangul glyph(s).",
+            ),
         )
 
 
@@ -481,9 +490,12 @@ def com_adobe_fonts_check_unsupported_tables(ttFont):
 
     if unsupported_tables:
         unsupported_list = "".join(f"* {tag}\n" for tag in unsupported_tables)
-        yield FAIL, Message(
-            "unsupported-tables",
-            f"The following unsupported font tables were found:\n\n{unsupported_list}",
+        yield (
+            FAIL,
+            Message(
+                "unsupported-tables",
+                f"The following unsupported font tables were found:\n\n{unsupported_list}",
+            ),
         )
     else:
         yield PASS, "No unsupported tables were found."
@@ -528,11 +540,14 @@ def com_adobe_fonts_check_STAT_strings(ttFont):
             bad_values.add(f"nameID {name.nameID}: {name.toUnicode()}")
 
     if bad_values:
-        yield FAIL, Message(
-            "bad-italic",
-            f"The following AxisValue entries in the STAT table"
-            f' should not contain "Italic":\n'
-            f" {sorted(bad_values)}",
+        yield (
+            FAIL,
+            Message(
+                "bad-italic",
+                f"The following AxisValue entries in the STAT table"
+                f' should not contain "Italic":\n'
+                f" {sorted(bad_values)}",
+            ),
         )
 
     if passed:
@@ -541,8 +556,9 @@ def com_adobe_fonts_check_STAT_strings(ttFont):
 
 profile.auto_register(
     globals(),
-    filter_func=lambda _, checkid, __: checkid
-    not in SET_IMPORTED_CHECKS - SET_EXPLICIT_CHECKS,
+    filter_func=lambda _, checkid, __: (
+        checkid not in SET_IMPORTED_CHECKS - SET_EXPLICIT_CHECKS
+    ),
 )
 
 
@@ -551,8 +567,7 @@ profile.check_log_override(
     "com.google.fonts/check/whitespace_glyphs",
     overrides=(("missing-whitespace-glyph-0x00A0", WARN, KEEP_ORIGINAL_MESSAGE),),
     reason=(
-        "For Adobe, this is not as severe"
-        " as assessed in the original check for 0x00A0."
+        "For Adobe, this is not as severe as assessed in the original check for 0x00A0."
     ),
 )
 

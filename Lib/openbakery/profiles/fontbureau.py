@@ -35,12 +35,15 @@ def io_github_abysstypeco_check_ytlc_sanity(ttFont):
 
         if axis.minValue < 0 or axis.maxValue > 1000:
             passed = False
-            yield FAIL, Message(
-                "invalid-range",
-                f"The range of ytlc values"
-                f" ({axis.minValue} - {axis.maxValue}) does not conform"
-                f" to the expected range of ytlc which"
-                f" should be min value 0 to max value 1000",
+            yield (
+                FAIL,
+                Message(
+                    "invalid-range",
+                    f"The range of ytlc values"
+                    f" ({axis.minValue} - {axis.maxValue}) does not conform"
+                    f" to the expected range of ytlc which"
+                    f" should be min value 0 to max value 1000",
+                ),
             )
     if passed:
         yield PASS, "ytlc is sane"

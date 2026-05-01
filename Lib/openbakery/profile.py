@@ -230,9 +230,7 @@ class Profile:
     def add_to_namespace(self, ns_type, name, value, force=False):
         if ns_type not in self._valid_namespace_types:
             valid_types = ", ".join(self._valid_namespace_types)
-            raise TypeError(
-                f'Unknow type "{ns_type}"' f" Valid types are: {valid_types}"
-            )
+            raise TypeError(f'Unknow type "{ns_type}" Valid types are: {valid_types}')
 
         if name in self._namespace:
             registered_type = self._namespace[name]
@@ -358,8 +356,7 @@ class Profile:
             if name in seen:
                 names = " -> ".join(path)
                 raise CircularAliasError(
-                    f'Alias for "{original_name}" has'
-                    f" a circular reference in {names}"
+                    f'Alias for "{original_name}" has a circular reference in {names}'
                 )
             seen.add(name)
             path.append(name)
@@ -540,9 +537,9 @@ class Profile:
             else:
                 current_section = None
 
-            assert (
-                current_section not in seen
-            ), f"Scopes are badly sorted. {current_section} in {seen}"
+            assert current_section not in seen, (
+                f"Scopes are badly sorted. {current_section} in {seen}"
+            )
 
             if current_section != last_section:
                 if items:
@@ -672,9 +669,9 @@ class Profile:
         return True
 
     def _unregister_check(self, section, check_id):
-        assert (
-            section == self._check_registry[check_id]
-        ), "Registered section must match"
+        assert section == self._check_registry[check_id], (
+            "Registered section must match"
+        )
         del self._check_registry[check_id]
         return True
 
@@ -1141,15 +1138,21 @@ def check_log_override(check, new_id, overrides, reason=None):
             if overriden:
                 # nothing changed (despite of a match in override rules)
                 if result_status == status and result_message == message:
-                    yield DEBUG, (
-                        "A check status override rule matched but"
-                        " did not change the resulting status."
+                    yield (
+                        DEBUG,
+                        (
+                            "A check status override rule matched but"
+                            " did not change the resulting status."
+                        ),
                     )
                 # Both changed
                 elif result_status != status and result_message != message:
-                    yield DEBUG, (
-                        f"Overridden check status and message,"
-                        f" original: {status} {message}"
+                    yield (
+                        DEBUG,
+                        (
+                            f"Overridden check status and message,"
+                            f" original: {status} {message}"
+                        ),
                     )
                 # Only status changed
                 elif result_status != status and result_message == message:
@@ -1171,7 +1174,7 @@ def check_log_override(check, new_id, overrides, reason=None):
         # ONLY if there's a reason for derivation, otherwise will take
         # the documentation from the __doc__ string of check.
         documentation=(
-            (f"{reason}\n" f"\n" f"{check.documentation}")
+            (f"{reason}\n\n{check.documentation}")
             if reason and check.documentation
             else (reason or check.documentation or None)
         ),
@@ -1180,5 +1183,5 @@ def check_log_override(check, new_id, overrides, reason=None):
     # reconstruct a proper doc string from the changes we made.
     # This is really backwards! But, it's so fundamental how python doc
     # strings work, that I think it's solid enough.
-    new_check.__doc__ = f"{new_check.description}\n" f"\n" f"{new_check.documentation}"
+    new_check.__doc__ = f"{new_check.description}\n\n{new_check.documentation}"
     return new_check

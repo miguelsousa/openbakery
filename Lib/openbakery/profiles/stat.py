@@ -28,10 +28,13 @@ def com_google_fonts_check_varfont_stat_axis_record_for_each_axis(ttFont, config
     stat_axes = set(a.AxisTag for a in ttFont["STAT"].table.DesignAxisRecord.Axis)
     missing_axes = fvar_axes - stat_axes
     if len(missing_axes) > 0:
-        yield FAIL, Message(
-            "missing-axis-records",
-            f"STAT table is missing Axis Records for the following axes:\n\n"
-            f"{bullet_list(config, sorted(missing_axes))}",
+        yield (
+            FAIL,
+            Message(
+                "missing-axis-records",
+                f"STAT table is missing Axis Records for the following axes:\n\n"
+                f"{bullet_list(config, sorted(missing_axes))}",
+            ),
         )
     else:
         yield PASS, "STAT table has all necessary Axis Records."
@@ -63,9 +66,12 @@ def com_adobe_fonts_check_stat_has_axis_value_tables(ttFont, is_variable_font):
     stat_table = ttFont["STAT"].table
 
     if ttFont["STAT"].table.AxisValueCount == 0:
-        yield FAIL, Message(
-            "no-axis-value-tables",
-            "STAT table has no Axis Value tables.",
+        yield (
+            FAIL,
+            Message(
+                "no-axis-value-tables",
+                "STAT table has no Axis Value tables.",
+            ),
         )
         return
 
@@ -96,16 +102,22 @@ def com_adobe_fonts_check_stat_has_axis_value_tables(ttFont, is_variable_font):
                     # against fvar instances.
                     # see https://github.com/googlefonts/fontbakery/issues/3957
                     if axis_value.AxisCount <= 1:
-                        yield FAIL, Message(
-                            "format-4-axis-count",
-                            "STAT Format 4 Axis Value table has axis count <= 1.",
+                        yield (
+                            FAIL,
+                            Message(
+                                "format-4-axis-count",
+                                "STAT Format 4 Axis Value table has axis count <= 1.",
+                            ),
                         )
 
                 else:
                     # FAIL on unknown axis_value_format
-                    yield FAIL, Message(
-                        "unknown-axis-value-format",
-                        f"AxisValue format {axis_value_format} is unknown.",
+                    yield (
+                        FAIL,
+                        Message(
+                            "unknown-axis-value-format",
+                            f"AxisValue format {axis_value_format} is unknown.",
+                        ),
                     )
 
             stat_axes_values[axis_tag] = axis_values
@@ -120,10 +132,13 @@ def com_adobe_fonts_check_stat_has_axis_value_tables(ttFont, is_variable_font):
                 ):
                     continue
 
-                yield FAIL, Message(
-                    "missing-axis-value-table",
-                    f"STAT table is missing Axis Value for"
-                    f" {coord_axis_tag!r} value '{coord_axis_value}'",
+                yield (
+                    FAIL,
+                    Message(
+                        "missing-axis-value-table",
+                        f"STAT table is missing Axis Value for"
+                        f" {coord_axis_tag!r} value '{coord_axis_value}'",
+                    ),
                 )
                 passed = False
 
@@ -175,10 +190,13 @@ def com_google_fonts_check_italic_axis_in_stat(fonts, config):
         from openbakery.utils import pretty_print_list
 
         missing_roman = pretty_print_list(config, missing_roman)
-        yield FAIL, Message(
-            "missing-roman",
-            f"Italics missing a Roman counterpart, so couldn't check"
-            f" both Roman and Italic for 'ital' axis: {missing_roman}",
+        yield (
+            FAIL,
+            Message(
+                "missing-roman",
+                f"Italics missing a Roman counterpart, so couldn't check"
+                f" both Roman and Italic for 'ital' axis: {missing_roman}",
+            ),
         )
         return
 
@@ -194,9 +212,12 @@ def com_google_fonts_check_italic_axis_in_stat(fonts, config):
                 axis.AxisTag for axis in ttFont["STAT"].table.DesignAxisRecord.Axis
             ]:
                 passed = False
-                yield FAIL, Message(
-                    "missing-ital-axis",
-                    f"Font {os.path.basename(filepath)}" f" is missing an 'ital' axis.",
+                yield (
+                    FAIL,
+                    Message(
+                        "missing-ital-axis",
+                        f"Font {os.path.basename(filepath)} is missing an 'ital' axis.",
+                    ),
                 )
 
     if passed:
@@ -247,39 +268,54 @@ def com_google_fonts_check_italic_axis_in_stat_is_boolean(ttFont, style):
     if "Italic" in style:
         if value != 1:
             passed = False
-            yield WARN, Message(
-                "wrong-ital-axis-value",
-                f"STAT table 'ital' axis has wrong value."
-                f" Expected: 1, got '{value}'.",
+            yield (
+                WARN,
+                Message(
+                    "wrong-ital-axis-value",
+                    f"STAT table 'ital' axis has wrong value."
+                    f" Expected: 1, got '{value}'.",
+                ),
             )
         if flags != 0:
             passed = False
-            yield WARN, Message(
-                "wrong-ital-axis-flag",
-                f"STAT table 'ital' axis flag is wrong."
-                f" Expected: 0 (not elided), got '{flags}'.",
+            yield (
+                WARN,
+                Message(
+                    "wrong-ital-axis-flag",
+                    f"STAT table 'ital' axis flag is wrong."
+                    f" Expected: 0 (not elided), got '{flags}'.",
+                ),
             )
     else:
         if value != 0:
             passed = False
-            yield WARN, Message(
-                "wrong-ital-axis-value",
-                f"STAT table 'ital' axis has wrong value."
-                f" Expected: 0, got '{value}'.",
+            yield (
+                WARN,
+                Message(
+                    "wrong-ital-axis-value",
+                    f"STAT table 'ital' axis has wrong value."
+                    f" Expected: 0, got '{value}'.",
+                ),
             )
         if flags != 2:
             passed = False
-            yield WARN, Message(
-                "wrong-ital-axis-flag",
-                f"STAT table 'ital' axis flag is wrong.\n"
-                f"Expected: 2 (elided)\n"
-                f"Got: '{flags}'",
+            yield (
+                WARN,
+                Message(
+                    "wrong-ital-axis-flag",
+                    f"STAT table 'ital' axis flag is wrong.\n"
+                    f"Expected: 2 (elided)\n"
+                    f"Got: '{flags}'",
+                ),
             )
         if linkedValue != 1:
             passed = False
-            yield WARN, Message(
-                "wrong-ital-axis-linkedvalue",
-                "STAT table 'ital' axis is not linked to Italic.",
+            yield (
+                WARN,
+                Message(
+                    "wrong-ital-axis-linkedvalue",
+                    "STAT table 'ital' axis is not linked to Italic.",
+                ),
             )
 
     if passed:
@@ -309,9 +345,12 @@ def com_google_fonts_check_italic_axis_last(ttFont, style):
         return
 
     if ttFont["STAT"].table.DesignAxisRecord.Axis[-1].AxisTag != "ital":
-        yield WARN, Message(
-            "ital-axis-not-last",
-            "STAT table 'ital' axis is not the last in the axis order.",
+        yield (
+            WARN,
+            Message(
+                "ital-axis-not-last",
+                "STAT table 'ital' axis is not the last in the axis order.",
+            ),
         )
     else:
         yield PASS, "STAT table ital axis order is good."

@@ -84,19 +84,25 @@ def com_google_fonts_check_outline_alignment_miss(ttFont, outlines_dict, config)
                         )
         if len(warnings) > FALSE_POSITIVE_CUTOFF:
             # Let's not waste time.
-            yield PASS, (
-                "So many Y-coordinates of points were close to"
-                " boundaries that this was probably by design."
+            yield (
+                PASS,
+                (
+                    "So many Y-coordinates of points were close to"
+                    " boundaries that this was probably by design."
+                ),
             )
             return
 
     if warnings:
         formatted_list = bullet_list(config, warnings, bullet="*")
-        yield WARN, Message(
-            "found-misalignments",
-            f"The following glyphs have on-curve points which"
-            f" have potentially incorrect y coordinates:\n\n"
-            f"{formatted_list}",
+        yield (
+            WARN,
+            Message(
+                "found-misalignments",
+                f"The following glyphs have on-curve points which"
+                f" have potentially incorrect y coordinates:\n\n"
+                f"{formatted_list}",
+            ),
         )
     else:
         yield PASS, "Y-coordinates of points fell on appropriate boundaries."
@@ -143,17 +149,21 @@ def com_google_fonts_check_outline_short_segments(ttFont, outlines_dict, config)
                     )
                 prev_was_line = len(seg) == 2
         if len(warnings) > FALSE_POSITIVE_CUTOFF:
-            yield PASS, (
-                "So many short segments were found that this was probably by design."
+            yield (
+                PASS,
+                ("So many short segments were found that this was probably by design."),
             )
             return
 
     if warnings:
         formatted_list = bullet_list(config, warnings, bullet="*")
-        yield WARN, Message(
-            "found-short-segments",
-            f"The following glyphs have segments which seem very short:\n\n"
-            f"{formatted_list}",
+        yield (
+            WARN,
+            Message(
+                "found-short-segments",
+                f"The following glyphs have segments which seem very short:\n\n"
+                f"{formatted_list}",
+            ),
         )
     else:
         yield PASS, "No short segments were found."
@@ -189,20 +199,26 @@ def com_google_fonts_check_outline_colinear_vectors(ttFont, outlines_dict, confi
                         < COLINEAR_EPSILON
                     ):
                         warnings.append(
-                            f"{glyphname} (U+{codepoint:04X}):" f" {prev} -> {this}"
+                            f"{glyphname} (U+{codepoint:04X}): {prev} -> {this}"
                         )
         if len(warnings) > FALSE_POSITIVE_CUTOFF:
-            yield PASS, (
-                "So many colinear vectors were found"
-                " that this was probably by design."
+            yield (
+                PASS,
+                (
+                    "So many colinear vectors were found"
+                    " that this was probably by design."
+                ),
             )
             return
 
     if warnings:
         formatted_list = bullet_list(config, sorted(set(warnings)), bullet="*")
-        yield WARN, Message(
-            "found-colinear-vectors",
-            f"The following glyphs have colinear vectors:\n\n" f"{formatted_list}",
+        yield (
+            WARN,
+            Message(
+                "found-colinear-vectors",
+                f"The following glyphs have colinear vectors:\n\n{formatted_list}",
+            ),
         )
     else:
         yield PASS, "No colinear vectors found."
@@ -250,9 +266,12 @@ def com_google_fonts_check_outline_jaggy_segments(ttFont, outlines_dict, config)
 
     if warnings:
         formatted_list = bullet_list(config, sorted(warnings), bullet="*")
-        yield WARN, Message(
-            "found-jaggy-segments",
-            f"The following glyphs have jaggy segments:\n\n" f"{formatted_list}",
+        yield (
+            WARN,
+            Message(
+                "found-jaggy-segments",
+                f"The following glyphs have jaggy segments:\n\n{formatted_list}",
+            ),
         )
     else:
         yield PASS, "No jaggy segments found."
@@ -290,12 +309,15 @@ def com_google_fonts_check_outline_semi_vertical(ttFont, outlines_dict, config):
 
     if warnings:
         formatted_list = bullet_list(config, sorted(warnings), bullet="*")
-        yield WARN, Message(
-            "found-semi-vertical",
-            f"The following glyphs have"
-            f" semi-vertical/semi-horizontal lines:\n"
-            f"\n"
-            f"{formatted_list}",
+        yield (
+            WARN,
+            Message(
+                "found-semi-vertical",
+                f"The following glyphs have"
+                f" semi-vertical/semi-horizontal lines:\n"
+                f"\n"
+                f"{formatted_list}",
+            ),
         )
     else:
         yield PASS, "No semi-horizontal/semi-vertical lines found."

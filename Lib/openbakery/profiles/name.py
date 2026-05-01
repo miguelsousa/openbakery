@@ -37,10 +37,13 @@ def com_adobe_fonts_check_name_empty_records(ttFont):
                     name_record.nameID,
                 ]
             )
-            yield FAIL, Message(
-                "empty-record",
-                f'"name" table record with key={name_key} is'
-                f" empty and should be removed.",
+            yield (
+                FAIL,
+                Message(
+                    "empty-record",
+                    f'"name" table record with key={name_key} is'
+                    f" empty and should be removed.",
+                ),
             )
     if not failed:
         yield PASS, ("No empty name table records found.")
@@ -61,19 +64,25 @@ def com_google_fonts_check_name_no_copyright_on_description(ttFont):
             failed = True
 
     if failed:
-        yield FAIL, Message(
-            "copyright-on-description",
-            f"Some namerecords with"
-            f" ID={NameID.DESCRIPTION} (NameID.DESCRIPTION)"
-            f" containing copyright info should be removed"
-            f" (perhaps these were added by a longstanding"
-            f" FontLab Studio 5.x bug that copied"
-            f" copyright notices to them.)",
+        yield (
+            FAIL,
+            Message(
+                "copyright-on-description",
+                f"Some namerecords with"
+                f" ID={NameID.DESCRIPTION} (NameID.DESCRIPTION)"
+                f" containing copyright info should be removed"
+                f" (perhaps these were added by a longstanding"
+                f" FontLab Studio 5.x bug that copied"
+                f" copyright notices to them.)",
+            ),
         )
     else:
-        yield PASS, (
-            "Description strings in the name table"
-            " do not contain any copyright string."
+        yield (
+            PASS,
+            (
+                "Description strings in the name table"
+                " do not contain any copyright string."
+            ),
         )
 
 
@@ -203,44 +212,56 @@ def com_google_fonts_check_monospace(ttFont, glyph_metrics_stats):
 
     if ttFont["hhea"].advanceWidthMax != width_max:
         passed = False
-        yield FAIL, Message(
-            "bad-advanceWidthMax",
-            f"Value of hhea.advanceWidthMax"
-            f" should be set to {width_max}"
-            f" but got {ttFont['hhea'].advanceWidthMax} instead.",
+        yield (
+            FAIL,
+            Message(
+                "bad-advanceWidthMax",
+                f"Value of hhea.advanceWidthMax"
+                f" should be set to {width_max}"
+                f" but got {ttFont['hhea'].advanceWidthMax} instead.",
+            ),
         )
 
     if seems_monospaced:
         if ttFont["post"].isFixedPitch == IsFixedWidth.NOT_MONOSPACED:
             passed = False
-            yield FAIL, Message(
-                "mono-bad-post-isFixedPitch",
-                f"On monospaced fonts, the value of post.isFixedPitch"
-                f" must be set to a non-zero value"
-                f" (meaning 'fixed width monospaced'),"
-                f" but got {ttFont['post'].isFixedPitch} instead.",
+            yield (
+                FAIL,
+                Message(
+                    "mono-bad-post-isFixedPitch",
+                    f"On monospaced fonts, the value of post.isFixedPitch"
+                    f" must be set to a non-zero value"
+                    f" (meaning 'fixed width monospaced'),"
+                    f" but got {ttFont['post'].isFixedPitch} instead.",
+                ),
             )
 
         number_of_h_metrics = ttFont["hhea"].numberOfHMetrics
         if number_of_h_metrics != 3:
             passed = False
-            yield WARN, Message(
-                "bad-numberOfHMetrics",
-                f"The OpenType spec recomments at https://learn.microsoft.com/"
-                f"en-us/typography/opentype/spec/recom#hhea-table"
-                f" that hhea.numberOfHMetrics be set to 3"
-                f" but this font has {number_of_h_metrics} instead.\n"
-                f"Please read https://github.com/fonttools/fonttools/issues/3014"
-                f" to decide whether this makes sense for your font.",
+            yield (
+                WARN,
+                Message(
+                    "bad-numberOfHMetrics",
+                    f"The OpenType spec recomments at https://learn.microsoft.com/"
+                    f"en-us/typography/opentype/spec/recom#hhea-table"
+                    f" that hhea.numberOfHMetrics be set to 3"
+                    f" but this font has {number_of_h_metrics} instead.\n"
+                    f"Please read https://github.com/fonttools/fonttools/issues/3014"
+                    f" to decide whether this makes sense for your font.",
+                ),
             )
 
         if not PANOSE_is_monospaced(ttFont["OS/2"].panose):
             passed = False
             family_type = ttFont["OS/2"].panose.bFamilyType
-            yield FAIL, Message(
-                "mono-bad-panose",
-                f"The PANOSE numbers are incorrect for a monospaced font. "
-                f"{PANOSE_expected(family_type)}",
+            yield (
+                FAIL,
+                Message(
+                    "mono-bad-panose",
+                    f"The PANOSE numbers are incorrect for a monospaced font. "
+                    f"{PANOSE_expected(family_type)}",
+                ),
             )
 
         num_glyphs = len(ttFont["glyf"].glyphs)
@@ -254,18 +275,25 @@ def com_google_fonts_check_monospace(ttFont, glyph_metrics_stats):
         outliers_ratio = float(len(unusually_spaced_glyphs)) / num_glyphs
         if outliers_ratio > 0:
             passed = False
-            yield WARN, Message(
-                "mono-outliers",
-                f"Font is monospaced"
-                f" but {len(unusually_spaced_glyphs)} glyphs"
-                f" ({100.0 * outliers_ratio:.2f}%)"
-                f" have a different width."
-                f" You should check the widths of:"
-                f" {unusually_spaced_glyphs}",
+            yield (
+                WARN,
+                Message(
+                    "mono-outliers",
+                    f"Font is monospaced"
+                    f" but {len(unusually_spaced_glyphs)} glyphs"
+                    f" ({100.0 * outliers_ratio:.2f}%)"
+                    f" have a different width."
+                    f" You should check the widths of:"
+                    f" {unusually_spaced_glyphs}",
+                ),
             )
         if passed:
-            yield PASS, Message(
-                "mono-good", "Font is monospaced and all related metadata look good."
+            yield (
+                PASS,
+                Message(
+                    "mono-good",
+                    "Font is monospaced and all related metadata look good.",
+                ),
             )
     else:
         # it is a non-monospaced font, so lets make sure
@@ -273,26 +301,35 @@ def com_google_fonts_check_monospace(ttFont, glyph_metrics_stats):
 
         if ttFont["post"].isFixedPitch != IsFixedWidth.NOT_MONOSPACED:
             passed = False
-            yield FAIL, Message(
-                "bad-post-isFixedPitch",
-                f"On non-monospaced fonts,"
-                f" the post.isFixedPitch value must be set to"
-                f" {IsFixedWidth.NOT_MONOSPACED} (not monospaced),"
-                f" but got {ttFont['post'].isFixedPitch} instead.",
+            yield (
+                FAIL,
+                Message(
+                    "bad-post-isFixedPitch",
+                    f"On non-monospaced fonts,"
+                    f" the post.isFixedPitch value must be set to"
+                    f" {IsFixedWidth.NOT_MONOSPACED} (not monospaced),"
+                    f" but got {ttFont['post'].isFixedPitch} instead.",
+                ),
             )
 
         if ttFont["OS/2"].panose.bProportion == PANOSE_Proportion.MONOSPACED:
             passed = False
-            yield FAIL, Message(
-                "bad-panose",
-                "On non-monospaced fonts,"
-                " the OS/2.panose.bProportion value can be set to"
-                " any value except 9 (proportion: monospaced)"
-                " which is the bad value we got in this font.",
+            yield (
+                FAIL,
+                Message(
+                    "bad-panose",
+                    "On non-monospaced fonts,"
+                    " the OS/2.panose.bProportion value can be set to"
+                    " any value except 9 (proportion: monospaced)"
+                    " which is the bad value we got in this font.",
+                ),
             )
         if passed:
-            yield PASS, Message(
-                "good", "Font is not monospaced and all related metadata look good."
+            yield (
+                PASS,
+                Message(
+                    "good", "Font is not monospaced and all related metadata look good."
+                ),
             )
 
 
@@ -371,10 +408,13 @@ def com_google_fonts_check_name_match_familyname_fullfont(ttFont):
                             family_name_id, plat_id, enc_id, lang_id
                         ).toUnicode()
                     except UnicodeDecodeError:
-                        yield FAIL, Message(
-                            f"cannot-decode-nameid-{family_name_id}",
-                            f"{decode_error_msg_prefix} and nameID {family_name_id}"
-                            " failed to be decoded.",
+                        yield (
+                            FAIL,
+                            Message(
+                                f"cannot-decode-nameid-{family_name_id}",
+                                f"{decode_error_msg_prefix} and nameID {family_name_id}"
+                                " failed to be decoded.",
+                            ),
                         )
                         passed = False
                         continue
@@ -384,35 +424,44 @@ def com_google_fonts_check_name_match_familyname_fullfont(ttFont):
                             full_name_id, plat_id, enc_id, lang_id
                         ).toUnicode()
                     except UnicodeDecodeError:
-                        yield FAIL, Message(
-                            f"cannot-decode-nameid-{full_name_id}",
-                            f"{decode_error_msg_prefix} and nameID {full_name_id}"
-                            " failed to be decoded.",
+                        yield (
+                            FAIL,
+                            Message(
+                                f"cannot-decode-nameid-{full_name_id}",
+                                f"{decode_error_msg_prefix} and nameID {full_name_id}"
+                                " failed to be decoded.",
+                            ),
                         )
                         passed = False
                         continue
 
                     if not full_name.startswith(family_name):
-                        yield FAIL, Message(
-                            "mismatch-font-names",
-                            f"On the 'name' table, the full font name {full_name!r}"
-                            f" does not begin with the font family name {family_name!r}"
-                            f" in platformID {plat_id},"
-                            f" encodingID {enc_id},"
-                            f" languageID {lang_id}({lang_id:04X}),"
-                            f" and nameID {family_name_id}.",
+                        yield (
+                            FAIL,
+                            Message(
+                                "mismatch-font-names",
+                                f"On the 'name' table, the full font name {full_name!r}"
+                                f" does not begin with the font family name {family_name!r}"
+                                f" in platformID {plat_id},"
+                                f" encodingID {enc_id},"
+                                f" languageID {lang_id}({lang_id:04X}),"
+                                f" and nameID {family_name_id}.",
+                            ),
                         )
                         passed = False
 
     if not names_compared:
-        yield FAIL, Message(
-            "missing-font-names",
-            f"The font's 'name' table lacks a pair of records with"
-            f" nameID {NameID.FULL_FONT_NAME} (Full name),"
-            f" and at least one of"
-            f" nameID {NameID.FONT_FAMILY_NAME} (Font Family name),"
-            f" {NameID.TYPOGRAPHIC_FAMILY_NAME} (Typographic Family name),"
-            f" or {NameID.WWS_FAMILY_NAME} (WWS Family name).",
+        yield (
+            FAIL,
+            Message(
+                "missing-font-names",
+                f"The font's 'name' table lacks a pair of records with"
+                f" nameID {NameID.FULL_FONT_NAME} (Full name),"
+                f" and at least one of"
+                f" nameID {NameID.FONT_FAMILY_NAME} (Font Family name),"
+                f" {NameID.TYPOGRAPHIC_FAMILY_NAME} (Typographic Family name),"
+                f" or {NameID.WWS_FAMILY_NAME} (WWS Family name).",
+            ),
         )
     elif passed:
         yield PASS, "Full font name begins with the font family name."
@@ -451,14 +500,21 @@ def com_adobe_fonts_check_postscript_name_characters(ttFont):
     for string in get_name_entry_strings(ttFont, NameID.POSTSCRIPT_NAME):
         if not valid_postscript_name(string):
             bad_entry_count += 1
-            yield FAIL, Message(
-                "bad-psname-characters",
-                f"PostScript name {string} contains disallowed characters.",
+            yield (
+                FAIL,
+                Message(
+                    "bad-psname-characters",
+                    f"PostScript name {string} contains disallowed characters.",
+                ),
             )
 
     if bad_entry_count == 0:
-        yield PASS, Message(
-            "psname-characters-ok", "PostScript name contains only allowed characters."
+        yield (
+            PASS,
+            Message(
+                "psname-characters-ok",
+                "PostScript name contains only allowed characters.",
+            ),
         )
 
 
@@ -476,14 +532,20 @@ def com_adobe_fonts_check_postscript_name_hyphens(ttFont):
     for string in get_name_entry_strings(ttFont, NameID.POSTSCRIPT_NAME):
         if string.count("-") > 1:
             bad_entry_count += 1
-            yield FAIL, Message(
-                "bad-psname-hyphens",
-                f"PostScript name {string} contains more than one hyphen.",
+            yield (
+                FAIL,
+                Message(
+                    "bad-psname-hyphens",
+                    f"PostScript name {string} contains more than one hyphen.",
+                ),
             )
 
     if bad_entry_count == 0:
-        yield PASS, Message(
-            "psname-hyphens-ok", "PostScript name contains at most one hyphen."
+        yield (
+            PASS,
+            Message(
+                "psname-hyphens-ok", "PostScript name contains at most one hyphen."
+            ),
         )
 
 
@@ -564,12 +626,12 @@ def com_google_fonts_check_family_naming_recommendations(ttFont):
         table += "|:----- |:----- |:-------------- |\n"
         for bad in bad_entries:
             table += "| {} | {} | {} |\n".format(bad["field"], bad["value"], bad["rec"])
-        yield INFO, Message(
-            "bad-entries",
-            f"Font does not follow "
-            f"some family naming recommendations:\n"
-            f"\n"
-            f"{table}",
+        yield (
+            INFO,
+            Message(
+                "bad-entries",
+                f"Font does not follow some family naming recommendations:\n\n{table}",
+            ),
         )
     else:
         yield PASS, "Font follows the family naming recommendations."
@@ -592,8 +654,9 @@ def com_adobe_fonts_check_name_postscript_vs_cff(ttFont):
     """CFF table FontName must match name table ID 6 (PostScript name)."""
     cff_names = ttFont["CFF "].cff.fontNames
     if len(cff_names) != 1:
-        yield FAIL, Message(
-            "cff-name-error", "Unexpected number of font names in CFF table."
+        yield (
+            FAIL,
+            Message("cff-name-error", "Unexpected number of font names in CFF table."),
         )
         return
 
@@ -604,10 +667,13 @@ def com_adobe_fonts_check_name_postscript_vs_cff(ttFont):
             postscript_name = entry.toUnicode()
             if postscript_name != cff_name:
                 passed = False
-                yield FAIL, Message(
-                    "ps-cff-name-mismatch",
-                    f"Name table PostScript name '{postscript_name}' "
-                    f"does not match CFF table FontName '{cff_name}'.",
+                yield (
+                    FAIL,
+                    Message(
+                        "ps-cff-name-mismatch",
+                        f"Name table PostScript name '{postscript_name}' "
+                        f"does not match CFF table FontName '{cff_name}'.",
+                    ),
                 )
 
     if passed:
@@ -634,15 +700,19 @@ def com_adobe_fonts_check_name_postscript_name_consistency(ttFont):
             postscript_names.add(postscript_name)
 
     if len(postscript_names) > 1:
-        yield FAIL, Message(
-            "inconsistency",
-            f'Entries in the "name" table for ID 6'
-            f" (PostScript name) are not consistent."
-            f" Names found: {sorted(postscript_names)}.",
+        yield (
+            FAIL,
+            Message(
+                "inconsistency",
+                f'Entries in the "name" table for ID 6'
+                f" (PostScript name) are not consistent."
+                f" Names found: {sorted(postscript_names)}.",
+            ),
         )
     else:
-        yield PASS, (
-            'Entries in the "name" table for ID 6 (PostScript name) are consistent.'
+        yield (
+            PASS,
+            ('Entries in the "name" table for ID 6 (PostScript name) are consistent.'),
         )
 
 
@@ -681,9 +751,12 @@ def com_adobe_fonts_check_family_max_4_fonts_per_family_name(ttFonts):
     for family_name, count in counter.items():
         if count > 4:
             passed = False
-            yield FAIL, Message(
-                "too-many",
-                f"Family '{family_name}' has {count} fonts" f" (should be 4 or fewer).",
+            yield (
+                FAIL,
+                Message(
+                    "too-many",
+                    f"Family '{family_name}' has {count} fonts (should be 4 or fewer).",
+                ),
             )
     if passed:
         yield PASS, ("There were no more than 4 fonts per family name.")
@@ -793,37 +866,50 @@ def com_google_fonts_check_name_italic_names(ttFont, style):
         passed = True
         # Name ID 1 (Family Name)
         if "Italic" in get_name(NameID.FONT_FAMILY_NAME):
-            yield FAIL, Message(
-                "bad-familyname", "Name ID 1 (Family Name) must not contain 'Italic'."
+            yield (
+                FAIL,
+                Message(
+                    "bad-familyname",
+                    "Name ID 1 (Family Name) must not contain 'Italic'.",
+                ),
             )
             passed = False
 
         # Name ID 2 (Subfamily Name)
         subfamily_name = get_name(NameID.FONT_SUBFAMILY_NAME)
         if subfamily_name not in ("Italic", "Bold Italic"):
-            yield FAIL, Message(
-                "bad-subfamilyname",
-                "Name ID 2 (Subfamily Name) does not conform to specs."
-                " Only R/I/B/BI are allowed.\n"
-                f"Got: '{subfamily_name}'.",
+            yield (
+                FAIL,
+                Message(
+                    "bad-subfamilyname",
+                    "Name ID 2 (Subfamily Name) does not conform to specs."
+                    " Only R/I/B/BI are allowed.\n"
+                    f"Got: '{subfamily_name}'.",
+                ),
             )
             passed = False
 
         # Name ID 16 (Typographic Family Name)
         if get_name(NameID.TYPOGRAPHIC_FAMILY_NAME):
             if "Italic" in get_name(NameID.TYPOGRAPHIC_FAMILY_NAME):
-                yield FAIL, Message(
-                    "bad-typographicfamilyname",
-                    "Name ID 16 (Typographic Family Name) must not contain 'Italic'.",
+                yield (
+                    FAIL,
+                    Message(
+                        "bad-typographicfamilyname",
+                        "Name ID 16 (Typographic Family Name) must not contain 'Italic'.",
+                    ),
                 )
                 passed = False
 
         # Name ID 17 (Typographic Subfamily Name)
         if get_name(NameID.TYPOGRAPHIC_SUBFAMILY_NAME):
             if not get_name(NameID.TYPOGRAPHIC_SUBFAMILY_NAME).endswith("Italic"):
-                yield FAIL, Message(
-                    "bad-typographicsubfamilyname",
-                    "Name ID 17 (Typographic Subfamily Name) must contain 'Italic'.",
+                yield (
+                    FAIL,
+                    Message(
+                        "bad-typographicsubfamilyname",
+                        "Name ID 17 (Typographic Subfamily Name) must contain 'Italic'.",
+                    ),
                 )
                 passed = False
 

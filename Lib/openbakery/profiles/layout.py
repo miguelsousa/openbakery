@@ -50,10 +50,13 @@ def com_google_fonts_check_layout_valid_feature_tags(ttFont):
             if not tag.isupper() or len(tag) > 4:
                 bad_tags.add(tag)
     if bad_tags:
-        yield FAIL, Message(
-            "bad-feature-tags",
-            "The following invalid feature tags were found in the font: "
-            + ", ".join(sorted(bad_tags)),
+        yield (
+            FAIL,
+            Message(
+                "bad-feature-tags",
+                "The following invalid feature tags were found in the font: "
+                + ", ".join(sorted(bad_tags)),
+            ),
         )
     else:
         yield PASS, "No invalid feature tags were found"
@@ -85,10 +88,13 @@ def com_google_fonts_check_layout_valid_script_tags(ttFont):
         if tag not in SCRIPT_TAGS.keys():
             bad_tags.add(tag)
     if bad_tags:
-        yield FAIL, Message(
-            "bad-script-tags",
-            "The following invalid script tags were found in the font: "
-            + ", ".join(sorted(bad_tags)),
+        yield (
+            FAIL,
+            Message(
+                "bad-script-tags",
+                "The following invalid script tags were found in the font: "
+                + ", ".join(sorted(bad_tags)),
+            ),
         )
     else:
         yield PASS, "No invalid script tags were found"
@@ -121,10 +127,13 @@ def com_google_fonts_check_layout_valid_language_tags(ttFont):
         if tag not in LANGUAGE_TAGS.keys():
             bad_tags.add(tag)
     if bad_tags:
-        yield FAIL, Message(
-            "bad-language-tags",
-            "The following invalid language tags were found in the font: "
-            + ", ".join(sorted(bad_tags)),
+        yield (
+            FAIL,
+            Message(
+                "bad-language-tags",
+                "The following invalid language tags were found in the font: "
+                + ", ".join(sorted(bad_tags)),
+            ),
         )
     else:
         yield PASS, "No invalid language tags were found"

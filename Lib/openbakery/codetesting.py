@@ -201,9 +201,9 @@ def _assert_last_status(status, check_results, reason, ignore_error=None):
         assert last_status == status
         # If the yielded result if of type Message, validate its code string.
         if isinstance(message, Message):
-            assert (
-                message.code == reason
-            ), f"Expected {reason!r} but got {message.code!r}"
+            assert message.code == reason, (
+                f"Expected {reason!r} but got {message.code!r}"
+            )
         return str(message)
 
 

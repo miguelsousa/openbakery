@@ -93,10 +93,13 @@ def com_google_fonts_check_name_trailing_spaces(ttFont):
             shortened_str = name_record.toUnicode()
             if len(shortened_str) > 20:
                 shortened_str = shortened_str[:10] + "[...]" + shortened_str[-10:]
-            yield FAIL, Message(
-                "trailing-space",
-                f"Name table record with key = {name_key} has trailing spaces"
-                f" that must be removed: '{shortened_str}'",
+            yield (
+                FAIL,
+                Message(
+                    "trailing-space",
+                    f"Name table record with key = {name_key} has trailing spaces"
+                    f" that must be removed: '{shortened_str}'",
+                ),
             )
     if not failed:
         yield PASS, ("No trailing spaces on name table entries.")
@@ -156,34 +159,46 @@ def com_google_fonts_check_family_win_ascent_and_descent(ttFont, vmetrics):
     # OS/2 usWinAscent:
     if win_ascent < y_max:
         failed = True
-        yield FAIL, Message(
-            "ascent",
-            f"OS/2.usWinAscent value should be equal or greater than {y_max},"
-            f" but got {win_ascent} instead",
+        yield (
+            FAIL,
+            Message(
+                "ascent",
+                f"OS/2.usWinAscent value should be equal or greater than {y_max},"
+                f" but got {win_ascent} instead",
+            ),
         )
     if win_ascent > y_max * 2:
         failed = True
-        yield FAIL, Message(
-            "ascent",
-            f"OS/2.usWinAscent value {win_ascent} is too large."
-            f" It should be less than double the yMax. Current yMax value is {y_max}",
+        yield (
+            FAIL,
+            Message(
+                "ascent",
+                f"OS/2.usWinAscent value {win_ascent} is too large."
+                f" It should be less than double the yMax. Current yMax value is {y_max}",
+            ),
         )
     # OS/2 usWinDescent:
     if win_descent < abs(y_min):
         failed = True
-        yield FAIL, Message(
-            "descent",
-            f"OS/2.usWinDescent value should be equal or greater than {abs(y_min)},"
-            f" but got {win_descent} instead",
+        yield (
+            FAIL,
+            Message(
+                "descent",
+                f"OS/2.usWinDescent value should be equal or greater than {abs(y_min)},"
+                f" but got {win_descent} instead",
+            ),
         )
 
     if win_descent > abs(y_min) * 2:
         failed = True
-        yield FAIL, Message(
-            "descent",
-            f"OS/2.usWinDescent value {win_descent} is too large."
-            " It should be less than double the yMin."
-            f" Current absolute yMin value is {abs(y_min)}",
+        yield (
+            FAIL,
+            Message(
+                "descent",
+                f"OS/2.usWinDescent value {win_descent} is too large."
+                " It should be less than double the yMin."
+                f" Current absolute yMin value is {abs(y_min)}",
+            ),
         )
     if not failed:
         yield PASS, "OS/2 usWinAscent & usWinDescent values look good!"
@@ -233,22 +248,31 @@ def com_google_fonts_check_os2_metrics_match_hhea(ttFont):
 
     # OS/2 sTypoAscender and sTypoDescender match hhea ascent and descent
     if ttFont["OS/2"].sTypoAscender != ttFont["hhea"].ascent:
-        yield FAIL, Message(
-            "ascender",
-            f"OS/2 sTypoAscender ({ttFont['OS/2'].sTypoAscender})"
-            f" and hhea ascent ({ttFont['hhea'].ascent}) must be equal.",
+        yield (
+            FAIL,
+            Message(
+                "ascender",
+                f"OS/2 sTypoAscender ({ttFont['OS/2'].sTypoAscender})"
+                f" and hhea ascent ({ttFont['hhea'].ascent}) must be equal.",
+            ),
         )
     elif ttFont["OS/2"].sTypoDescender != ttFont["hhea"].descent:
-        yield FAIL, Message(
-            "descender",
-            f"OS/2 sTypoDescender ({ttFont['OS/2'].sTypoDescender})"
-            f" and hhea descent ({ttFont['hhea'].descent}) must be equal.",
+        yield (
+            FAIL,
+            Message(
+                "descender",
+                f"OS/2 sTypoDescender ({ttFont['OS/2'].sTypoDescender})"
+                f" and hhea descent ({ttFont['hhea'].descent}) must be equal.",
+            ),
         )
     elif ttFont["OS/2"].sTypoLineGap != ttFont["hhea"].lineGap:
-        yield FAIL, Message(
-            "lineGap",
-            f"OS/2 sTypoLineGap ({ttFont['OS/2'].sTypoLineGap})"
-            f" and hhea lineGap ({ttFont['hhea'].lineGap}) must be equal.",
+        yield (
+            FAIL,
+            Message(
+                "lineGap",
+                f"OS/2 sTypoLineGap ({ttFont['OS/2'].sTypoLineGap})"
+                f" and hhea lineGap ({ttFont['hhea'].lineGap}) must be equal.",
+            ),
         )
     else:
         yield PASS, "OS/2.sTypoAscender/Descender values match hhea.ascent/descent."
@@ -277,12 +301,15 @@ def com_google_fonts_check_family_single_directory(fonts):
     if len(directories) == 1:
         yield PASS, "All files are in the same directory."
     else:
-        yield FAIL, Message(
-            "single-directory",
-            "Not all fonts passed in the command line are in the"
-            " same directory. This may lead to bad results as the tool"
-            " will interpret all font files as belonging to a single"
-            f" font family. The detected directories are: {directories}",
+        yield (
+            FAIL,
+            Message(
+                "single-directory",
+                "Not all fonts passed in the command line are in the"
+                " same directory. This may lead to bad results as the tool"
+                " will interpret all font files as belonging to a single"
+                f" font family. The detected directories are: {directories}",
+            ),
         )
 
 
@@ -295,17 +322,23 @@ def com_google_fonts_check_ots(font):
         process = ots.sanitize(font, check=True, capture_output=True)
 
     except ots.CalledProcessError as e:
-        yield FAIL, Message(
-            "ots-sanitize-error",
-            f"ots-sanitize returned an error code ({e.returncode})."
-            f" Output follows:\n\n{e.stderr.decode()}{e.stdout.decode()}",
+        yield (
+            FAIL,
+            Message(
+                "ots-sanitize-error",
+                f"ots-sanitize returned an error code ({e.returncode})."
+                f" Output follows:\n\n{e.stderr.decode()}{e.stdout.decode()}",
+            ),
         )
     else:
         if process.stderr:
-            yield WARN, Message(
-                "ots-sanitize-warn",
-                "ots-sanitize passed this file, however warnings were printed:\n\n"
-                f"{process.stderr.decode()}",
+            yield (
+                WARN,
+                Message(
+                    "ots-sanitize-warn",
+                    "ots-sanitize passed this file, however warnings were printed:\n\n"
+                    f"{process.stderr.decode()}",
+                ),
             )
         else:
             yield PASS, "ots-sanitize passed this file"
@@ -431,33 +464,43 @@ def com_google_fonts_check_mandatory_glyphs(ttFont):
     glyph_order = ttFont.getGlyphOrder()
 
     if NOTDEF not in glyph_order or len(glyph_order) == 0:
-        yield WARN, Message(
-            "notdef-not-found", f"Font should contain the {NOTDEF!r} glyph."
+        yield (
+            WARN,
+            Message("notdef-not-found", f"Font should contain the {NOTDEF!r} glyph."),
         )
         # The font doesn't even have the notdef. There's no point in testing further.
         return
 
     if glyph_order[0] != NOTDEF:
         passed = False
-        yield WARN, Message(
-            "notdef-not-first", f"The {NOTDEF!r} should be the font's first glyph."
+        yield (
+            WARN,
+            Message(
+                "notdef-not-first", f"The {NOTDEF!r} should be the font's first glyph."
+            ),
         )
 
     cmap = ttFont.getBestCmap()  # e.g. {65: 'A', 66: 'B', 67: 'C'} or None
     if cmap and NOTDEF in cmap.values():
         passed = False
         rev_cmap = {name: val for val, name in reversed(sorted(cmap.items()))}
-        yield WARN, Message(
-            "notdef-has-codepoint",
-            f"The {NOTDEF!r} glyph should not have a Unicode codepoint value assigned,"
-            f" but has 0x{rev_cmap[NOTDEF]:04X}.",
+        yield (
+            WARN,
+            Message(
+                "notdef-has-codepoint",
+                f"The {NOTDEF!r} glyph should not have a Unicode codepoint value assigned,"
+                f" but has 0x{rev_cmap[NOTDEF]:04X}.",
+            ),
         )
 
     if not glyph_has_ink(ttFont, NOTDEF):
         passed = False
-        yield WARN, Message(
-            "notdef-is-blank",
-            f"The {NOTDEF!r} glyph should contain a drawing, but it is blank.",
+        yield (
+            WARN,
+            Message(
+                "notdef-is-blank",
+                f"The {NOTDEF!r} glyph should contain a drawing, but it is blank.",
+            ),
         )
 
     if passed:
@@ -470,9 +513,12 @@ def com_google_fonts_check_whitespace_glyphs(ttFont, missing_whitespace_chars):
     failed = False
     for wsc in missing_whitespace_chars:
         failed = True
-        yield FAIL, Message(
-            f"missing-whitespace-glyph-{wsc}",
-            f"Whitespace glyph missing for codepoint {wsc}.",
+        yield (
+            FAIL,
+            Message(
+                f"missing-whitespace-glyph-{wsc}",
+                f"Whitespace glyph missing for codepoint {wsc}.",
+            ),
         )
 
     if not failed:
@@ -518,15 +564,21 @@ def com_google_fonts_check_whitespace_glyphnames(ttFont):
 
         elif space in AGL_COMPLIANT_BUT_NOT_RECOMMENDED_0020:
             passed = False
-            yield WARN, Message(
-                "not-recommended-0020",
-                f'Glyph 0x0020 is called "{space}": Change to "space"',
+            yield (
+                WARN,
+                Message(
+                    "not-recommended-0020",
+                    f'Glyph 0x0020 is called "{space}": Change to "space"',
+                ),
             )
         else:
             passed = False
-            yield FAIL, Message(
-                "non-compliant-0020",
-                f'Glyph 0x0020 is called "{space}": Change to "space"',
+            yield (
+                FAIL,
+                Message(
+                    "non-compliant-0020",
+                    f'Glyph 0x0020 is called "{space}": Change to "space"',
+                ),
             )
 
         nbsp = get_glyph_name(ttFont, 0x00A0)
@@ -540,15 +592,21 @@ def com_google_fonts_check_whitespace_glyphnames(ttFont):
 
         elif nbsp in AGL_COMPLIANT_BUT_NOT_RECOMMENDED_00A0:
             passed = False
-            yield WARN, Message(
-                "not-recommended-00a0",
-                f'Glyph 0x00A0 is called "{nbsp}": Change to "uni00A0"',
+            yield (
+                WARN,
+                Message(
+                    "not-recommended-00a0",
+                    f'Glyph 0x00A0 is called "{nbsp}": Change to "uni00A0"',
+                ),
             )
         else:
             passed = False
-            yield FAIL, Message(
-                "non-compliant-00a0",
-                f'Glyph 0x00A0 is called "{nbsp}": Change to "uni00A0"',
+            yield (
+                FAIL,
+                Message(
+                    "non-compliant-00a0",
+                    f'Glyph 0x00A0 is called "{nbsp}": Change to "uni00A0"',
+                ),
             )
 
         if passed:
@@ -605,9 +663,12 @@ def com_google_fonts_check_whitespace_ink(ttFont):
         g = get_glyph_name(ttFont, codepoint)
         if g is not None and glyph_has_ink(ttFont, g):
             passed = False
-            yield FAIL, Message(
-                "has-ink",
-                f"Glyph '{g}' has ink. It needs to be replaced by an empty glyph.",
+            yield (
+                FAIL,
+                Message(
+                    "has-ink",
+                    f"Glyph '{g}' has ink. It needs to be replaced by an empty glyph.",
+                ),
             )
     if passed:
         yield PASS, "There is no whitespace glyph with ink."
@@ -689,10 +750,13 @@ def com_google_fonts_check_required_tables(ttFont, config, is_variable_font):
 
     optional_tables = [opt for opt in OPTIONAL_TABLES if opt in font_tables]
     if optional_tables:
-        yield INFO, Message(
-            "optional-tables",
-            "This font contains the following optional tables:\n\n"
-            f"{bullet_list(config, optional_tables)}",
+        yield (
+            INFO,
+            Message(
+                "optional-tables",
+                "This font contains the following optional tables:\n\n"
+                f"{bullet_list(config, optional_tables)}",
+            ),
         )
 
     if is_variable_font:
@@ -714,10 +778,13 @@ def com_google_fonts_check_required_tables(ttFont, config, is_variable_font):
         missing_tables.append("glyf")
 
     if missing_tables:
-        yield FAIL, Message(
-            "required-tables",
-            "This font is missing the following required tables:\n\n"
-            f"{bullet_list(config, missing_tables)}",
+        yield (
+            FAIL,
+            Message(
+                "required-tables",
+                "This font is missing the following required tables:\n\n"
+                f"{bullet_list(config, missing_tables)}",
+            ),
         )
     else:
         yield PASS, "Font contains all required tables."
@@ -756,11 +823,14 @@ def com_google_fonts_check_unwanted_tables(ttFont):
             unwanted_tables_found.append(f"* {table} - {info}\n")
 
     if unwanted_tables_found:
-        yield FAIL, Message(
-            "unwanted-tables",
-            "The following unwanted font tables were found:\n\n"
-            f"{''.join(unwanted_tables_found)}\nThey can be removed with"
-            " the 'fix-unwanted-tables' script provided by gftools.",
+        yield (
+            FAIL,
+            Message(
+                "unwanted-tables",
+                "The following unwanted font tables were found:\n\n"
+                f"{''.join(unwanted_tables_found)}\nThey can be removed with"
+                " the 'fix-unwanted-tables' script provided by gftools.",
+            ),
         )
     else:
         yield PASS, "There are no unwanted tables."
@@ -803,10 +873,13 @@ def com_google_fonts_check_STAT_strings(ttFont):
             bad_values.add(f"nameID {name.nameID}: {name.toUnicode()}")
 
     if bad_values:
-        yield FAIL, Message(
-            "bad-italic",
-            "The following AxisValue entries on the STAT table"
-            f' should not contain "Italic":\n{sorted(bad_values)}',
+        yield (
+            FAIL,
+            Message(
+                "bad-italic",
+                "The following AxisValue entries on the STAT table"
+                f' should not contain "Italic":\n{sorted(bad_values)}',
+            ),
         )
 
     if passed:
@@ -847,8 +920,9 @@ def com_google_fonts_check_valid_glyphnames(ttFont, config):
         and ttFont.get("post")
         and ttFont["post"].formatType == 3
     ):
-        yield SKIP, (
-            "TrueType fonts with a format 3 post table contain no glyph names."
+        yield (
+            SKIP,
+            ("TrueType fonts with a format 3 post table contain no glyph names."),
         )
     elif (
         ttFont.sfntVersion == "OTTO"
@@ -856,8 +930,9 @@ def com_google_fonts_check_valid_glyphnames(ttFont, config):
         and ttFont.get("post")
         and ttFont["post"].formatType == 3
     ):
-        yield SKIP, (
-            "OpenType-CFF2 fonts with a format 3 post table contain no glyph names."
+        yield (
+            SKIP,
+            ("OpenType-CFF2 fonts with a format 3 post table contain no glyph names."),
         )
     else:
         bad_names = set()
@@ -876,24 +951,30 @@ def com_google_fonts_check_valid_glyphnames(ttFont, config):
             if not warn_names:
                 yield PASS, "Glyph names are all valid."
             else:
-                yield WARN, Message(
-                    "legacy-long-names",
-                    "The following glyph names may be too long for some legacy systems"
-                    " which may expect a maximum 31-characters length limit:\n"
-                    f"{pretty_print_list(config, sorted(warn_names))}",
+                yield (
+                    WARN,
+                    Message(
+                        "legacy-long-names",
+                        "The following glyph names may be too long for some legacy systems"
+                        " which may expect a maximum 31-characters length limit:\n"
+                        f"{pretty_print_list(config, sorted(warn_names))}",
+                    ),
                 )
         else:
             bad_names_list = pretty_print_list(config, sorted(bad_names))
-            yield FAIL, Message(
-                "found-invalid-names",
-                "The following glyph names do not comply"
-                f" with naming conventions: {bad_names_list}\n\n"
-                " A glyph name must be entirely comprised of characters"
-                " from the following set: A-Z a-z 0-9 .(period) _(underscore)."
-                " A glyph name must not start with a digit or period."
-                ' There are a few exceptions such as the special glyph ".notdef".'
-                ' The glyph names "twocents", "a1", and "_" are all valid,'
-                ' while "2cents" and ".twocents" are not.',
+            yield (
+                FAIL,
+                Message(
+                    "found-invalid-names",
+                    "The following glyph names do not comply"
+                    f" with naming conventions: {bad_names_list}\n\n"
+                    " A glyph name must be entirely comprised of characters"
+                    " from the following set: A-Z a-z 0-9 .(period) _(underscore)."
+                    " A glyph name must not start with a digit or period."
+                    ' There are a few exceptions such as the special glyph ".notdef".'
+                    ' The glyph names "twocents", "a1", and "_" are all valid,'
+                    ' while "2cents" and ".twocents" are not.',
+                ),
             )
 
 
@@ -912,8 +993,9 @@ def com_google_fonts_check_unique_glyphnames(ttFont):
         and ttFont.get("post")
         and ttFont["post"].formatType == 3
     ):
-        yield SKIP, (
-            "TrueType fonts with a format 3 post table contain no glyph names."
+        yield (
+            SKIP,
+            ("TrueType fonts with a format 3 post table contain no glyph names."),
         )
     elif (
         ttFont.sfntVersion == "OTTO"
@@ -921,8 +1003,9 @@ def com_google_fonts_check_unique_glyphnames(ttFont):
         and ttFont.get("post")
         and ttFont["post"].formatType == 3
     ):
-        yield SKIP, (
-            "OpenType-CFF2 fonts with a format 3 post table contain no glyph names."
+        yield (
+            SKIP,
+            ("OpenType-CFF2 fonts with a format 3 post table contain no glyph names."),
         )
     else:
         glyph_names = set()
@@ -938,9 +1021,12 @@ def com_google_fonts_check_unique_glyphnames(ttFont):
         if not dup_glyph_names:
             yield PASS, "Glyph names are all unique."
         else:
-            yield FAIL, Message(
-                "duplicated-glyph-names",
-                f"These glyph names occur more than once: {sorted(dup_glyph_names)}",
+            yield (
+                FAIL,
+                Message(
+                    "duplicated-glyph-names",
+                    f"These glyph names occur more than once: {sorted(dup_glyph_names)}",
+                ),
             )
 
 
@@ -986,9 +1072,12 @@ def com_google_fonts_check_ttx_roundtrip(font):
 
         if export_error_msgs:
             failed = True
-            yield INFO, (
-                "While converting TTF into an XML file,"
-                " ttx emited the messages listed below."
+            yield (
+                INFO,
+                (
+                    "While converting TTF into an XML file,"
+                    " ttx emited the messages listed below."
+                ),
             )
             for msg in export_error_msgs:
                 yield FAIL, msg.strip()
@@ -999,26 +1088,32 @@ def com_google_fonts_check_ttx_roundtrip(font):
 
         if len(import_error_msgs):
             failed = True
-            yield INFO, (
-                "While importing an XML file and converting it back to TTF,"
-                " ttx emited the messages listed below."
+            yield (
+                INFO,
+                (
+                    "While importing an XML file and converting it back to TTF,"
+                    " ttx emited the messages listed below."
+                ),
             )
             for msg in import_error_msgs:
                 yield FAIL, msg.strip()
         logger.restore()
     except ExpatError as e:
         failed = True
-        yield FAIL, (
-            "TTX had some problem parsing the generated XML file."
-            " This most likely mean there's some problem in the font."
-            " Please inspect the output of ttx in order to find more"
-            " on what went wrong. A common problem is the presence of"
-            " control characteres outside the accepted character range"
-            " as defined in the XML spec. FontTools has got a bug which"
-            " causes TTX to generate corrupt XML files in those cases."
-            " So, check the entries of the name table and remove any control"
-            " chars that you find there. The full ttx error message was:\n"
-            f"======\n{e}\n======"
+        yield (
+            FAIL,
+            (
+                "TTX had some problem parsing the generated XML file."
+                " This most likely mean there's some problem in the font."
+                " Please inspect the output of ttx in order to find more"
+                " on what went wrong. A common problem is the presence of"
+                " control characteres outside the accepted character range"
+                " as defined in the XML spec. FontTools has got a bug which"
+                " causes TTX to generate corrupt XML files in those cases."
+                " So, check the entries of the name table and remove any control"
+                " chars that you find there. The full ttx error message was:\n"
+                f"======\n{e}\n======"
+            ),
         )
 
     if not failed:
@@ -1087,8 +1182,11 @@ def com_google_fonts_check_family_vertical_metrics(ttFonts):
             for k in failed:
                 s = ["{}: {}".format(k, v) for k, v in vmetrics[k].items()]
                 s = "\n".join(s)
-                yield FAIL, Message(
-                    f"{k}-mismatch", f"{k} is not the same across the family:\n{s}"
+                yield (
+                    FAIL,
+                    Message(
+                        f"{k}-mismatch", f"{k} is not the same across the family:\n{s}"
+                    ),
                 )
         else:
             yield PASS, "Vertical metrics are the same across the family."
@@ -1166,9 +1264,12 @@ def com_google_fonts_check_superfamily_vertical_metrics(superfamily_ttFonts):
         for k in warn:
             s = ["{}: {}".format(k, v) for k, v in vmetrics[k].items()]
             s = "\n".join(s)
-            yield WARN, Message(
-                "superfamily-vertical-metrics",
-                f"{k} is not the same across the super-family:\n{s}",
+            yield (
+                WARN,
+                Message(
+                    "superfamily-vertical-metrics",
+                    f"{k} is not the same across the super-family:\n{s}",
+                ),
             )
     else:
         yield PASS, "Vertical metrics are the same across the super-family."
@@ -1187,9 +1288,12 @@ def com_google_fonts_check_superfamily_vertical_metrics(superfamily_ttFonts):
 def com_google_fonts_check_rupee(ttFont):
     """Ensure indic fonts have the Indian Rupee Sign glyph."""
     if 0x20B9 not in ttFont["cmap"].getBestCmap().keys():
-        yield FAIL, Message(
-            "missing-rupee",
-            "Please add a glyph for Indian Rupee Sign (₹) at codepoint U+20B9.",
+        yield (
+            FAIL,
+            Message(
+                "missing-rupee",
+                "Please add a glyph for Indian Rupee Sign (₹) at codepoint U+20B9.",
+            ),
         )
     else:
         yield PASS, "Looks good!"
@@ -1319,11 +1423,14 @@ def com_google_fonts_check_unreachable_glyphs(ttFont, config):
                 all_glyphs -= set(base_glyph.getComponentNames(ttFont["glyf"]))
 
     if all_glyphs:
-        yield WARN, Message(
-            "unreachable-glyphs",
-            "The following glyphs could not be reached"
-            " by codepoint or substitution rules:\n\n"
-            f"{bullet_list(config, sorted(all_glyphs))}\n",
+        yield (
+            WARN,
+            Message(
+                "unreachable-glyphs",
+                "The following glyphs could not be reached"
+                " by codepoint or substitution rules:\n\n"
+                f"{bullet_list(config, sorted(all_glyphs))}\n",
+            ),
         )
     else:
         yield PASS, "Font did not contain any unreachable glyphs"
@@ -1460,19 +1567,22 @@ def com_google_fonts_check_contour_count(ttFont, config):
                 for name, count, expected in bad_glyphs
             ]
             bad_glyphs_name = bullet_list(config, bad_glyphs_name)
-            yield WARN, Message(
-                "contour-count",
-                "This check inspects the glyph outlines and detects the total number"
-                " of contours in each of them. The expected values are infered from"
-                " the typical ammounts of contours observed in a large collection"
-                " of reference font families. The divergences listed below may simply"
-                " indicate a significantly different design on some of your glyphs."
-                " On the other hand, some of these may flag actual bugs in the font"
-                " such as glyphs mapped to an incorrect codepoint. Please consider"
-                " reviewing the design and codepoint assignment of these to make"
-                " sure they are correct.\n\n"
-                "The following glyphs do not have the recommended"
-                f" number of contours:\n\n{bad_glyphs_name}\n",
+            yield (
+                WARN,
+                Message(
+                    "contour-count",
+                    "This check inspects the glyph outlines and detects the total number"
+                    " of contours in each of them. The expected values are infered from"
+                    " the typical ammounts of contours observed in a large collection"
+                    " of reference font families. The divergences listed below may simply"
+                    " indicate a significantly different design on some of your glyphs."
+                    " On the other hand, some of these may flag actual bugs in the font"
+                    " such as glyphs mapped to an incorrect codepoint. Please consider"
+                    " reviewing the design and codepoint assignment of these to make"
+                    " sure they are correct.\n\n"
+                    "The following glyphs do not have the recommended"
+                    f" number of contours:\n\n{bad_glyphs_name}\n",
+                ),
             )
         else:
             yield PASS, "All glyphs have the recommended amount of contours"
@@ -1591,10 +1701,13 @@ def com_google_fonts_check_transformed_components(ttFont, is_hinted):
                     failures += f"* {glyph_name} (component {comp_name})\n"
 
     if failures:
-        yield FAIL, Message(
-            "transformed-components",
-            "The following glyphs had components with scaling or rotation\n"
-            f"or inverted outline direction:\n\n{failures}",
+        yield (
+            FAIL,
+            Message(
+                "transformed-components",
+                "The following glyphs had components with scaling or rotation\n"
+                f"or inverted outline direction:\n\n{failures}",
+            ),
         )
     else:
         yield PASS, "No glyphs had components with scaling or rotation"
@@ -1634,8 +1747,11 @@ def com_google_fonts_check_gpos7(ttFont):
         yield PASS, "Font has no GPOS7 lookups"
         return
 
-    yield WARN, Message(
-        "has-gpos7", "Font contains a GPOS7 lookup which is not processed by macOS"
+    yield (
+        WARN,
+        Message(
+            "has-gpos7", "Font contains a GPOS7 lookup which is not processed by macOS"
+        ),
     )
 
 
@@ -1665,8 +1781,12 @@ def com_adobe_fonts_check_freetype_rasterizer(font):
         face.load_char("0")
 
     except FT_Exception as err:
-        yield FAIL, Message(
-            "freetype-crash", f"Font caused FreeType to crash with this error: {err}"
+        yield (
+            FAIL,
+            Message(
+                "freetype-crash",
+                f"Font caused FreeType to crash with this error: {err}",
+            ),
         )
     else:
         yield PASS, "Font can be rasterized by FreeType."
@@ -1691,16 +1811,22 @@ def com_adobe_fonts_check_sfnt_version(ttFont, is_ttf, is_cff, is_cff2):
     sfnt_version = ttFont.sfntVersion
 
     if is_ttf and sfnt_version != "\x00\x01\x00\x00":
-        yield FAIL, Message(
-            "wrong-sfnt-version-ttf",
-            "Font with TrueType outlines has incorrect sfntVersion value:"
-            f" '{sfnt_version}'",
+        yield (
+            FAIL,
+            Message(
+                "wrong-sfnt-version-ttf",
+                "Font with TrueType outlines has incorrect sfntVersion value:"
+                f" '{sfnt_version}'",
+            ),
         )
 
     elif (is_cff or is_cff2) and sfnt_version != "OTTO":
-        yield FAIL, Message(
-            "wrong-sfnt-version-cff",
-            f"Font with CFF data has incorrect sfntVersion value: '{sfnt_version}'",
+        yield (
+            FAIL,
+            Message(
+                "wrong-sfnt-version-cff",
+                f"Font with CFF data has incorrect sfntVersion value: '{sfnt_version}'",
+            ),
         )
 
     else:
@@ -1739,14 +1865,17 @@ def com_google_fonts_check_whitespace_widths(ttFont):
     if space_width > 0 and space_width == nbsp_width:
         yield PASS, "Space and non-breaking space have the same width."
     else:
-        yield FAIL, Message(
-            "different-widths",
-            "Space and non-breaking space have differing width:"
-            f" The space glyph named {space_name} is {space_width} font units wide,"
-            f" non-breaking space named ({nbsp_name}) is {nbsp_width} font units wide,"
-            ' and both should be positive and the same. GlyphsApp has "Sidebearing'
-            ' arithmetic" (https://glyphsapp.com/tutorials/spacing) which allows you to'
-            " set the non-breaking space width to always equal the space width.",
+        yield (
+            FAIL,
+            Message(
+                "different-widths",
+                "Space and non-breaking space have differing width:"
+                f" The space glyph named {space_name} is {space_width} font units wide,"
+                f" non-breaking space named ({nbsp_name}) is {nbsp_width} font units wide,"
+                ' and both should be positive and the same. GlyphsApp has "Sidebearing'
+                ' arithmetic" (https://glyphsapp.com/tutorials/spacing) which allows you to'
+                " set the non-breaking space width to always equal the space width.",
+            ),
         )
 
 
@@ -1815,10 +1944,13 @@ def com_google_fonts_check_iterpolation_issues(ttFont, config):
                         f" location {p['master_1'] or 'default'} and"
                         f" location {p['master_2'] or 'default'}"
                     )
-        yield WARN, Message(
-            "interpolation-issues",
-            f"Interpolation issues were found in the font:"
-            f" {bullet_list(config, report)}",
+        yield (
+            WARN,
+            Message(
+                "interpolation-issues",
+                f"Interpolation issues were found in the font:"
+                f" {bullet_list(config, report)}",
+            ),
         )
 
 
@@ -1885,11 +2017,14 @@ def com_google_fonts_check_math_signs_width(ttFont):
             if not w == most_common_width:
                 outliers_summary.append(f"Width = {w}:\n{', '.join(names)}\n")
         outliers_summary = "\n".join(outliers_summary)
-        yield WARN, Message(
-            "width-outliers",
-            f"The most common width is {most_common_width} among a set of {num_glyphs}"
-            " math glyphs.\nThe following math glyphs have a different width, though:"
-            f"\n\n{outliers_summary}",
+        yield (
+            WARN,
+            Message(
+                "width-outliers",
+                f"The most common width is {most_common_width} among a set of {num_glyphs}"
+                " math glyphs.\nThe following math glyphs have a different width, though:"
+                f"\n\n{outliers_summary}",
+            ),
         )
     else:
         yield PASS, "Looks good."
@@ -1986,11 +2121,14 @@ def com_google_fonts_check_STAT_in_statics(ttFont):
     for tag_name in entries:
         if entries[tag_name] > 1:
             passed = False
-            yield FAIL, Message(
-                "multiple-STAT-entries",
-                "The STAT table has more than a single entry for the"
-                f" '{tag_name}' axis ({entries[tag_name]}) on this"
-                " static font which will causes problems on Windows.",
+            yield (
+                FAIL,
+                Message(
+                    "multiple-STAT-entries",
+                    "The STAT table has more than a single entry for the"
+                    f" '{tag_name}' axis ({entries[tag_name]}) on this"
+                    " static font which will causes problems on Windows.",
+                ),
             )
 
     if passed:
