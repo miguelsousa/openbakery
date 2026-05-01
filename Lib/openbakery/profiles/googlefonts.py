@@ -3153,8 +3153,10 @@ def com_google_fonts_check_name_family_name_compliance(ttFont):
         known_exception = False
 
         # Process exceptions
-        text = files("openbakery").joinpath(camelcase_exceptions_txt).read_text(
-            encoding="utf-8"
+        text = (
+            files("openbakery")
+            .joinpath(camelcase_exceptions_txt)
+            .read_text(encoding="utf-8")
         )
         for exception in text.splitlines():
             exception = exception.split("#")[0].strip()
@@ -3182,8 +3184,10 @@ def com_google_fonts_check_name_family_name_compliance(ttFont):
         known_exception = False
 
         # Process exceptions
-        text = files("openbakery").joinpath(abbreviations_exceptions_txt).read_text(
-            encoding="utf-8"
+        text = (
+            files("openbakery")
+            .joinpath(abbreviations_exceptions_txt)
+            .read_text(encoding="utf-8")
         )
         for exception in text.splitlines():
             exception = exception.split("#")[0].strip()

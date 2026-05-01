@@ -1,7 +1,6 @@
 import math
 import os
 import shutil
-import sys
 from unittest.mock import patch
 
 import pytest
@@ -3679,5 +3678,3 @@ def test_check_italic_axis_last():
 
     font = TEST_FILE("shantell/ShantellSans-Italic[BNCE,INFM,SPAC,wght].ttf")
     assert_PASS(check(font, {"style": style(font)}))
-
-

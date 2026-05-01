@@ -167,9 +167,7 @@ def registered_vendor_ids():
     from importlib.resources import files
 
     registered_vendor_ids = {}
-    CACHED = files("openbakery").joinpath(
-        "data/openbakery-microsoft-vendorlist.cache"
-    )
+    CACHED = files("openbakery").joinpath("data/openbakery-microsoft-vendorlist.cache")
     content = CACHED.read_text(encoding="utf-8")
     # Strip all <A> HTML tags from the raw HTML. The current page contains a
     # closing </A> for which no opening <A> is present, which causes

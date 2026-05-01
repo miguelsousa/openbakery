@@ -6,7 +6,7 @@ to one of the other profiles (either universal, or a vendor-specific one).
 
 from openbakery.callable import check
 from openbakery.section import Section
-from openbakery.status import INFO, PASS, FAIL  # WARN
+from openbakery.status import INFO
 from openbakery.fonts_profile import profile_factory
 from openbakery.message import Message
 
