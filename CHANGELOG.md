@@ -40,7 +40,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed the `fontval` profile (https://github.com/miguelsousa/openbakery/pull/141).
 - `com.adobe.fonts/check/unsupported_tables`: Added COLR and CPAL tables to SUPPORTED_TABLES, added extra check to fail for COLRv1 (and pass for COLRv0). (https://github.com/miguelsousa/openbakery/pull/205)
 - Removed the `protobuf` dependency, along with all checks that depended on parsing `METADATA.pb` files. This includes the entire `com.google.fonts/check/metadata/*` family of checks (and their related conditions, test fixtures, and `*.proto` schemas) (https://github.com/miguelsousa/openbakery/pull/345).
-- Replaced `black` and `flake8` with `ruff` for code formatting and linting.
+- Removed the `axisregistry` dependency, along with the seven `googlefonts`-profile checks that relied on it: `com.google.fonts/check/canonical_filename`, `com.google.fonts/check/usweightclass`, `com.google.fonts/check/font_names`, `com.google.fonts/check/STAT`, `com.google.fonts/check/fvar_instances`, `com.google.fonts/check/gf_axisregistry/fvar_axis_defaults`, and `com.google.fonts/check/STAT/gf_axisregistry` (along with their backing `GFAxisRegistry` and `expected_font_names` conditions) (https://github.com/miguelsousa/openbakery/pull/367).
+- Replaced `black` and `flake8` with `ruff` for code formatting and linting (https://github.com/miguelsousa/openbakery/pull/348).
 
 ### Fixed
 
