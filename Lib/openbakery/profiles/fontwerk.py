@@ -29,7 +29,6 @@ profile.configuration_defaults = {
 def leave_this_one_out(checkid):
     CHECKS_NOT_TO_INCLUDE = [
         # don't run these checks on the Fontwerk profile:
-        "com.google.fonts/check/canonical_filename",
         "com.google.fonts/check/vendor_id",
         "com.google.fonts/check/fstype",
         "com.google.fonts/check/gasp",

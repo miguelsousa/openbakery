@@ -36,7 +36,7 @@ def test_command_check_googlefonts():
             TOOL_NAME,
             "googlefonts",
             "-c",
-            "com.google.fonts/check/canonical_filename",
+            "com.google.fonts/check/vendor_id",
             "-c",
             "stat_axis_record_for_each_axis",
             "-c",

@@ -620,13 +620,6 @@ def production_metadata(config):
 
 
 @condition
-def GFAxisRegistry():
-    from axisregistry import AxisRegistry
-
-    return AxisRegistry()
-
-
-@condition
 def upstream_yaml(family_directory):
     fp = os.path.join(family_directory, "upstream.yaml")
     if not os.path.isfile(fp):
@@ -637,17 +630,3 @@ def upstream_yaml(family_directory):
 @condition
 def is_noto(font_familyname):
     return font_familyname.startswith("Noto ")
-
-
-@condition
-def expected_font_names(ttFont, ttFonts):
-    from axisregistry import build_name_table, build_fvar_instances, build_stat
-    from copy import deepcopy
-
-    siblings = [f for f in ttFonts if f != ttFont]
-    font_cp = deepcopy(ttFont)
-    build_name_table(font_cp, siblings=siblings)
-    if "fvar" in font_cp:
-        build_fvar_instances(font_cp)
-        build_stat(font_cp, siblings)
-    return font_cp
