@@ -11,7 +11,6 @@ from openbakery.utils import (
     add_check_overrides,
     bullet_list,
     filesize_formatting,
-    markdown_table,
 )
 from openbakery.message import Message, KEEP_ORIGINAL_MESSAGE
 from openbakery.fonts_profile import profile_factory
@@ -23,7 +22,6 @@ from openbakery.constants import (
     UnicodeEncodingID,
     LATEST_TTFAUTOHINT_VERSION,
 )
-from openbakery.utils import exit_with_install_instructions
 
 profile_imports = (
     (".", ("googlefonts_conditions", "universal", "outline", "shaping", "ufo_sources")),
@@ -95,8 +93,6 @@ REPO_CHECKS = [
 
 FONT_FILE_CHECKS = [
     "com.google.fonts/check/glyph_coverage",
-    "com.google.fonts/check/canonical_filename",
-    "com.google.fonts/check/usweightclass",
     "com.google.fonts/check/fstype",
     "com.google.fonts/check/vendor_id",
     "com.google.fonts/check/ligature_carets",
@@ -118,13 +114,11 @@ FONT_FILE_CHECKS = [
     "com.google.fonts/check/hinting_impact",
     "com.google.fonts/check/file_size",
     "com.google.fonts/check/varfont/has_HVAR",
-    "com.google.fonts/check/font_names",
     "com.google.fonts/check/gasp",
     "com.google.fonts/check/name/mandatory_entries",
     "com.google.fonts/check/name/copyright_length",
     "com.google.fonts/check/fontdata_namecheck",
     "com.google.fonts/check/name/ascii_only_entries",
-    "com.google.fonts/check/fvar_instances",
     "com.google.fonts/check/old_ttfautohint",
     "com.google.fonts/check/vttclean",
     "com.google.fonts/check/aat",
@@ -140,8 +134,6 @@ FONT_FILE_CHECKS = [
     "com.google.fonts/check/varfont/consistent_axes",
     "com.google.fonts/check/varfont/unsupported_axes",
     "com.google.fonts/check/varfont/grade_reflow",
-    "com.google.fonts/check/gf_axisregistry/fvar_axis_defaults",
-    "com.google.fonts/check/STAT/gf_axisregistry",
     "com.google.fonts/check/STAT/axis_order",
     "com.google.fonts/check/mandatory_avar_table",
     "com.google.fonts/check/missing_small_caps_glyphs",
@@ -150,7 +142,6 @@ FONT_FILE_CHECKS = [
     "com.google.fonts/check/meta/script_lang_tags",
     "com.google.fonts/check/no_debugging_tables",
     "com.google.fonts/check/render_own_name",
-    "com.google.fonts/check/STAT",
     "com.google.fonts/check/colorfont_tables",
     "com.google.fonts/check/color_cpal_brightness",
     "com.google.fonts/check/empty_glyph_on_gid1_for_colrv0",
@@ -168,47 +159,6 @@ GOOGLEFONTS_PROFILE_CHECKS = (
     + FONT_FILE_CHECKS
     + GLYPHSAPP_CHECKS
 )
-
-
-@check(
-    id="com.google.fonts/check/canonical_filename",
-    rationale="""
-        A font's filename must be composed as "<familyname>-<stylename>.ttf":
-
-        - Nunito-Regular.ttf
-
-        - Oswald-BoldItalic.ttf
-
-
-        Variable fonts must list the axis tags in alphabetical order in
-        square brackets and separated by commas:
-
-        - Roboto[wdth,wght].ttf
-
-        - Familyname-Italic[wght].ttf
-    """,
-    proposal="legacy:check/001",
-)
-def com_google_fonts_check_canonical_filename(ttFont):
-    """Checking file is named canonically."""
-    try:
-        from axisregistry import build_filename
-
-        current_filename = os.path.basename(ttFont.reader.file.name)
-        expected_filename = build_filename(ttFont)
-    except ImportError:
-        exit_with_install_instructions("googlefonts")
-
-    if current_filename != expected_filename:
-        yield (
-            FAIL,
-            Message(
-                "bad-filename",
-                f'Expected "{expected_filename}. Got {current_filename}.',
-            ),
-        )
-    else:
-        yield PASS, f'Font filename is correct, "{current_filename}".'
 
 
 @check(
@@ -830,100 +780,6 @@ def com_google_fonts_check_name_unwanted_chars(ttFont):
                 " trademark symbols in name table entries of this font."
             ),
         )
-
-
-@check(
-    id="com.google.fonts/check/usweightclass",
-    conditions=["expected_font_names"],
-    rationale="""
-        Google Fonts expects variable fonts, static ttfs and static otfs to have
-        differing OS/2 usWeightClass values.
-
-        - For Variable Fonts, Thin-Black must be 100-900
-
-        - For static ttfs, Thin-Black can be 100-900 or 250-900
-
-        - For static otfs, Thin-Black must be 250-900
-
-        If static otfs are set lower than 250, text may appear blurry in
-        legacy Windows applications.
-
-        Glyphsapp users can change the usWeightClass value of an instance by adding
-        a 'weightClass' customParameter.
-    """,
-    proposal="legacy:check/020",
-)
-def com_google_fonts_check_usweightclass(ttFont, expected_font_names):
-    """
-    Check the OS/2 usWeightClass is appropriate for the font's best SubFamily name.
-    """
-    from openbakery.profiles.shared_conditions import is_ttf, is_cff, is_variable_font
-
-    passed = True
-    value = ttFont["OS/2"].usWeightClass
-    expected_value = expected_font_names["OS/2"].usWeightClass
-    style_name = ttFont["name"].getBestSubFamilyName()
-    has_expected_value = value == expected_value
-    fail_message = (
-        "Best SubFamily name is '{}'. Expected OS/2 usWeightClass is {}, got {}."
-    )
-    if is_variable_font(ttFont):
-        if not has_expected_value:
-            passed = False
-            yield (
-                FAIL,
-                Message(
-                    "bad-value", fail_message.format(style_name, expected_value, value)
-                ),
-            )
-    # overrides for static Thin and ExtaLight fonts
-    # for static ttfs, we don't mind if Thin is 250 and ExtraLight is 275.
-    # However, if the values are incorrect we will recommend they set Thin
-    # to 100 and ExtraLight to 250.
-    # for static otfs, Thin must be 250 and ExtraLight must be 275
-    elif "Thin" in style_name:
-        if is_ttf(ttFont) and value not in [100, 250]:
-            passed = False
-            yield (
-                FAIL,
-                Message(
-                    "bad-value", fail_message.format(style_name, expected_value, value)
-                ),
-            )
-        if is_cff(ttFont) and value != 250:
-            passed = False
-            yield (
-                FAIL,
-                Message("bad-value", fail_message.format(style_name, 250, value)),
-            )
-
-    elif "ExtraLight" in style_name:
-        if is_ttf(ttFont) and value not in [200, 275]:
-            passed = False
-            yield (
-                FAIL,
-                Message(
-                    "bad-value", fail_message.format(style_name, expected_value, value)
-                ),
-            )
-        if is_cff(ttFont) and value != 275:
-            passed = False
-            yield (
-                FAIL,
-                Message("bad-value", fail_message.format(style_name, 275, value)),
-            )
-
-    elif not has_expected_value:
-        passed = False
-        yield (
-            FAIL,
-            Message(
-                "bad-value", fail_message.format(style_name, expected_value, value)
-            ),
-        )
-
-    if passed:
-        yield PASS, "OS/2 usWeightClass is good"
 
 
 @check(
@@ -2102,89 +1958,6 @@ def com_google_fonts_check_slant_direction(ttFont, uharfbuzz_blob):
         yield PASS, "Angle of 'slnt' axis looks good."
 
 
-@check(
-    id="com.google.fonts/check/font_names",
-    conditions=["expected_font_names"],
-    rationale="""
-        Google Fonts has several rules which need to be adhered to when
-        setting a font's name table. Please read:
-        https://googlefonts.github.io/gf-guide/statics.html#supported-styles
-        https://googlefonts.github.io/gf-guide/statics.html#style-linking
-        https://googlefonts.github.io/gf-guide/statics.html#unsupported-styles
-        https://googlefonts.github.io/gf-guide/statics.html#single-weight-families
-    """,
-    proposal="https://github.com/googlefonts/fontbakery/pull/3800",
-)
-def com_google_fonts_check_font_names(ttFont, expected_font_names):
-    """Check font names are correct"""
-
-    def style_names(nametable):
-        res = {}
-        for nameID in (
-            NameID.FONT_FAMILY_NAME,
-            NameID.FONT_SUBFAMILY_NAME,
-            NameID.FULL_FONT_NAME,
-            NameID.POSTSCRIPT_NAME,
-            NameID.TYPOGRAPHIC_FAMILY_NAME,
-            NameID.TYPOGRAPHIC_SUBFAMILY_NAME,
-        ):
-            rec = nametable.getName(nameID, 3, 1, 0x409)
-            if rec:
-                res[nameID] = rec.toUnicode()
-        return res
-
-    font_names = style_names(ttFont["name"])
-    expected_names = style_names(expected_font_names["name"])
-
-    name_ids = {
-        NameID.FONT_FAMILY_NAME: "Family Name",
-        NameID.FONT_SUBFAMILY_NAME: "Subfamily Name",
-        NameID.FULL_FONT_NAME: "Full Name",
-        NameID.POSTSCRIPT_NAME: "Poscript Name",
-        NameID.TYPOGRAPHIC_FAMILY_NAME: "Typographic Family Name",
-        NameID.TYPOGRAPHIC_SUBFAMILY_NAME: "Typographic Subfamily Name",
-    }
-    table = []
-    for nameID in set(font_names.keys()) | set(expected_names.keys()):
-        id_name = name_ids[nameID]
-        row = {"nameID": id_name}
-        if nameID in font_names:
-            row["current"] = font_names[nameID]
-        else:
-            row["current"] = "N/A"
-        if nameID in expected_names:
-            row["expected"] = expected_names[nameID]
-        else:
-            row["expected"] = "N/A"
-        table.append(row)
-
-    new_names = set(font_names) - set(expected_names)
-    missing_names = set(expected_names) - set(font_names)
-    same_names = set(font_names) & set(expected_names)
-
-    md_table = markdown_table(table)
-
-    passed = True
-    if new_names or missing_names:
-        passed = False
-
-    for nameID in same_names:
-        if nameID == NameID.FULL_FONT_NAME and all(
-            [
-                " Regular" in expected_names[nameID],
-                font_names[nameID] == expected_names[nameID].replace(" Regular", ""),
-            ]
-        ):
-            yield WARN, Message("lacks-regular", "Regular missing from full name")
-        elif font_names[nameID] != expected_names[nameID]:
-            passed = False
-
-    if not passed:
-        yield FAIL, Message("bad-names", f"Font names are incorrect:\n\n{md_table}")
-    else:
-        yield PASS, f"Font names are good:\n\n{md_table}"
-
-
 # FIXME!
 # Temporarily disabled since GFonts hosted Cabin files seem to have changed in ways
 # that break some of the assumptions in the check implementation below.
@@ -2772,207 +2545,6 @@ def com_google_fonts_check_aat(ttFont):
         )
     else:
         yield PASS, "There are no unwanted AAT tables."
-
-
-@check(
-    id="com.google.fonts/check/STAT",
-    conditions=["is_variable_font", "expected_font_names"],
-    rationale="""
-        Check a font's STAT table contains compulsory Axis Values which exist
-        in the Google Fonts Axis Registry.
-
-        We cannot determine what Axis Values the user will set for axes such as
-        opsz, GRAD since these axes are unique for each font so we'll skip them.
-    """,
-    proposal="https://github.com/googlefonts/fontbakery/pull/3800",
-)
-def com_google_fonts_check_stat(ttFont, expected_font_names):
-    """Check a font's STAT table contains compulsory Axis Values."""
-    if "STAT" not in ttFont:
-        yield FAIL, "Font is missing STAT table"
-        return
-
-    AXES_TO_CHECK = {
-        "CASL",
-        "CRSV",
-        "FILL",
-        "FLAR",
-        "MONO",
-        "SOFT",
-        "VOLM",
-        "wdth",
-        "wght",
-        "WONK",
-    }
-
-    def stat_axis_values(ttFont):
-        name = ttFont["name"]
-        stat = ttFont["STAT"].table
-        axes = [a.AxisTag for a in stat.DesignAxisRecord.Axis]
-        res = {}
-        if ttFont["STAT"].table.AxisValueCount == 0:
-            return res
-        axis_values = stat.AxisValueArray.AxisValue
-        for ax in axis_values:
-            # Google Fonts axis registry cannot check format 4 Axis Values
-            if ax.Format == 4:
-                continue
-            axis_tag = axes[ax.AxisIndex]
-            if axis_tag not in AXES_TO_CHECK:
-                continue
-            ax_name = name.getName(ax.ValueNameID, 3, 1, 0x409).toUnicode()
-            if ax.Format == 2:
-                value = ax.NominalValue
-            else:
-                value = ax.Value
-            res[(axis_tag, ax_name)] = {
-                "Axis": axis_tag,
-                "Name": ax_name,
-                "Flags": ax.Flags,
-                "Value": value,
-                "LinkedValue": (
-                    None if not hasattr(ax, "LinkedValue") else ax.LinkedValue
-                ),
-            }
-        return res
-
-    font_axis_values = stat_axis_values(ttFont)
-    expected_axis_values = stat_axis_values(expected_font_names)
-
-    table = []
-    for axis, name in set(font_axis_values.keys()) | set(expected_axis_values.keys()):
-        row = {}
-        key = (axis, name)
-        if key in font_axis_values:
-            row["Name"] = name
-            row["Axis"] = axis
-            row["Current Value"] = font_axis_values[key]["Value"]
-            row["Current Flags"] = font_axis_values[key]["Flags"]
-            row["Current LinkedValue"] = font_axis_values[key]["LinkedValue"]
-        else:
-            row["Name"] = name
-            row["Axis"] = axis
-            row["Current Value"] = "N/A"
-            row["Current Flags"] = "N/A"
-            row["Current LinkedValue"] = "N/A"
-        if key in expected_axis_values:
-            row["Name"] = name
-            row["Axis"] = axis
-            row["Expected Value"] = expected_axis_values[key]["Value"]
-            row["Expected Flags"] = expected_axis_values[key]["Flags"]
-            row["Expected LinkedValue"] = expected_axis_values[key]["LinkedValue"]
-        else:
-            row["Name"] = name
-            row["Axis"] = axis
-            row["Expected Value"] = "N/A"
-            row["Expected Flags"] = "N/A"
-            row["Expected LinkedValue"] = "N/A"
-        table.append(row)
-    table.sort(key=lambda k: (k["Axis"], str(k["Expected Value"])))
-    md_table = markdown_table(table)
-
-    passed = True
-    is_italic = any(a.axisTag in ["ital", "slnt"] for a in ttFont["fvar"].axes)
-    missing_ital_av = any("Italic" in r["Name"] for r in table)
-    if is_italic and missing_ital_av:
-        passed = False
-        yield FAIL, Message("missing-ital-axis-values", "Italic Axis Value missing.")
-
-    if font_axis_values != expected_axis_values:
-        passed = False
-        yield (
-            FAIL,
-            Message(
-                "bad-axis-values",
-                f"Compulsory STAT Axis Values are incorrect:\n\n {md_table}\n",
-            ),
-        )
-    if passed:
-        yield PASS, "Compulsory STAT Axis Values are correct."
-
-
-@check(
-    id="com.google.fonts/check/fvar_instances",
-    conditions=["is_variable_font", "expected_font_names"],
-    rationale="""
-        Check a font's fvar instance coordinates comply with our guidelines:
-        https://googlefonts.github.io/gf-guide/variable.html#fvar-instances
-    """,
-    proposal="https://github.com/googlefonts/fontbakery/pull/3800",
-)
-def com_google_fonts_check_fvar_instances(ttFont, expected_font_names):
-    """Check variable font instances"""
-
-    def get_instances(ttFont):
-        name = ttFont["name"]
-        fvar = ttFont["fvar"]
-        res = {}
-        for inst in fvar.instances:
-            inst_name = name.getName(inst.subfamilyNameID, 3, 1, 0x409)
-            if not inst_name:
-                continue
-            res[inst_name.toUnicode()] = inst.coordinates
-        return res
-
-    font_instances = get_instances(ttFont)
-    expected_instances = get_instances(expected_font_names)
-    table = []
-    for name in set(font_instances.keys()) | set(expected_instances.keys()):
-        row = {"Name": name}
-        if name in font_instances:
-            row["current"] = ", ".join(
-                [f"{k}={v}" for k, v in font_instances[name].items()]
-            )
-        else:
-            row["current"] = "N/A"
-        if name in expected_instances:
-            row["expected"] = ", ".join(
-                [f"{k}={v}" for k, v in expected_instances[name].items()]
-            )
-        else:
-            row["expected"] = "N/A"
-        table.append(row)
-    table = sorted(table, key=lambda k: str(k["expected"]))
-
-    missing = set(expected_instances.keys()) - set(font_instances.keys())
-    new = set(font_instances.keys()) - set(expected_instances.keys())
-    same = set(font_instances.keys()) & set(expected_instances.keys())
-    # check if instances have correct weight.
-    if all("wght" in expected_instances[i] for i in expected_instances):
-        wght_wrong = any(
-            font_instances[i]["wght"] != expected_instances[i]["wght"] for i in same
-        )
-    else:
-        wght_wrong = False
-
-    md_table = markdown_table(table)
-    if any([wght_wrong, missing, new]):
-        hints = ""
-        if missing:
-            hints += "- Add missing instances\n"
-        if new:
-            hints += "- Delete additional instances\n"
-        if wght_wrong:
-            hints += "- wght coordinates are wrong for some instances"
-        yield (
-            FAIL,
-            Message(
-                "bad-fvar-instances",
-                f"fvar instances are incorrect:\n{hints}\n{md_table}",
-            ),
-        )
-    elif any(font_instances[i] != expected_instances[i] for i in same):
-        yield (
-            WARN,
-            Message(
-                "suspicious-fvar-coords",
-                "fvar instance coordinates for non-wght axes are not the same as the fvar"
-                " defaults. This may be intentional so please check with the font author:"
-                f"\n\n{md_table}",
-            ),
-        )
-    else:
-        yield PASS, f"fvar instances are good:\n\n{md_table}"
 
 
 @check(
@@ -4628,173 +4200,6 @@ def com_google_fonts_check_varfont_grade_reflow(ttFont, config):
             PASS,
             ("No variations or kern rules vary horizontal advance along the GRAD axis"),
         )
-
-
-@check(
-    id="com.google.fonts/check/gf_axisregistry/fvar_axis_defaults",
-    rationale="""
-        Check that axis defaults have a corresponding fallback name registered at the
-        Google Fonts Axis Registry, available at
-        https://github.com/google/fonts/tree/main/axisregistry
-
-        This is necessary for the following reasons:
-
-        To get ZIP files downloads on Google Fonts to be accurate — otherwise the
-        chosen default font is not generated. The Newsreader family, for instance, has
-        a default value on the 'opsz' axis of 16pt. If 16pt was not a registered
-        fallback position, then the ZIP file would instead include another position
-        as default (such as 14pt).
-
-        For the Variable fonts to display the correct location on the specimen page.
-
-        For VF with no weight axis to be displayed at all. For instance, Ballet, which
-        has no weight axis, was not appearing in sandbox because default position on
-        'opsz' axis was 16pt, and it was not yet a registered fallback positon.
-    """,
-    conditions=["is_variable_font", "GFAxisRegistry"],
-    proposal="https://github.com/googlefonts/fontbakery/issues/3141",
-)
-def com_google_fonts_check_gf_axisregistry_fvar_axis_defaults(ttFont, GFAxisRegistry):
-    """
-    Validate defaults on fvar table match registered fallback names in GFAxisRegistry.
-    """
-
-    passed = True
-    for axis in ttFont["fvar"].axes:
-        if axis.axisTag not in GFAxisRegistry:
-            continue
-        fallbacks = GFAxisRegistry[axis.axisTag].fallback
-        if axis.defaultValue not in [f.value for f in fallbacks]:
-            passed = False
-            yield (
-                FAIL,
-                Message(
-                    "not-registered",
-                    f"The defaul value {axis.axisTag}:{axis.defaultValue} is not registered"
-                    " as an axis fallback name on the Google Axis Registry.\n\tYou should"
-                    " consider suggesting the addition of this value to the registry"
-                    " or adopted one of the existing fallback names for this axis:\n"
-                    f"\t{fallbacks}",
-                ),
-            )
-    if passed:
-        yield PASS, "OK"
-
-
-@check(
-    id="com.google.fonts/check/STAT/gf_axisregistry",
-    rationale="""
-        Check that particle names and values on STAT table match the fallback names
-        in each axis entry at the Google Fonts Axis Registry, available at
-        https://github.com/google/fonts/tree/main/axisregistry
-    """,
-    conditions=["is_variable_font", "GFAxisRegistry"],
-    proposal="https://github.com/googlefonts/fontbakery/issues/3022",
-)
-def com_google_fonts_check_STAT_gf_axisregistry_names(ttFont, GFAxisRegistry):
-    """
-    Validate STAT particle names and values match the fallback names in GFAxisRegistry.
-    """
-
-    def normalize_name(name):
-        return "".join(name.split(" "))
-
-    passed = True
-    format4_entries = False
-    if "STAT" not in ttFont:
-        yield FAIL, "Font is missing STAT table."
-        return
-    axis_value_array = ttFont["STAT"].table.AxisValueArray
-    if not axis_value_array:
-        yield (
-            FAIL,
-            Message("missing-axis-values", "STAT table is missing Axis Value Records"),
-        )
-        return
-
-    for axis_value in axis_value_array.AxisValue:
-        if axis_value.Format == 4:
-            coords = []
-            for record in axis_value.AxisValueRecord:
-                axis = ttFont["STAT"].table.DesignAxisRecord.Axis[record.AxisIndex]
-                coords.append(f"{axis.AxisTag}:{record.Value}")
-            coords = ", ".join(coords)
-
-            name_entry = ttFont["name"].getName(
-                axis_value.ValueNameID,
-                PlatformID.WINDOWS,
-                WindowsEncodingID.UNICODE_BMP,
-                WindowsLanguageID.ENGLISH_USA,
-            )
-            format4_entries = True
-            yield INFO, Message("format-4", f"'{name_entry.toUnicode()}' at ({coords})")
-            continue
-
-        axis = ttFont["STAT"].table.DesignAxisRecord.Axis[axis_value.AxisIndex]
-        if axis.AxisTag in GFAxisRegistry.keys():
-            fallbacks = GFAxisRegistry[axis.AxisTag].fallback
-            fallbacks = {f.name: f.value for f in fallbacks}
-
-            # Here we assume that it is enough to check for only the Windows,
-            # English USA entry corresponding to a given nameID. It is up to other
-            # checks to ensure all different platform/encoding entries
-            # with a given nameID are consistent in the name table.
-            name_entry = ttFont["name"].getName(
-                axis_value.ValueNameID,
-                PlatformID.WINDOWS,
-                WindowsEncodingID.UNICODE_BMP,
-                WindowsLanguageID.ENGLISH_USA,
-            )
-
-            # Here "name_entry" has the user-friendly name of the current AxisValue
-            # We want to ensure that this string shows up as a "fallback" name
-            # on the GF Axis Registry for this specific variation axis tag.
-            is_value = None
-            name = normalize_name(name_entry.toUnicode())
-            expected_names = [normalize_name(n) for n in fallbacks.keys()]
-            if hasattr(axis_value, "Value"):  # Format 1 & 3
-                is_value = axis_value.Value
-            elif hasattr(axis_value, "NominalValue"):  # Format 2
-                is_value = axis_value.NominalValue
-            if name not in expected_names:
-                expected_names = ", ".join(expected_names)
-                passed = False
-                yield (
-                    FAIL,
-                    Message(
-                        "invalid-name",
-                        f"On the font variation axis '{axis.AxisTag}',"
-                        f" the name '{name_entry.toUnicode()}'"
-                        f" is not among the expected ones ({expected_names}) according"
-                        " to the Google Fonts Axis Registry.",
-                    ),
-                )
-            elif is_value != fallbacks[name_entry.toUnicode()]:
-                passed = False
-                yield (
-                    FAIL,
-                    Message(
-                        "bad-coordinate",
-                        f"Axis Value for '{axis.AxisTag}':'{name_entry.toUnicode()}' is"
-                        f" expected to be '{fallbacks[name_entry.toUnicode()]}' but this"
-                        f" font has '{name_entry.toUnicode()}'='{axis_value.Value}'.",
-                    ),
-                )
-
-    if format4_entries:
-        yield (
-            INFO,
-            Message(
-                "format-4",
-                "The GF Axis Registry does not currently contain fallback names"
-                " for the combination of values for more than a single axis,"
-                " which is what these 'format 4' entries are designed to describe,"
-                " so this check will ignore them for now.",
-            ),
-        )
-
-    if passed:
-        yield PASS, "OK"
 
 
 @check(

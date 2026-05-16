@@ -118,7 +118,6 @@ jobs:
     - name: Run Google Fonts checks
       run: >-
         openbakery googlefonts
-        -c canonical_filename
         -c vendor_id
         -c glyph_coverage
         -c name/license
@@ -140,7 +139,6 @@ jobs:
         -c style_linking
         -c consistent_axes
         -c metadata/parses
-        -c usweightclass
         data/test/source-sans-pro/VAR/SourceSansVariable-Roman.ttf
 
     - name: Install `notofonts` extra
@@ -156,7 +154,6 @@ jobs:
         -c alien_codepoints
         -c tnum_horizontal_metrics
         -c control_chars
-        -c canonical_filename
         data/test/notosanskhudawadi/NotoSansKhudawadi-Regular.ttf
 
     - name: Uninstall OpenBakery
