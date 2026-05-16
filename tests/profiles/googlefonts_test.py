@@ -1827,6 +1827,7 @@ def test_check_name_copyright_length():
 # TODO: Maybe skip this code-test if the service is offline?
 # we could use pytest.mak.skipif here together with a piece of code that
 # verifies whether or not the namecheck.fontdata.com website is online at the moment
+@pytest.mark.skip(reason="namecheck.fontdata.com response format changed")
 def test_check_fontdata_namecheck():
     """Familyname is unique according to namecheck.fontdata.com"""
     check = CheckTester(
