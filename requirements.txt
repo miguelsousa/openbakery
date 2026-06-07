@@ -1,4 +1,4 @@
-beautifulsoup4==4.14.3
+beautifulsoup4==4.15.0
 beziers==0.6.0
 cmarkgfm==2025.10.22
 collidoscope==0.6.5
